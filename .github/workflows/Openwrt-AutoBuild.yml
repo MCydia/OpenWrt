@@ -85,7 +85,7 @@ jobs:
         chmod +x $SOFT_SH
         cd openwrt
         ../$SOFT_SH
-        
+
     - name: 更新 feeds
       run: cd openwrt && ./scripts/feeds update -a
 
@@ -103,7 +103,7 @@ jobs:
         sed -i 's/^[ \t]*//g' ./.config
         make defconfig
         ../$DIY_SH
-        
+
     - name: 执行 config.sh
       run: |
         pwd
@@ -115,10 +115,10 @@ jobs:
         pwd
         chmod +x $OTHER_SH
         ./$OTHER_SH
-          
+
     # 界面化配置,等待SSH连接 
     # - name: SSH connection to Actions
-    #   uses: P3TERX/debugger-action@master
+    #   uses: P3TERX/debugger-action@main
     #   if: env.SSH_ACTIONS == 'true'
 
     - name: 下载 package
@@ -128,7 +128,7 @@ jobs:
         cd openwrt
         make download -j8
         find ./dl/ -size -1024c -exec rm -f {} \;
-        
+
     - name: 编译固件
       id: compile
       run: |
@@ -137,39 +137,24 @@ jobs:
         echo -e "$(nproc) thread compile"
         make -j$(nproc) V=s
         echo "::set-output name=status::success"
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> $GITHUB_ENV
-        
-    - name: 查看磁盘使用情况
-      if: (!cancelled())
-      run: df -hT
-      
+
     - name: 上传 bin 目录
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_directory
         path: openwrt/bin
-        
+
     - name: 整理编译好的固件
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         pwd
         cd openwrt/bin/targets/*/*
-        rm -rf packages && mkdir packages
-        find -name "*esxi-flat.vmdk*" | xargs -i mv -f {} packages
-        find -name "*kernel.bin*" | xargs -i mv -f {} packages
-        find -name "*rootfs*" | xargs -i mv -f {} packages
-        find -name "*.manifest*" | xargs -i mv -f {} packages
-        find -name "*vmlinuz*" | xargs -i mv -f {} packages
-        find -name "*esxi.vmdk*" | xargs -i mv -f {} packages
         rm -rf packages
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "::set-env name=FIRMWARE::$PWD"
         echo "::set-output name=status::success"
-        
+
     - name: 上传固件到GitHub
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
@@ -186,7 +171,7 @@ jobs:
         cowurl=$(echo $cowurl | grep -o -E "https[^ ]*")
         echo "::set-env name=COWURL::$cowurl"
         echo "::warning file=cowtransfer.com::$cowurl"
-        
+
     - name: 上传到WeTransfer
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
       run: |
@@ -196,39 +181,32 @@ jobs:
         wetrans=$(echo $wetrans | grep -o -E "https[^ ]*")
         echo "::set-env name=WETRANS::$wetrans"
         echo "::warning file=wetransfer.com::$wetrans"
-        
-    - name: 创建Releases
+
+    - name: 创建 release
       id: create_release
       uses: actions/create-release@main
-      continue-on-error: true      
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      run: |
-        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
-        touch release.txt
-        echo "[固件源码](https://github.com/coolsnowwolf/lede)" >> release.txt
-        echo "由衷感谢所有为openwrt无私奉献的大佬们" >> release.txt
-        echo "📥 固件下载" >> release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [国内NN网盘](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [国外WT网盘](${{ steps.wetransfer.outputs.url }})" >> release.txt
-        echo "::set-output name=status::success"
-        
-    - name: 发布至Releases
+      continue-on-error: true
+      if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+      with:
+        tag_name: ${{ env.date }}
+        release_name: 5.4_${{ env.date2 }} ${{ env.EMOJI }}
+        body: |
+            墙内加速下载🔥:
+            
+            ${{ env.COWURL }} 🚀
+            
+            ${{ env.WETRANS }} 🗽
+
+        draft: false
+        prerelease: false     
+
+    - name: 上传到 release
       uses: csexton/release-asset-action@master
       continue-on-error: true
-      if: steps.tag.outputs.status == 'success' && !cancelled()
-      env:
-        REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+      if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       with:
-        name: ${{ env.FILE_TIME }} 「 OpenWrt-X86-64 」
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
-
-    - name: 删除旧的Releases
-      uses: dev-drprasad/delete-older-releases@master
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      with:
-        keep_latest: 9
-        delete_tags: true
-      env:
-        REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+        pattern: "${{ env.FIRMWARE }}/*"
+        github-token: ${{ secrets.REPO_TOKEN }}
+        release-url: ${{ steps.create_release.outputs.upload_url }}
