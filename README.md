@@ -2,7 +2,7 @@
 
 ## 固件来源：
 
-P3TERX云编译脚本：[https://github.com/P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt)
+P3TERX云编译：[https://github.com/P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt)
 
 1. [lean固件源码]：[https://github.com/coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)
 2. [KFERMercer]：[https://github.com/KFERMercer/OpenWrt-CI](https://github.com/KFERMercer/OpenWrt-CI)
