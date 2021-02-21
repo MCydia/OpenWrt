@@ -6,19 +6,16 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: Build_5.4_OpenWrt
-
 on:
-  release:
-    types: published
+  #release:
+  #  types: published
   push:
     branches:
      - master
-  schedule:
-    - cron: 0 16 * * 6
+  #schedule:
+  #  - cron: 0 16 * * 6
   watch:
     types: started
-
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
