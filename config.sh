@@ -109,11 +109,12 @@ CONFIG_PACKAGE_luci-app-bypass=y
 CONFIG_PACKAGE_luci-app-passwall=y
 CONFIG_PACKAGE_luci-app-webadmin=n
 CONFIG_PACKAGE_luci-app-wrtbwmon=n
-# 其他软件(京东签到,UU,smartdns,netdata)
+# 其他软件(京东签到,UU,smartdns,netdata,微信)
 CONFIG_PACKAGE_luci-app-jd-dailybonus=n
 CONFIG_PACKAGE_luci-app-uugamebooster=n
 CONFIG_PACKAGE_luci-app-smartdns=n
 CONFIG_PACKAGE_luci-app-netdata=y
+CONFIG_PACKAGE_luci-app-serverchan=y
 EOF
 # 取消默认插件
 cat >> .config <<EOF
