@@ -85,7 +85,7 @@ jobs:
         chmod +x $SOFT_SH
         cd openwrt
         ../$SOFT_SH
-
+        
     - name: 更新 feeds
       run: cd openwrt && ./scripts/feeds update -a
 
@@ -103,7 +103,7 @@ jobs:
         sed -i 's/^[ \t]*//g' ./.config
         make defconfig
         ../$DIY_SH
-
+        
     - name: 执行 config.sh
       run: |
         pwd
@@ -115,18 +115,20 @@ jobs:
         pwd
         chmod +x $OTHER_SH
         ./$OTHER_SH
-
+          
     # 界面化配置,等待SSH连接 
     # - name: SSH connection to Actions
-    #   uses: P3TERX/debugger-action@main
+    #   uses: P3TERX/debugger-action@master
     #   if: env.SSH_ACTIONS == 'true'
+
     - name: 下载 package
       id: package
       run: |
         pwd
         cd openwrt
         make download -j8
-        find ./dl/ -size -1024c -exec rm -f {} \;        
+        find ./dl/ -size -1024c -exec rm -f {} \;
+        
     - name: 编译固件
       id: compile
       run: |
@@ -138,16 +140,19 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> $GITHUB_ENV     
+        echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> $GITHUB_ENV
+        
     - name: 查看磁盘使用情况
       if: (!cancelled())
-      run: df -hT    
+      run: df -hT
+      
     - name: 上传 bin 目录
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_directory
-        path: openwrt/bin        
+        path: openwrt/bin
+        
     - name: 整理编译好的固件
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
@@ -163,13 +168,15 @@ jobs:
         find -name "*esxi.vmdk*" | xargs -i mv -f {} packages
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "::set-output name=status::success"        
+        echo "::set-output name=status::success"
+        
     - name: 上传固件到GitHub
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware
         path: ${{ env.FIRMWARE }}
+
     - name: 上传到奶牛快传
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
@@ -178,7 +185,8 @@ jobs:
         cowurl=$(./transfer cow --block 2621440 -s --no-progress ${FIRMWARE})
         cowurl=$(echo $cowurl | grep -o -E "https[^ ]*")
         echo "::set-env name=COWURL::$cowurl"
-        echo "::warning file=cowtransfer.com::$cowurl"        
+        echo "::warning file=cowtransfer.com::$cowurl"
+        
     - name: 上传到WeTransfer
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
       run: |
@@ -187,7 +195,8 @@ jobs:
         wetrans=$(./transfer wet -s -p 16 --no-progress ${FIRMWARE})
         wetrans=$(echo $wetrans | grep -o -E "https[^ ]*")
         echo "::set-env name=WETRANS::$wetrans"
-        echo "::warning file=wetransfer.com::$wetrans"       
+        echo "::warning file=wetransfer.com::$wetrans"
+        
     - name: 创建Releases
       id: create_release
       uses: actions/create-release@main
@@ -201,7 +210,8 @@ jobs:
         echo "📥 固件下载" >> release.txt
         [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [国内NN网盘](${{ steps.cowtransfer.outputs.url }})" >> release.txt
         [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [国外WT网盘](${{ steps.wetransfer.outputs.url }})" >> release.txt
-        echo "::set-output name=status::success"       
+        echo "::set-output name=status::success"
+        
     - name: 发布至Releases
       uses: csexton/release-asset-action@master
       continue-on-error: true
@@ -213,6 +223,7 @@ jobs:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
+
     - name: 删除旧的Releases
       uses: dev-drprasad/delete-older-releases@master
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
