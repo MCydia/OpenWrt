@@ -6,14 +6,16 @@
 # Blog: https://p3terx.com
 #=================================================
 
+name: Build_5.4_OpenWrt
+
 on:
-  release:
-    types: published
+  #release:
+  #  types: published
   push:
     branches:
      - master
-  schedule:
-    - cron: 0 16 * * 6
+  #schedule:
+  #  - cron: 0 16 * * 6
   watch:
     types: started
 
@@ -81,7 +83,6 @@ jobs:
         chmod +x $SOFT_SH
         cd openwrt
         ../$SOFT_SH
-        
     - name: 更新 feeds
       run: cd openwrt && ./scripts/feeds update -a
 
@@ -99,7 +100,6 @@ jobs:
         sed -i 's/^[ \t]*//g' ./.config
         make defconfig
         ../$DIY_SH
-        
     - name: 执行 config.sh
       run: |
         pwd
@@ -123,7 +123,6 @@ jobs:
         cd openwrt
         make download -j8
         find ./dl/ -size -1024c -exec rm -f {} \;
-        
     - name: 编译固件
       id: compile
       run: |
@@ -132,7 +131,6 @@ jobs:
         echo -e "$(nproc) thread compile"
         make -j$(nproc) V=s
         echo "::set-output name=status::success"
-        
     - name: 上传 bin 目录
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
@@ -149,7 +147,6 @@ jobs:
         rm -rf packages
         echo "::set-env name=FIRMWARE::$PWD"
         echo "::set-output name=status::success"
-        
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
@@ -166,7 +163,6 @@ jobs:
         cowurl=$(echo $cowurl | grep -o -E "https[^ ]*")
         echo "::set-env name=COWURL::$cowurl"
         echo "::warning file=cowtransfer.com::$cowurl"
-        
     - name: 上传到WeTransfer
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
       run: |
@@ -176,7 +172,6 @@ jobs:
         wetrans=$(echo $wetrans | grep -o -E "https[^ ]*")
         echo "::set-env name=WETRANS::$wetrans"
         echo "::warning file=wetransfer.com::$wetrans"
-        
     - name: 创建 release
       id: create_release
       uses: actions/create-release@main
