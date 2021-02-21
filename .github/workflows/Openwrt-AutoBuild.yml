@@ -28,7 +28,7 @@ env:
   SOFT_SH: soft.sh
   DIY_SH: diy.sh
   OTHER_SH: other.sh
-  CONFIG_SH: config-x86.sh
+  CONFIG_SH: config.sh
   SSH_ACTIONS: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
