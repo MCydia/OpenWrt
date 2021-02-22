@@ -30,7 +30,7 @@ env:
   OTHER_SH: other.sh
   CONFIG_SH: config.sh
   SSH_ACTIONS: true
-  UPLOAD_BIN_DIR: false
+  UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: true
   UPLOAD_WETRANSFER: true
@@ -138,7 +138,7 @@ jobs:
         make -j$(nproc) V=s
         echo "::set-output name=status::success"
         
-    - name: 上传bin文件夹
+    - name: 上传bin文件
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
@@ -201,7 +201,7 @@ jobs:
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
-            ☆  感谢源码作者[ ${{ env.ZUOZHE }}大神 ]无私分享！
+            ☆  感谢源码作者[ ${{ env.ZUOZHE }}大雕 ]无私分享！
             
             🎉 [ ${{ env.NAME2 }}${{ env.NAME1 }} ]固件下载 ✨
             -
@@ -210,21 +210,22 @@ jobs:
             ⛄ WeTransfer(国外高速🚀下载)： ${{ env.WETRANS }}
             
             🌴 链接有效期为7天，无需注册直接下载 🐤
-        files: ${{ env.FIRMWARE }}/*
+            
+        draft: true
+        prerelease: true  
     
     - name: 发布至Release
       uses: csexton/release-asset-action@master
       continue-on-error: true
       if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       with:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         name: ${{ env.FILE_TIME }} 「 OpenWrt-X86-64 」
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        pattern: "${{ env.FIRMWARE }}/*"
+        github-token: ${{ secrets.REPO_TOKEN }}
+        release-url: ${{ steps.create_release.outputs.upload_url }}
         
     - name: 删除旧的Releases
-      uses: dev-drprasad/delete-older-releases@v0.1.0
+      uses: dev-drprasad/delete-older-releases@master
       if: env.REPO_TOKEN == 'true' && !cancelled()
       with:
         keep_latest: 9
