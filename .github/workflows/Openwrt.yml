@@ -30,7 +30,7 @@ env:
   OTHER_SH: other.sh
   CONFIG_SH: config.sh
   SSH_ACTIONS: true
-  UPLOAD_BIN_DIR: true
+  UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: true
   UPLOAD_WETRANSFER: true
@@ -142,56 +142,49 @@ jobs:
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
         echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> $GITHUB_ENV
         
-    - name: 查看磁盘使用情况
-      if: (!cancelled())
-      run: df -hT
-
-    - name: 上传bin文件夹(固件+ipk)
-      uses: actions/upload-artifact@v2
+    - name: 上传bin文件夹
+      uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: OpenWrt_bin_${{ env.NAME2 }}${{ env.NAME1 }}_${{ env.date }}
+        name: OpenWrt_directory
         path: openwrt/bin
-
+        
     - name: 整理编译好的固件
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
+        pwd
         cd openwrt/bin/targets/*/*
-        rm -rf packages && mkdir packages
-        find -name "*esxi-flat.vmdk*" | xargs -i mv -f {} packages
-        find -name "*kernel.bin*" | xargs -i mv -f {} packages
-        find -name "*rootfs*" | xargs -i mv -f {} packages
-        find -name "*.manifest*" | xargs -i mv -f {} packages
-        find -name "*vmlinuz*" | xargs -i mv -f {} packages
-        find -name "*esxi.vmdk*" | xargs -i mv -f {} packages
         rm -rf packages
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "::set-env name=FIRMWARE::$PWD"
         echo "::set-output name=status::success"
         
-    - name: 上传固件到github
+    - name: 上传固件到GitHub
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: OpenWrt_firmware
         path: ${{ env.FIRMWARE }}
 
     - name: 上传固件到NN网盘
-      id: cowtransfer
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
+        pwd
         curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+        cowurl=$(./transfer cow --block 2621440 -s --no-progress ${FIRMWARE})
+        cowurl=$(echo $cowurl | grep -o -E "https[^ ]*")
+        echo "::set-env name=COWURL::$cowurl"
+        echo "::warning file=cowtransfer.com::$cowurl"
+        
     - name: 上传固件到WT网盘
-      id: wetransfer
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
       run: |
+        pwd
         curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+        wetrans=$(./transfer wet -s -p 16 --no-progress ${FIRMWARE})
+        wetrans=$(echo $wetrans | grep -o -E "https[^ ]*")
+        echo "::set-env name=WETRANS::$wetrans"
+        echo "::warning file=wetransfer.com::$wetrans"
     
     - name: 创建Release
       id: create_release
@@ -214,7 +207,7 @@ jobs:
             
             ⛄ WeTransfer(国外高速🚀下载)： ${{ env.WETRANSFER_URL }}
             
-            🌴 链接有效期为7天，无需注册直接下载 🐤
+            🌴 链接有效期为7天，无需注册直接下载 🐤               
         pattern: "${{ env.FIRMWARE }}/*"
     
     - name: 发布至Release
