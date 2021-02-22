@@ -124,49 +124,51 @@ jobs:
     - name: 下载安装包
       id: package
       run: |
+        pwd
         cd openwrt
-        make defconfig
         make download -j8
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        find ./dl/ -size -1024c -exec rm -f {} \;
         
     - name: 开始编译固件        
       id: compile
       run: |
+        pwd
         cd openwrt
-        echo -e "$(($(nproc)+1)) thread compile"
-        make -j$(($(nproc)+1)) || make -j1 V=s
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) V=s
         echo "::set-output name=status::success"
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> $GITHUB_ENV
         
     - name: 上传bin文件夹
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: OpenWrt_directory
+        name: OpenWrt_bin_${{ env.NAME2 }}${{ env.NAME1 }}_${{ env.date }}
         path: openwrt/bin
         
-    - name: 整理编译好的固件
+    - name: 整理编译
       id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true' && !cancelled()
       run: |
-        pwd
         cd openwrt/bin/targets/*/*
+        rm -rf packages && mkdir packages
+        find -name "*esxi-flat.vmdk*" | xargs -i mv -f {} packages
+        find -name "*kernel.bin*" | xargs -i mv -f {} packages
+        find -name "*rootfs*" | xargs -i mv -f {} packages
+        find -name "*.manifest*" | xargs -i mv -f {} packages
+        find -name "*vmlinuz*" | xargs -i mv -f {} packages
+        find -name "*esxi.vmdk*" | xargs -i mv -f {} packages
         rm -rf packages
-        echo "::set-env name=FIRMWARE::$PWD"
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
         
     - name: 上传固件到GitHub
       uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       with:
-        name: OpenWrt_firmware
+        name: OpenWrt-${{ env.NAME2 }}${{ env.NAME1 }}-firmware-${{ env.date }}
         path: ${{ env.FIRMWARE }}
 
-    - name: 上传固件到NN网盘
+    - name: 上传到奶牛快传
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
         pwd
@@ -176,7 +178,7 @@ jobs:
         echo "::set-env name=COWURL::$cowurl"
         echo "::warning file=cowtransfer.com::$cowurl"
         
-    - name: 上传固件到WT网盘
+    - name: 上传到WeTransfer
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
       run: |
         pwd
@@ -194,8 +196,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        tag_name: ${{ env.date }}
-        release_name: OpenWrt_${{ env.date2 }} ${{ env.EMOJI }}
+        name: ${{ env.date1 }} 固件
+        tag_name: ${{ env.date2 }}
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
@@ -203,12 +205,12 @@ jobs:
             
             🎉 [ ${{ env.NAME2 }}${{ env.NAME1 }} ]固件下载 ✨
             -
-            💐 奶牛快传(国内高速🚀下载)： ${{ env.COWTRANSFER_URL }}
+            💐 奶牛快传(国内高速🚀下载)： ${{ env.COWURL }}
             
-            ⛄ WeTransfer(国外高速🚀下载)： ${{ env.WETRANSFER_URL }}
+            ⛄ WeTransfer(国外高速🚀下载)： ${{ env.WETRANS }}
             
-            🌴 链接有效期为7天，无需注册直接下载 🐤               
-        pattern: "${{ env.FIRMWARE }}/*"
+            🌴 链接有效期为7天，无需注册直接下载 🐤
+        files: ${{ env.FIRMWARE }}/*
     
     - name: 发布至Release
       uses: csexton/release-asset-action@master
@@ -219,11 +221,11 @@ jobs:
         name: ${{ env.FILE_TIME }} 「 OpenWrt-X86-64 」
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        pattern: "${{ env.FIRMWARE }}/*"
+        files: ${{ env.FIRMWARE }}/*
         
     - name: 删除旧的Releases
       uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: env.REPO_TOKEN == 'true' && !cancelled()
       with:
         keep_latest: 9
         delete_tags: true
