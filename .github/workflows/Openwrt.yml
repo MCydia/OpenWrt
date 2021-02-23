@@ -192,8 +192,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        tag_name: ${{ env.date2 }}
-        release_name: ${{ env.date }} 「 OpenWrt-X86-64 」固件 ${{ env.EMOJI }} 
+        tag_name: ${{ env.date }}
+        release_name: Lede_x86_64 ${{ env.date2 }} ${{ env.EMOJI }}
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
