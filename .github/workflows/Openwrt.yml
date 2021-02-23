@@ -190,7 +190,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.date }} 「 ${{ env.date2 }} 」固件
         tag_name: ${{ env.date3 }}
         release_name: OpenWrt-${{ env.date2 }} ${{ env.EMOJI }}
         body: |
