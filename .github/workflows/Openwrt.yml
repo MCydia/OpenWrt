@@ -192,6 +192,7 @@ jobs:
       with:
         name: ${{ env.date }} 「 ${{ env.date2 }} 」固件
         tag_name: ${{ env.date3 }}
+        release_name: OpenWrt-${{ env.date2 }} ${{ env.EMOJI }}
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
