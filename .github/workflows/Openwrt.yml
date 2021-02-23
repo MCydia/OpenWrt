@@ -36,6 +36,8 @@ env:
   UPLOAD_WETRANSFER: true
   UPLOAD_FIRMWARE_FOR_RELEASE: true
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}  
   PPPOE_USERNAME: ${{ secrets.PPPOE_USERNAME }}
   PPPOE_PASSWD: ${{ secrets.PPPOE_PASSWD }}
   TZ: Asia/Shanghai
@@ -227,7 +229,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         
     - name: TG 推送
-      run: curl "https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=OpenWrt-X86-64 编译完成"
+      run: curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=OpenWrt-X86-64 编译完成"
 
     - name: 微信报告
       uses: emon100/Action-Serverchan@master
