@@ -6,7 +6,7 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: OpenWrt
+name: MCydia OpenWrt
 
 on:
   release:
@@ -236,8 +236,8 @@ jobs:
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         SCKEY: ${{ secrets.SCKEY }}
-        text: 恭喜主人OpenWrt固件编译成功！
-        desp: 我亲爱的主人您要编译的[ OpenWrt ]固件顺利编译完成了！
+        text: 恭喜主人[ OpenWrt-X86-64 ]固件编译成功！
+        desp: 我亲爱的主人您要编译的[ OpenWrt-X86-64 ]固件顺利编译完成了！
               
               完成时间：${{ env.date2 }}
               
