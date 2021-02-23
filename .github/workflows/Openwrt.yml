@@ -9,8 +9,8 @@
 name: OpenWrt
 
 on:
-  #release:
-  #  types: published
+  release:
+    types: published
   push:
     branches:
      - master
@@ -139,7 +139,7 @@ jobs:
         echo "::set-output name=status::success"
         
     - name: 上传bin文件
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v1
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_directory
@@ -183,15 +183,13 @@ jobs:
         echo "::warning file=wetransfer.com::$wetrans"
     
     - name: 创建Release
-      id: create_release
-      uses: actions/create-release@main
-      continue-on-error: true
-      if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
+      uses: softprops/action-gh-release@v1
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true' || (github.event.inputs.release == 'release' && github.event.inputs.release  != 'false')
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.date }} 固件
-        release_name: ${{ env.date2 }} ${{ env.EMOJI }}
+        name: ${{ env.date1 }} 固件
+        tag_name: ${{ env.date2 }}
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
@@ -205,21 +203,21 @@ jobs:
             
             🌴 链接有效期为7天，无需注册直接下载 🐤
             
-        draft: false
-        prerelease: false   
+        files: ${{ env.FIRMWARE }}/*
     
-    - name: 发布至Release
-      uses: csexton/release-asset-action@master
-      continue-on-error: true
-      if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
+    - name: 发布定时升级云端
+      uses: softprops/action-gh-release@v1
+      if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.FILE_TIME }} 「 OpenWrt-X86-64 」
-        pattern: "${{ env.FIRMWARE }}/*"
-        github-token: ${{ secrets.REPO_TOKEN }}
-        release-url: ${{ steps.create_release.outputs.upload_url }}
+        name: 定时升级云端
+        tag_name: update_Firmware
+        body: 完成时间-${{ env.date }}
+        files: openwrt/bin/Firmware/*
         
     - name: 删除旧的Releases
-      uses: dev-drprasad/delete-older-releases@master
+      uses: dev-drprasad/delete-older-releases@v1
       if: env.REPO_TOKEN == 'true' && !cancelled()
       with:
         keep_latest: 9
