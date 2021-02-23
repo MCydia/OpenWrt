@@ -183,13 +183,15 @@ jobs:
         echo "::warning file=wetransfer.com::$wetrans"
     
     - name: 创建Release
-      uses: softprops/action-gh-release@v1
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true' || (github.event.inputs.release == 'release' && github.event.inputs.release  != 'false')
+      id: create_release
+      uses: actions/create-release@master
+      continue-on-error: true
+      if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.date1 }} 固件
-        tag_name: ${{ env.date2 }}
+        name: ${{ env.date2 }} 固件
+        tag_name: ${{ env.date3 }}
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
@@ -206,18 +208,19 @@ jobs:
         files: ${{ env.FIRMWARE }}/*
     
     - name: 发布定时升级云端
-      uses: softprops/action-gh-release@v1
-      if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
+      uses: csexton/release-asset-action@master
+      continue-on-error: true
+      if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
         name: 定时升级云端
         tag_name: update_Firmware
-        body: 完成时间-${{ env.date }}
+        body: 完成时间-${{ env.date3 }}
         files: openwrt/bin/Firmware/*
         
     - name: 删除旧的Releases
-      uses: dev-drprasad/delete-older-releases@v1
+      uses: dev-drprasad/delete-older-releases@master
       if: env.REPO_TOKEN == 'true' && !cancelled()
       with:
         keep_latest: 9
