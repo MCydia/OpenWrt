@@ -6,7 +6,7 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: MCydia OpenWrt
+name: OpenWrt
 
 on:
   release:
