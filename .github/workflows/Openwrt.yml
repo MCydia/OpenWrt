@@ -145,7 +145,7 @@ jobs:
         name: OpenWrt_directory
         path: openwrt/bin
         
-    - name: 整理 OpenWrt_firmware
+    - name: 整理 Firmware
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
@@ -162,7 +162,7 @@ jobs:
         name: OpenWrt_firmware
         path: ${{ env.FIRMWARE }}
 
-    - name: 上传到奶牛快传
+    - name: 上传到 奶牛快传
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
         pwd
@@ -172,7 +172,7 @@ jobs:
         echo "::set-env name=COWURL::$cowurl"
         echo "::warning file=cowtransfer.com::$cowurl"
         
-    - name: 上传到WeTransfer
+    - name: 上传到 WeTransfer
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
       run: |
         pwd
@@ -182,7 +182,7 @@ jobs:
         echo "::set-env name=WETRANS::$wetrans"
         echo "::warning file=wetransfer.com::$wetrans"
     
-    - name: 创建Release
+    - name: 创建 Release
       id: create_release
       uses: actions/create-release@master
       continue-on-error: true
@@ -190,7 +190,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.date2 }} 固件
+        name: ${{ env.date }} 「 ${{ env.date2 }} 」固件
         tag_name: ${{ env.date3 }}
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
@@ -205,21 +205,19 @@ jobs:
             
             🌴 链接有效期为7天，无需注册直接下载 🐤
             
-        files: ${{ env.FIRMWARE }}/*
-    
-    - name: 发布定时升级云端
+        draft: false
+        prerelease: false     
+
+    - name: 上传到 Release
       uses: csexton/release-asset-action@master
       continue-on-error: true
       if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: 定时升级云端
-        tag_name: update_Firmware
-        body: 完成时间-${{ env.date3 }}
-        files: openwrt/bin/Firmware/*
+        pattern: "${{ env.FIRMWARE }}/*"
+        github-token: ${{ secrets.REPO_TOKEN }}
+        release-url: ${{ steps.create_release.outputs.upload_url }}
         
-    - name: 删除旧的Releases
+    - name: 删除旧的 Releases
       uses: dev-drprasad/delete-older-releases@master
       if: env.REPO_TOKEN == 'true' && !cancelled()
       with:
