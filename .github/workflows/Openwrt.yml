@@ -145,7 +145,7 @@ jobs:
         name: OpenWrt_directory
         path: openwrt/bin
         
-    - name: 整理编译
+    - name: 整理 OpenWrt_firmware
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
@@ -154,18 +154,12 @@ jobs:
         rm -rf packages
         echo "::set-env name=FIRMWARE::$PWD"
         echo "::set-output name=status::success"
-    - name: Upload firmware directory
+        
+    - name: 上传到 GitHub
       uses: actions/upload-artifact@master
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware
-        path: ${{ env.FIRMWARE }}
-        
-    - name: 上传固件到GitHub
-      uses: actions/upload-artifact@main
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
-      with:
-        name: OpenWrt-${{ env.NAME2 }}${{ env.NAME1 }}-firmware-${{ env.date }}
         path: ${{ env.FIRMWARE }}
 
     - name: 上传到奶牛快传
