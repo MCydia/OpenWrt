@@ -9,8 +9,8 @@
 name: OpenWrt
 
 on:
-  release:
-    types: published
+  #release:
+  #  types: published
   push:
     branches:
      - master
@@ -139,27 +139,27 @@ jobs:
         echo "::set-output name=status::success"
         
     - name: 上传bin文件
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@master
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: OpenWrt_bin_${{ env.NAME2 }}${{ env.NAME1 }}_${{ env.date }}
+        name: OpenWrt_directory
         path: openwrt/bin
         
     - name: 整理编译
       id: organize
-      if: env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true' && !cancelled()
+      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
+        pwd
         cd openwrt/bin/targets/*/*
-        rm -rf packages && mkdir packages
-        find -name "*esxi-flat.vmdk*" | xargs -i mv -f {} packages
-        find -name "*kernel.bin*" | xargs -i mv -f {} packages
-        find -name "*rootfs*" | xargs -i mv -f {} packages
-        find -name "*.manifest*" | xargs -i mv -f {} packages
-        find -name "*vmlinuz*" | xargs -i mv -f {} packages
-        find -name "*esxi.vmdk*" | xargs -i mv -f {} packages
         rm -rf packages
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "::set-env name=FIRMWARE::$PWD"
         echo "::set-output name=status::success"
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@master
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        name: OpenWrt_firmware
+        path: ${{ env.FIRMWARE }}
         
     - name: 上传固件到GitHub
       uses: actions/upload-artifact@main
@@ -196,8 +196,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: ${{ env.date1 }} 固件
-        tag_name: ${{ env.date2 }}
+        name: ${{ env.date }} 固件
+        release_name: ${{ env.date2 }} ${{ env.EMOJI }}
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
             ☆  分支 : ${{ env.REPO_BRANCH }}
@@ -211,8 +211,8 @@ jobs:
             
             🌴 链接有效期为7天，无需注册直接下载 🐤
             
-        draft: true
-        prerelease: true  
+        draft: false
+        prerelease: false   
     
     - name: 发布至Release
       uses: csexton/release-asset-action@master
