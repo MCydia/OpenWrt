@@ -184,13 +184,13 @@ jobs:
     
     - name: 创建 Release
       id: create_release
-      uses: actions/create-release@master
+      uses: actions/create-release@main
       continue-on-error: true
       if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        tag_name: ${{ env.date3 }}
+        tag_name: ${{ env.date }}
         release_name: OpenWrt-${{ env.date2 }} ${{ env.EMOJI }}
         body: |
             ☆  源码 : ${{ env.REPO_URL }}
@@ -225,3 +225,22 @@ jobs:
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        
+    - name: TG 推送
+      run: curl "https://api.telegram.org/bot${{ secrets.TGKEY }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=OpenWrt 编译完成"
+
+    - name: 微信报告
+      uses: emon100/Action-Serverchan@master
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        SCKEY: ${{ secrets.SCKEY }}
+        text: 恭喜主人OpenWrt固件编译成功！
+        desp: 我亲爱的主人您要编译的[ OpenWrt ]固件顺利编译完成了！
+              
+              完成时间：${{ env.date2 }}
+              
+              奶牛快传：${{ env.COWURL }}
+              
+              WeTransfer：${{ env.WETRANS }}
+              
+              祝小主人见人爱，花见花开，车见车载，天天好心情🎈！！！
