@@ -229,11 +229,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         
     - name: TG 推送
-      if: env.TELEGRAM_TOKEN && ! contains(github.event.action, 'notg')
-      continue-on-error: true
-      run: |
-         [ steps.compile.outputs.status == 'success' ] && curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 OpenWrt ${{ env.date3 }} 编译成功 😋  ${{ env.COWURL }}   ${{ env.WETRANS }} 🚀" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" || curl -k --data chat_id="${{ secrets.TELEGRAM_TO }}" --data "text=❌ OpenWrt ${{ env.date3 }} 编译失败 😂" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
-
+      run: curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=OpenWrt-X86-64 编译完成 奶牛快传：${{ env.COWURL }} WeTransfer：${{ env.WETRANS }} ${{ env.EMOJI }}"
+      
     - name: 微信报告
       uses: emon100/Action-Serverchan@master
       if: steps.organize.outputs.status == 'success' && !cancelled()
