@@ -35,6 +35,7 @@ env:
   UPLOAD_COWTRANSFER: true
   UPLOAD_WETRANSFER: true
   UPLOAD_FIRMWARE_FOR_RELEASE: true
+  SCKEY: ${{ secrets.SCKEY }}
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}  
