@@ -35,7 +35,6 @@ env:
   UPLOAD_COWTRANSFER: true
   UPLOAD_WETRANSFER: true
   UPLOAD_FIRMWARE_FOR_RELEASE: true
-  SCKEY: ${{ secrets.SCKEY }}
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}  
@@ -236,7 +235,7 @@ jobs:
       uses: emon100/Action-Serverchan@master
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        GITHUB_TOKEN: ${{ secrets.SCKEY }}
+        SCKEY: ${{ secrets.SCKEY }}
         text: 恭喜主人[ OpenWrt-X86-64 ]固件编译成功！
         desp: 我亲爱的主人您要编译的[ OpenWrt-X86-64 ]固件顺利编译完成了！
               
