@@ -36,6 +36,7 @@ env:
   UPLOAD_WETRANSFER: true
   UPLOAD_FIRMWARE_FOR_RELEASE: true
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+  SCKEY: ${{ secrets.SCKEY }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}  
   PPPOE_USERNAME: ${{ secrets.PPPOE_USERNAME }}
@@ -61,6 +62,10 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
         sudo timedatectl set-timezone "$TZ"
+  
+    - name: 电报信息
+      run: |
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人您要编译的[OpenWrt_firmware]固件正在努力耕耘中,请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
         
     - name: 设置环境变量
       id: date
@@ -228,8 +233,19 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         
-    - name: TG 推送
-      run: curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=OpenWrt-X86-64 编译完成 奶牛快传：${{ env.COWURL }} WeTransfer：${{ env.WETRANS }} ${{ env.EMOJI }}"
+    - name: 电报机器人
+      run: |
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人✨您要编译的[OpenWrt_firmware]固件顺利编译完成了！
+      
+          完成时间：${{ env.date }}
+      
+          发布地址：${{ env.GITHUB_RELEASE }}/releases
+      
+          奶牛快传：${{ env.COWURL }}
+      
+          WeTransfer：${{ env.WETRANS }}
+      
+          祝小主人见人爱，💐花见花开，车见车载，天天好心情🎈！！！" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" 
       
     - name: 微信报告
       uses: emon100/Action-Serverchan@master
