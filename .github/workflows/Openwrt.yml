@@ -240,7 +240,7 @@ jobs:
       
           完成时间：${{ env.date }}
       
-          发布地址：${{ env.GITHUB_RELEASE }}/releases
+          发布地址：${{ env.GITHUB_RELEASE }}
       
           奶牛快传：${{ env.COWURL }}
       
