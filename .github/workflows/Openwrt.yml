@@ -64,7 +64,7 @@ jobs:
         sudo -E apt-get clean
         sudo timedatectl set-timezone "$TZ"
         
-    - name: 设置环境变量
+    - name: 设置环境
       id: date
       run: |
         echo "::set-env name=date::$(date +'%m/%d_%Y_%H/%M')"
@@ -137,7 +137,7 @@ jobs:
         make download -j8
         find ./dl/ -size -1024c -exec rm -f {} \;
         
-    - name: 开始编译固件        
+    - name: 开始编译        
       id: compile
       run: |
         pwd
@@ -146,7 +146,7 @@ jobs:
         make -j$(nproc) V=s
         echo "::set-output name=status::success"
         
-    - name: 上传bin文件
+    - name: 上传 bin文件
       uses: actions/upload-artifact@v1
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
