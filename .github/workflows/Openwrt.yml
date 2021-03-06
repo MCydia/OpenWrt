@@ -62,10 +62,6 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
         sudo timedatectl set-timezone "$TZ"
-  
-    - name: 电报信息
-      run: |
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人您要编译的[OpenWrt_firmware]固件正在努力耕耘中,请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
         
     - name: 设置环境变量
       id: date
@@ -85,7 +81,11 @@ jobs:
     # - name: 等待SSH连接
     #   uses: P3TERX/debugger-action@main
     #   if: env.SSH_ACTIONS == 'true'
-    
+
+    - name: 电报信息
+      run: |
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人您要编译的[OpenWrt_firmware]固件正在努力耕耘中,请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
+
     - name: 执行 soft.sh
       run: |
         pwd
@@ -235,7 +235,7 @@ jobs:
         
     - name: 电报机器人
       run: |
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人✨您要编译的[OpenWrt_firmware]固件顺利编译完成了！
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人✨您要编译的[Lede_x86_64]固件顺利编译完成了！
       
           完成时间：${{ env.date }}
       
@@ -245,7 +245,7 @@ jobs:
       
           WeTransfer：${{ env.WETRANS }}
       
-          祝小主人见人爱，💐花见花开，车见车载，天天好心情🎈！！！" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" 
+          祝小主人见人爱，💐花见花开，车见车载，天天好心情🎈！！！" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" 
       
     - name: 微信报告
       uses: emon100/Action-Serverchan@master
