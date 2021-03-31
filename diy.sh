@@ -9,7 +9,6 @@
 #sed -i 's/192.168.1.1/10.10.10.251/g' package/base-files/files/bin/config_generate
 
 ZZZ="package/lean/default-settings/files/zzz-default-settings"
-
 sed -i "/uci commit fstab/a\uci commit network" $ZZZ
 sed -i "/uci commit network/i\uci set network.lan.ipaddr='10.10.10.251'" $ZZZ             # IPv4 地址(openwrt后台地址)
 sed -i "/uci commit network/i\uci set network.lan.netmask='255.255.255.0'" $ZZZ           # IPv4 子网掩码
