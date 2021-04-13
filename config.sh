@@ -126,6 +126,7 @@ CONFIG_PACKAGE_luci-app-xlnetacc=n
 CONFIG_PACKAGE_luci-app-wol=n
 CONFIG_PACKAGE_luci-app-upnp=n
 CONFIG_PACKAGE_luci-app-sfe=n
+CONFIG_PACKAGE_luci-app-flowoffload=n
 CONFIG_PACKAGE_luci-app-accesscontrol=n
 # zerotier内网穿透,使用VPN
 CONFIG_PACKAGE_luci-app-zerotier=y
