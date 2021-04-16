@@ -27,7 +27,6 @@ env:
   Run_number: ${{github.run_number}}
   Run_workflow: ${{github.workflow}}
   TZ: Asia/Shanghai
-  GITHUB_RELEASE: https://github.com/MCydia/OpenWrt/releases
 
 jobs:
   build:
