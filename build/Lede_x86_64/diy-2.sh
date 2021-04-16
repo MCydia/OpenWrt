@@ -12,7 +12,7 @@ sed -i "/uci commit network/i\uci set network.lan.dns='10.10.10.253'" $ZZZ      
 sed -i "/uci commit network/i\uci set network.lan.delegate='0'" $ZZZ                       # 去掉LAN口使用内置的 IPv6 管理
 
 sed -i 's/luci-theme-bootstrap/luci-theme-atmaterial/g' feeds/luci/collections/luci/Makefile  # 强制选择atmaterial为默认主题选项
-sed -i "/uci commit luci/i\uci set luci.main.mediaurlbase=/luci-static/atmaterial" $ZZZ       # 选择atmaterial为默认主题
+sed -i "/uci commit luci/i\uci set luci.main.mediaurlbase=/luci-static/ATMaterial" $ZZZ       # 选择atmaterial为默认主题
 
 sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt-MCydia'" $ZZZ     # 修改主机名称为OpenWrt
 
