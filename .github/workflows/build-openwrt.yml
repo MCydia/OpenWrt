@@ -64,14 +64,6 @@ jobs:
         echo "Updete_firmware=${Updete_firmware}" >> $GITHUB_ENV
         echo "Extension=${Extension}" >> $GITHUB_ENV
         
-    - name: 微信通知
-      uses: emon100/Action-Serverchan@v2
-      if: env.SERVERCHAN_SCKEY == 'true'
-      with:
-        SCKEY: ${{ secrets.SCKEY }}
-        text: 主人${{matrix.target}}编译开始啦
-        desp: 主人您要编译的[${{matrix.target}}]固件正在努力耕耘中(${CangKu}仓库的#${Run_number}号),请耐心等待......
-        
     - name: 电报通知
       run: |
         if [[ "${SERVERCHAN_SCKEY}" == "true" ]]; then
@@ -300,11 +292,3 @@ jobs:
             您使用【${{matrix.target}}】文件夹编译的[${{ env.NAME2 }}-${{ env.NAME1 }}]固件(${{env.CangKu}}仓库的#${{env.Run_number}}号)顺利编译完成了！💐" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
           fi
         fi
-        
-    - name: 微信通知
-      uses: emon100/Action-Serverchan@v2
-      if: steps.organizer.outputs.status == 'success' && env.SERVERCHAN_SCKEY == 'true'
-      with:
-        SCKEY: ${{ secrets.SCKEY }}
-        text: 恭喜主人${{ env.NAME2 }}_${{ env.NAME1 }}固件编译成功！
-        desp: 我亲爱的主人您使用${{matrix.target}}文件夹编译的[ ${{ env.NAME2 }}-${{ env.NAME1 }} ]固件(${CangKu}仓库的#${Run_number}号)顺利编译完成了！
