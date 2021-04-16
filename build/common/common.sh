@@ -15,7 +15,7 @@ git clone -b $REPO_BRANCH --single-branch https://github.com/281677160/openwrt-p
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
-git clone https://github.com/281677160/luci-app-autoupdate package/luci-app-autoupdate
+git clone https://github.com/MCydia/luci-app-autoupdate package/luci-app-autoupdate
 mv "${PATH1}"/AutoUpdate.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoUpdate.sh
 fi
@@ -317,7 +317,7 @@ echo " 源码作者: ${ZUOZHE}"
 echo " 编译机型: ${TARGET_PROFILE}"
 echo " 固件作者: ${Author}"
 echo " 仓库地址: ${Github_Repo}"
-echo " 启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
+echo " 启动编号: ${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
 echo " 编译时间: $(TZ=UTC-8 date "+%Y年%m月%d号-%H时%M分")"
 echo " 您当前使用【${Modelfile}】文件夹编译【${TARGET_PROFILE}】固件"
 echo
