@@ -11,10 +11,11 @@ LIZZZ="package/default-settings/files/zzz-default-settings"
 # 全脚本源码通用diy.sh文件
 Diy_all() {
 DIY_GET_COMMON_SH
+git clone -b $REPO_BRANCH --single-branch https://github.com/281677160/openwrt-package package/danshui
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
-git clone https://github.com/longcat99/luci-app-autoupdate package/luci-app-autoupdate
+git clone https://github.com/281677160/luci-app-autoupdate package/luci-app-autoupdate
 mv "${PATH1}"/AutoUpdate.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoUpdate.sh
 fi
@@ -39,25 +40,23 @@ fi
 ################################################################################################################
 Diy_lede() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-app-argon,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-argon,k3screenctrl}
 sed -i 's/iptables -t nat/# iptables -t nat/g' ${TYZZZ}
 if [[ "${Modelfile}" == "Lede_x86_64" ]]; then
 sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
 
-git clone https://github.com/fw876/helloworld package/longcat/luci-app-ssr-plus
-git clone https://github.com/xiaorouji/openwrt-passwall package/longcat/luci-app-passwall
-git clone https://github.com/jerrykuku/luci-app-vssr package/longcat/luci-app-vssr
-git clone https://github.com/vernesong/OpenClash package/longcat/OpenClash
-git clone https://github.com/frainzy1477/luci-app-clash package/longcat/luci-app-clash
-git clone https://github.com/garypang13/luci-app-bypass package/longcat/luci-app-bypass
+git clone https://github.com/fw876/helloworld package/danshui/luci-app-ssr-plus
+git clone https://github.com/xiaorouji/openwrt-passwall package/danshui/luci-app-passwall
+git clone https://github.com/jerrykuku/luci-app-vssr package/danshui/luci-app-vssr
+git clone https://github.com/vernesong/OpenClash package/danshui/luci-app-openclash
+git clone https://github.com/frainzy1477/luci-app-clash package/danshui/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/danshui/luci-app-bypass
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
-chmod +x scripts/*.sh
-./scripts/preset-clash-core.sh amd64
-# ./scripts/preset-terminal-tools.sh
 }
+
 ################################################################################################################
 # LEDE源码通用diy2.sh文件
 Diy_lede2() {
@@ -97,8 +96,6 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -
 find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
 
-
-
 ################################################################################################################
 # LIENOL源码通用diy1.sh文件
 ################################################################################################################
@@ -126,7 +123,6 @@ sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webwe
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
 }
 
-
 ################################################################################################################
 # 天灵源码通用diy1.sh文件
 ################################################################################################################
@@ -148,7 +144,6 @@ rm -rf feeds/luci/themes/{luci-theme-argonv2,luci-theme-argonv3}
 sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
 sed -i "/exit 0/i\sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" ${TYZZZ}
 }
-
 
 ################################################################################################################
 # 判断脚本是否缺少主要文件（如果缺少settings.ini设置文件在检测脚本设置就运行错误了）
