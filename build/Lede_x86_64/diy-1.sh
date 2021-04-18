@@ -42,9 +42,6 @@ git clone https://github.com/jerrykuku/luci-app-vssr.git
 # git clone https://github.com/Leo-Jo-My/my.git
 # git clone https://github.com/liuwenwv/luci-app-vssr-plus.git
 
-#bypass
-git clone https://github.com/garypang13/luci-app-bypass.git
-
 # openclash
 # svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-openclash
 # svn co https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
