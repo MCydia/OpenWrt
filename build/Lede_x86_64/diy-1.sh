@@ -7,3 +7,10 @@
 # 想要什么插件就单独的拉取什么插件就好，或者告诉我，我把插件放我的插件包就行了
 # 软件包地址：https://github.com/281677160/openwrt-package.git
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
+
+#atmaterial主题
+git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
+#opentomato主题
+git clone https://github.com/solidus1983/luci-theme-opentomato.git
+# netdata
+rm -rf luci-app-netdata && git clone https://github.com/sirpdboy/luci-app-netdata.git
