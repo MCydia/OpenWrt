@@ -15,7 +15,7 @@ DIY_GET_COMMON_SH
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
-git clone https://github.com/longcat99/luci-app-autoupdate package/luci-app-autoupdate
+git clone https://github.com/MCydia/luci-app-autoupdate package/luci-app-autoupdate
 mv "${PATH1}"/AutoUpdate.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoUpdate.sh
 fi
