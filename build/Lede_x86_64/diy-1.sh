@@ -18,7 +18,7 @@ git clone https://github.com/linkease/ddnsto-openwrt.git
 git clone https://github.com/lisaac/luci-app-dockerman.git
 git clone https://github.com/lisaac/luci-lib-docker.git
 git clone https://github.com/longcat99/luci-app-dnsfilter.git
-git clone --depth 1 https://github.com/garypang13/smartdns-le
+# git clone --depth 1 https://github.com/garypang13/smartdns-le
 git clone https://github.com/kuoruan/luci-app-kcptun.git
 git clone https://github.com/project-lede/luci-app-godproxy.git
 svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
@@ -39,6 +39,6 @@ git clone --depth 1 https://github.com/sirpdboy/luci-theme-opentoks
 #atmaterial主题
 git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
 #opentomato主题
-svn co https://github.com/solidus1983/luci-theme-opentomato/trunk/luci/themes/luci-theme-opentomato
+git clone https://github.com/solidus1983/luci-theme-opentomato
 # netdata
 rm -rf luci-app-netdata && git clone https://github.com/sirpdboy/luci-app-netdata.git
