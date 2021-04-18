@@ -11,11 +11,11 @@ LIZZZ="package/default-settings/files/zzz-default-settings"
 # 全脚本源码通用diy.sh文件
 Diy_all() {
 DIY_GET_COMMON_SH
-# git clone -b $REPO_BRANCH --single-branch https://github.com/281677160/openwrt-package package/longcat
+git clone -b $REPO_BRANCH --single-branch https://github.com/281677160/openwrt-package package/danshui
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
-git clone https://github.com/MCydia/luci-app-autoupdate package/luci-app-autoupdate
+git clone https://github.com/281677160/luci-app-autoupdate package/luci-app-autoupdate
 mv "${PATH1}"/AutoUpdate.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoUpdate.sh
 fi
@@ -24,15 +24,15 @@ fi
 # 全脚本源码通用diy2.sh文件
 Diy_all2() {
 DIY_GET_COMMON_SH
-# if [ -n "$(ls -A "${Home}/package/longcat/ddnsto" 2>/dev/null)" ]; then
-# mv package/longcat/ddnsto package/network/services
-# fi
-# if [[ `grep -c "# CONFIG_PACKAGE_ddnsto is not set" "${PATH1}/${CONFIG_FILE}"` -eq '0' ]]; then
-# sed -i '/CONFIG_PACKAGE_ddnsto/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
-# echo -e "\nCONFIG_PACKAGE_ddnsto=y" >> "${PATH1}/${CONFIG_FILE}"
-# fi
-}
+if [ -n "$(ls -A "${Home}/package/danshui/ddnsto" 2>/dev/null)" ]; then
+mv package/danshui/ddnsto package/network/services
+fi
+if [[ `grep -c "# CONFIG_PACKAGE_ddnsto is not set" "${PATH1}/${CONFIG_FILE}"` -eq '0' ]]; then
+sed -i '/CONFIG_PACKAGE_ddnsto/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
+echo -e "\nCONFIG_PACKAGE_ddnsto=y" >> "${PATH1}/${CONFIG_FILE}"
+fi
 
+}
 
 ################################################################################################################
 # LEDE源码通用diy1.sh文件
@@ -56,7 +56,7 @@ find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 chmod +x scripts/*.sh
 ./scripts/preset-clash-core.sh amd64
-# ./scripts/preset-terminal-tools.sh
+./scripts/preset-terminal-tools.sh
 }
 ################################################################################################################
 # LEDE源码通用diy2.sh文件
