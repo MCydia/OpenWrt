@@ -54,9 +54,9 @@ git clone https://github.com/frainzy1477/luci-app-clash package/longcat/luci-app
 git clone https://github.com/garypang13/luci-app-bypass package/longcat/luci-app-bypass
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
-chmod +x scripts/*.sh
-./scripts/preset-clash-core.sh amd64
-./scripts/preset-terminal-tools.sh
+# chmod +x scripts/*.sh
+# ./scripts/preset-clash-core.sh amd64
+# ./scripts/preset-terminal-tools.sh
 }
 ################################################################################################################
 # LEDE源码通用diy2.sh文件
