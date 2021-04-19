@@ -11,7 +11,7 @@
 #atmaterial主题:
 git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
 #opentomato主题:
-svn co https://github.com/solidus1983/luci-theme-opentomato/tree/master/luci/themes/luci-theme-opentomato
+svn co https://github.com/solidus1983/luci-theme-opentomato/trunk/luci/themes/luci-theme-opentomato
 # netdata:
 rm -rf luci-app-netdata && git clone https://github.com/sirpdboy/luci-app-netdata.git
 # Lua-Maxminddb:
