@@ -13,4 +13,4 @@
 #opentomato主题
 # git clone https://github.com/solidus1983/luci-theme-opentomato.git
 # netdata
-# rm -rf luci-app-netdata && git clone https://github.com/sirpdboy/luci-app-netdata.git
+rm -rf luci-app-netdata && git clone https://github.com/sirpdboy/luci-app-netdata.git
