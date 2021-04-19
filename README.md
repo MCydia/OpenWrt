@@ -12,21 +12,20 @@
 - 感谢[hyird](https://github.com/hyird/Action-Openwrt)大神，是这仁兄告诉我有patch补丁这回事的
 - 感谢微软免费提供的编译平台
 - 感谢各位大佬提供的各种各样的插件
-- 感谢各位帮助过我的人，祝福各位好人一生平安
+- 由衷感谢所有为openwrt无私奉献的大佬们
 
 ### 插件列表
 1. [常用插件](https://github.com/coolsnowwolf/lede/wiki/%E5%B8%B8%E7%94%A8%E6%8F%92%E4%BB%B6%E5%BA%94%E7%94%A8%E8%AF%B4%E6%98%8E)
 2. [全部插件](https://www.right.com.cn/forum/thread-3682029-1-1.html)
 3. [全部插件github](https://github.com/RealKiro/gitblog/issues/4)
 
-由衷感谢所有为openwrt无私奉献的大佬们。
 
-固件说明：
-lean源码版本，内核为5.4（ipv4）版
+## 固件说明：
+  lean源码版本，内核为5.4（ipv4）版
 
-自动每7天更新一次，手动不定时更新
+  自动每7天更新一次，手动不定时更新
 
-ip：10.10.10.251 密码：为空
+  ip：10.10.10.251 密码：为空
 ## 其他
-联系：[Tg频道订阅](https://t.me/six_cloud)
+  联系：[Tg频道订阅](https://t.me/six_cloud)
 
