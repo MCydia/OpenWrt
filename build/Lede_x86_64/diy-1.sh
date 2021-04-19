@@ -8,9 +8,13 @@
 # 软件包地址：https://github.com/281677160/openwrt-package.git
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
 
-#atmaterial主题
-# git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
-#opentomato主题
-# git clone https://github.com/solidus1983/luci-theme-opentomato.git
-# netdata
+#atmaterial主题:
+git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
+#opentomato主题:
+svn co https://github.com/solidus1983/luci-theme-opentomato/tree/master/luci/themes/luci-theme-opentomato
+# netdata:
 rm -rf luci-app-netdata && git clone https://github.com/sirpdboy/luci-app-netdata.git
+# Lua-Maxminddb:
+svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
+# smartdns-le:
+git clone --depth 1 https://github.com/garypang13/smartdns-le
