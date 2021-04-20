@@ -8,10 +8,6 @@
 # 软件包地址：https://github.com/281677160/openwrt-package.git
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
 
-# edge主题:
-git clone -b 18.06 https://github.com/garypang13/luci-theme-edge.git package/luci-theme-edge
-# atmaterial主题:
-git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
 # opentomato主题:
 svn co https://github.com/solidus1983/luci-theme-opentomato/trunk/luci/themes/luci-theme-opentomato
 # netdata:
