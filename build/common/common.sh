@@ -40,7 +40,7 @@ fi
 ################################################################################################################
 Diy_lede() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-theme-opentomcat,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-edge,k3screenctrl}
 sed -i 's/iptables -t nat/# iptables -t nat/g' ${TYZZZ}
 if [[ "${Modelfile}" == "Lede_x86_64" ]]; then
 sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
@@ -63,7 +63,7 @@ DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LEDE/files "${Home}"
 cp -Rf "${Home}"/build/common/LEDE/diy/* "${Home}"
 sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
-sed -i 's/ +luci-theme-opentomcat//g' package/feeds/luci/luci/Makefile
+sed -i 's/ +luci-theme-edge//g' package/feeds/luci/luci/Makefile
 # 修改luci/luci-app-ddns排序
 find package/*/ feeds/*/ -maxdepth 5 -path "*luci-app-ddns/luasrc/controller/ddns.lua" | xargs -i sed -i 's/\"Dynamic DNS\")\, 59/\"Dynamic DNS\")\, 0/g' {}
 # 修改luci-app-ddns导航菜单位置
@@ -102,7 +102,7 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -
 Diy_lienol() {
 DIY_GET_COMMON_SH
 rm -rf package/diy/luci-app-adguardhome
-rm -rf package/lean/{luci-app-netdata,luci-theme-opentomcat,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-edge,k3screenctrl}
 git clone https://github.com/fw876/helloworld package/danshui/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/danshui/luci-app-passwall
 git clone https://github.com/jerrykuku/luci-app-vssr package/danshui/luci-app-vssr
@@ -130,7 +130,7 @@ sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/li
 Diy_immortalwrt() {
 DIY_GET_COMMON_SH
 rm -rf package/lienol/luci-app-timecontrol
-rm -rf package/lean/luci-theme-opentomcat
+rm -rf package/lean/luci-theme-edge
 git clone https://github.com/garypang13/luci-app-bypass package/danshui/luci-app-bypass
 }
 
