@@ -12,5 +12,7 @@
 # git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
 #opentomato主题
 # git clone https://github.com/solidus1983/luci-theme-opentomato.git
-# netdata
-rm -rf luci-app-netdata && git clone https://github.com/sirpdboy/luci-app-netdata.git
+# Lua-Maxminddb:
+svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
+# smartdns-le:
+git clone --depth 1 https://github.com/garypang13/smartdns-le
