@@ -40,7 +40,7 @@ fi
 ################################################################################################################
 Diy_lede() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-opentomcat,luci-theme-rosy,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-rosy,k3screenctrl}
 sed -i 's/iptables -t nat/# iptables -t nat/g' ${TYZZZ}
 if [[ "${Modelfile}" == "Lede_x86_64" ]]; then
 sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
@@ -102,7 +102,7 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -
 Diy_lienol() {
 DIY_GET_COMMON_SH
 rm -rf package/diy/luci-app-adguardhome
-rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-opentomcat,luci-theme-rosy,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-rosy,k3screenctrl}
 git clone https://github.com/fw876/helloworld package/mcydia/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/mcydia/luci-app-passwall
 git clone https://github.com/jerrykuku/luci-app-vssr package/mcydia/luci-app-vssr
