@@ -1,3 +1,4 @@
+  
 #!/bin/bash
 # https://github.com/MCydia/OpenWrt
 # common Module by MCydia
@@ -24,8 +25,8 @@ fi
 # 全脚本源码通用diy2.sh文件
 Diy_all2() {
 DIY_GET_COMMON_SH
-if [ -n "$(ls -A "${Home}/package/danshui/ddnsto" 2>/dev/null)" ]; then
-mv package/danshui/ddnsto package/network/services
+if [ -n "$(ls -A "${Home}/package/mcydia/ddnsto" 2>/dev/null)" ]; then
+mv package/mcydia/ddnsto package/network/services
 fi
 if [[ `grep -c "# CONFIG_PACKAGE_ddnsto is not set" "${PATH1}/${CONFIG_FILE}"` -eq '0' ]]; then
 sed -i '/CONFIG_PACKAGE_ddnsto/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
@@ -47,12 +48,12 @@ sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
 
-git clone https://github.com/fw876/helloworld package/danshui/luci-app-ssr-plus
-git clone https://github.com/xiaorouji/openwrt-passwall package/danshui/luci-app-passwall
-git clone https://github.com/jerrykuku/luci-app-vssr package/danshui/luci-app-vssr
-git clone https://github.com/vernesong/OpenClash package/danshui/luci-app-openclash
-git clone https://github.com/frainzy1477/luci-app-clash package/danshui/luci-app-clash
-git clone https://github.com/garypang13/luci-app-bypass package/danshui/luci-app-bypass
+git clone https://github.com/fw876/helloworld package/mcydia/luci-app-ssr-plus
+git clone https://github.com/xiaorouji/openwrt-passwall package/mcydia/luci-app-passwall
+git clone https://github.com/jerrykuku/luci-app-vssr package/mcydia/luci-app-vssr
+git clone https://github.com/vernesong/OpenClash package/mcydia/luci-app-openclash
+git clone https://github.com/frainzy1477/luci-app-clash package/mcydia/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/mcydia/luci-app-bypass
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
@@ -63,7 +64,7 @@ DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LEDE/files "${Home}"
 cp -Rf "${Home}"/build/common/LEDE/diy/* "${Home}"
 sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
-sed -i 's/ +luci-theme-argon//g' package/feeds/luci/luci/Makefile
+sed -i 's/ +luci-theme-edge//g' package/feeds/luci/luci/Makefile
 # 修改luci/luci-app-ddns排序
 find package/*/ feeds/*/ -maxdepth 5 -path "*luci-app-ddns/luasrc/controller/ddns.lua" | xargs -i sed -i 's/\"Dynamic DNS\")\, 59/\"Dynamic DNS\")\, 0/g' {}
 # 修改luci-app-ddns导航菜单位置
@@ -103,12 +104,12 @@ Diy_lienol() {
 DIY_GET_COMMON_SH
 rm -rf package/diy/luci-app-adguardhome
 rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-opentomcat,luci-theme-rosy,k3screenctrl}
-git clone https://github.com/fw876/helloworld package/danshui/luci-app-ssr-plus
-git clone https://github.com/xiaorouji/openwrt-passwall package/danshui/luci-app-passwall
-git clone https://github.com/jerrykuku/luci-app-vssr package/danshui/luci-app-vssr
-git clone https://github.com/vernesong/OpenClash package/danshui/luci-app-openclash
-git clone https://github.com/frainzy1477/luci-app-clash package/danshui/luci-app-clash
-git clone https://github.com/garypang13/luci-app-bypass package/danshui/luci-app-bypass
+git clone https://github.com/fw876/helloworld package/mcydia/luci-app-ssr-plus
+git clone https://github.com/xiaorouji/openwrt-passwall package/mcydia/luci-app-passwall
+git clone https://github.com/jerrykuku/luci-app-vssr package/mcydia/luci-app-vssr
+git clone https://github.com/vernesong/OpenClash package/mcydia/luci-app-openclash
+git clone https://github.com/frainzy1477/luci-app-clash package/mcydia/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/mcydia/luci-app-bypass
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
@@ -130,8 +131,8 @@ sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/li
 Diy_immortalwrt() {
 DIY_GET_COMMON_SH
 rm -rf package/lienol/luci-app-timecontrol
-rm -rf package/lean/luci-theme-argon
-git clone https://github.com/garypang13/luci-app-bypass package/danshui/luci-app-bypass
+rm -rf package/lean/luci-theme-edge
+git clone https://github.com/garypang13/luci-app-bypass package/mcydia/luci-app-bypass
 }
 
 ################################################################################################################
