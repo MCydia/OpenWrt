@@ -8,7 +8,7 @@ sed -i "/uci commit network/i\uci set network.lan.ipaddr='10.10.10.12'" $ZZZ    
 sed -i "/uci commit network/i\uci set network.lan.netmask='255.255.255.0'" $ZZZ           # IPv4 子网掩码
 sed -i "/uci commit network/i\uci set network.lan.gateway='10.10.10.10'" $ZZZ             # IPv4 网关
 sed -i "/uci commit network/i\uci set network.lan.broadcast='10.10.10.255'" $ZZZ          # IPv4 广播
-sed -i "/uci commit network/i\uci set network.lan.dns='10.10.10.20'" $ZZZ   # DNS(多个DNS要用空格分开)
+sed -i "/uci commit network/i\uci set network.lan.dns='10.10.10.20'" $ZZZ                 # DNS(多个DNS要用空格分开)
 sed -i "/uci commit network/i\uci set network.lan.delegate='0'" $ZZZ                      # 去掉LAN口使用内置的 IPv6 管理
 
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile   # 强制选择argon为默认主题选项
