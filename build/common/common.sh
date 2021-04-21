@@ -64,7 +64,7 @@ DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LEDE/files "${Home}"
 cp -Rf "${Home}"/build/common/LEDE/diy/* "${Home}"
 sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
-sed -i 's/ +luci-theme-edge//g' package/feeds/luci/luci/Makefile
+sed -i 's/ +luci-theme-argon//g' package/feeds/luci/luci/Makefile
 # 修改luci/luci-app-ddns排序
 find package/*/ feeds/*/ -maxdepth 5 -path "*luci-app-ddns/luasrc/controller/ddns.lua" | xargs -i sed -i 's/\"Dynamic DNS\")\, 59/\"Dynamic DNS\")\, 0/g' {}
 # 修改luci-app-ddns导航菜单位置
@@ -131,7 +131,7 @@ sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/li
 Diy_immortalwrt() {
 DIY_GET_COMMON_SH
 rm -rf package/lienol/luci-app-timecontrol
-rm -rf package/lean/luci-theme-edge
+rm -rf package/lean/luci-theme-argon
 git clone https://github.com/garypang13/luci-app-bypass package/mcydia/luci-app-bypass
 }
 
