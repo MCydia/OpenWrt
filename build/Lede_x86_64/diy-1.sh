@@ -9,8 +9,6 @@
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
 
 cd openwrt-packages
-# opentomato主题:
-svn co https://github.com/solidus1983/luci-theme-opentomato/trunk/luci/themes/luci-theme-opentomato
 # Lua-Maxminddb:
 svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
 # smartdns-le:
