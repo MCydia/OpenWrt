@@ -8,7 +8,7 @@
 - 感谢[P3TERX](https://github.com/P3TERX/Actions-OpenWrt)大神提供的一键编译脚本
 - 感谢[garypang13](https://github.com/garypang13/Actions-OpenWrt)大神提供的一键编译脚本
 - 感谢[tuanqing](https://github.com/tuanqing/mknop)大神提供的一键打包脚本
-- 感谢[Hyy2001X](https://github.com/Hyy2001X/AutoBuild-Actions)大神，定时自动升级固件来源于此大神
+- 感谢[Hyy2001X](https://github.com/Hyy2001X/AutoBuild-Actions)大神，定时升级固件来源于此大神
 - 感谢[hyird](https://github.com/hyird/Action-Openwrt)大神，是这仁兄告诉我有patch补丁这回事的
 - 感谢微软免费提供的编译平台
 - 感谢各位大佬提供的各种各样的插件
