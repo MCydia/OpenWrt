@@ -21,8 +21,8 @@ on:
         required: false
         default: 'true'
 
-  schedule:
-    - cron: 0 16 * * 6
+  #schedule:
+    #- cron: 0 16 * * 6
 
 env:
   OLDER_WORKFLOW: true
