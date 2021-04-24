@@ -16,7 +16,7 @@ sed -i "/uci commit luci/i\uci set luci.main.mediaurlbase=/luci-static/edge" $ZZ
 
 sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ            # 修改主机名称为OpenWrt
 
-sed -i "s/OpenWrt /MCydia $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ                  # 增加自己个性名称
+sed -i "s/OpenWrt /MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ                  # 增加自己个性名称
 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                     # 设置密码为空
 
