@@ -11,11 +11,11 @@ sed -i "/uci commit network/i\uci set network.lan.broadcast='10.10.10.255'" $ZZZ
 sed -i "/uci commit network/i\uci set network.lan.dns='10.10.10.253'" $ZZZ                  # DNS(多个DNS要用空格分开)
 sed -i "/uci commit network/i\uci set network.lan.delegate='0'" $ZZZ                        # 去掉LAN口使用内置的 IPv6 管理
 
-sed -i 's/luci-theme-bootstrap/luci-theme-edge/g' feeds/luci/collections/luci/Makefile      # 强制选择edge为默认主题选项
+sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile      # 强制选择rosy为默认主题选项
 
 sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ             # 修改主机名称为OpenWrt
 
-sed -i "s/OpenWrt /MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ       # 增加自己个性名称281677160
+sed -i "s/OpenWrt /MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ       # 增加自己个性名称MCydia
 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                      # 设置密码为空
 
