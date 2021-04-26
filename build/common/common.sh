@@ -11,7 +11,7 @@ LIZZZ="package/default-settings/files/zzz-default-settings"
 # 全脚本源码通用diy.sh文件
 Diy_all() {
 DIY_GET_COMMON_SH
-git clone -b $REPO_BRANCH --single-branch https://github.com/281677160/openwrt-package package/mcydia
+git clone -b $REPO_BRANCH --single-branch https://github.com/MCydia/openwrt-package package/mcydia
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
@@ -24,7 +24,7 @@ fi
 # 全脚本源码通用diy2.sh文件
 Diy_all2() {
 DIY_GET_COMMON_SH
-if [ -n "$(ls -A "${Home}/package/mcydia/ddnsto" 2>/dev/null)" ]; then
+if [ -n "$(ls -A "${Home}/package/MCydia/ddnsto" 2>/dev/null)" ]; then
 mv package/mcydia/ddnsto package/network/services
 fi
 if [[ `grep -c "# CONFIG_PACKAGE_ddnsto is not set" "${PATH1}/${CONFIG_FILE}"` -eq '0' ]]; then
