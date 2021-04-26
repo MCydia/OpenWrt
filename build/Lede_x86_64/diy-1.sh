@@ -10,8 +10,8 @@
 
 cd package
 git clone https://github.com/MCydia/openwrt-package.git
-mkdir openwrt-packages
-cd openwrt-packages
+mkdir openwrt-package
+cd openwrt-package
 git clone https://github.com/frainzy1477/luci-app-clash.git
 git clone https://github.com/destan19/OpenAppFilter.git
 git clone https://github.com/jerrykuku/luci-app-ttnode.git
