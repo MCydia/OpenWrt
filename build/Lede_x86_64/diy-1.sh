@@ -8,8 +8,8 @@
 # 软件包地址：https://github.com/MCydia/openwrt-package.git
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
 
-cd openwrt-packages
+# cd openwrt-packages
 # Lua-Maxminddb:
-svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
+# svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
 # smartdns-le:
-git clone https://github.com/garypang13/smartdns-le
+# git clone https://github.com/garypang13/smartdns-le
