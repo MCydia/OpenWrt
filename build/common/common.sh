@@ -1,6 +1,6 @@
 #!/bin/bash
-# https://github.com/MCydia/OpenWrt
-# common Module by MCydia
+# https://github.com/281677160/build-openwrt
+# common Module by 28677160
 # matrix.target=${Modelfile}
 
 DIY_GET_COMMON_SH() {
@@ -24,14 +24,13 @@ fi
 # 全脚本源码通用diy2.sh文件
 Diy_all2() {
 DIY_GET_COMMON_SH
-if [ -n "$(ls -A "${Home}/package/MCydia/ddnsto" 2>/dev/null)" ]; then
+if [ -n "$(ls -A "${Home}/package/mcydia/ddnsto" 2>/dev/null)" ]; then
 mv package/mcydia/ddnsto package/network/services
 fi
 if [[ `grep -c "# CONFIG_PACKAGE_ddnsto is not set" "${PATH1}/${CONFIG_FILE}"` -eq '0' ]]; then
 sed -i '/CONFIG_PACKAGE_ddnsto/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 echo -e "\nCONFIG_PACKAGE_ddnsto=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
-
 }
 
 
@@ -40,7 +39,7 @@ fi
 ################################################################################################################
 Diy_lede() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-opentomcat,luci-theme-rosy,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-rosy,k3screenctrl}
 sed -i 's/iptables -t nat/# iptables -t nat/g' ${TYZZZ}
 if [[ "${Modelfile}" == "Lede_x86_64" ]]; then
 sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
@@ -50,7 +49,7 @@ fi
 git clone https://github.com/fw876/helloworld package/mcydia/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/mcydia/luci-app-passwall
 git clone https://github.com/jerrykuku/luci-app-vssr package/mcydia/luci-app-vssr
-git clone https://github.com/vernesong/OpenClash package/mcydia/luci-app-openclash
+git clone https://github.com/vernesong/OpenClash package/mcydia/OpenClash
 git clone https://github.com/frainzy1477/luci-app-clash package/mcydia/luci-app-clash
 git clone https://github.com/garypang13/luci-app-bypass package/mcydia/luci-app-bypass
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
@@ -62,8 +61,8 @@ Diy_lede2() {
 DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LEDE/files "${Home}"
 cp -Rf "${Home}"/build/common/LEDE/diy/* "${Home}"
-sed -i '/exit 0/i\echo "*/4 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
-sed -i 's/ +luci-theme-argon//g' package/feeds/luci/luci/Makefile
+sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
+sed -i 's/ +luci-theme-rosy//g' package/feeds/luci/luci/Makefile 
 # 修改luci/luci-app-ddns排序
 find package/*/ feeds/*/ -maxdepth 5 -path "*luci-app-ddns/luasrc/controller/ddns.lua" | xargs -i sed -i 's/\"Dynamic DNS\")\, 59/\"Dynamic DNS\")\, 0/g' {}
 # 修改luci-app-ddns导航菜单位置
@@ -96,13 +95,14 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -
 }
 
 
+
 ################################################################################################################
 # LIENOL源码通用diy1.sh文件
 ################################################################################################################
 Diy_lienol() {
 DIY_GET_COMMON_SH
 rm -rf package/diy/luci-app-adguardhome
-rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-opentomcat,luci-theme-rosy,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-rosy,k3screenctrl}
 git clone https://github.com/fw876/helloworld package/mcydia/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/mcydia/luci-app-passwall
 git clone https://github.com/jerrykuku/luci-app-vssr package/mcydia/luci-app-vssr
@@ -119,7 +119,7 @@ DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LIENOL/files "${Home}"
 cp -Rf "${Home}"/build/common/LIENOL/diy/* "${Home}"
 rm -rf feeds/packages/net/adguardhome
-sed -i '/exit 0/i\echo "*/1 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${LIZZZ}
+sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${LIZZZ}
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
 }
 
@@ -130,7 +130,7 @@ sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/li
 Diy_immortalwrt() {
 DIY_GET_COMMON_SH
 rm -rf package/lienol/luci-app-timecontrol
-rm -rf package/lean/luci-theme-argon
+rm -rf package/lean/luci-theme-rosy 
 git clone https://github.com/garypang13/luci-app-bypass package/mcydia/luci-app-bypass
 }
 
@@ -142,7 +142,7 @@ cp -Rf "${Home}"/build/common/PROJECT/files "${Home}"
 cp -Rf "${Home}"/build/common/PROJECT/diy/* "${Home}"
 rm -rf feeds/luci/applications/{luci-app-adguardhome,luci-app-argon-config}
 rm -rf feeds/luci/themes/{luci-theme-argonv2,luci-theme-argonv3}
-sed -i '/exit 0/i\echo "*/4 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
+sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
 sed -i "/exit 0/i\sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" ${TYZZZ}
 }
 
