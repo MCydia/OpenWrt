@@ -1,6 +1,6 @@
 #!/bin/bash
-# https://github.com/281677160/build-openwrt
-# common Module by 28677160
+# https://github.com/MCydia/OpenWrt
+# common Module by MCydia
 # matrix.target=${Modelfile}
 
 DIY_GET_COMMON_SH() {
