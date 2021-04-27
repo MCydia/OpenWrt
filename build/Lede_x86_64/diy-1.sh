@@ -8,11 +8,9 @@
 # 软件包地址：https://github.com/MCydia/openwrt-package.git
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
 
-#atmaterial主题
-# git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git
-#opentomato主题
-# git clone https://github.com/solidus1983/luci-theme-opentomato.git
-# Lua-Maxminddb:
-svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
-# smartdns-le:
+cd package
+git clone https://github.com/MCydia/openwrt-package.git
+mkdir openwrt-package
+cd openwrt-package
 git clone --depth 1 https://github.com/garypang13/smartdns-le
+svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
