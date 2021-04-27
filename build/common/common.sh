@@ -25,7 +25,7 @@ fi
 Diy_all2() {
 DIY_GET_COMMON_SH
 if [ -n "$(ls -A "${Home}/package/MCydia/ddnsto" 2>/dev/null)" ]; then
-mv package/mcydia/ddnsto package/network/services
+mv package/MCydia/ddnsto package/network/services
 fi
 if [[ `grep -c "# CONFIG_PACKAGE_ddnsto is not set" "${PATH1}/${CONFIG_FILE}"` -eq '0' ]]; then
 sed -i '/CONFIG_PACKAGE_ddnsto/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
