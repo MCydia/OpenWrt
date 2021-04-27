@@ -131,7 +131,7 @@ Diy_immortalwrt() {
 DIY_GET_COMMON_SH
 rm -rf package/lienol/luci-app-timecontrol
 rm -rf package/lean/luci-theme-rosy 
-git clone https://github.com/garypang13/luci-app-bypass package/mcydia/luci-app-bypass
+git clone https://github.com/garypang13/luci-app-bypass package/MCydia/luci-app-bypass
 }
 
 ################################################################################################################
