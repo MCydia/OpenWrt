@@ -64,7 +64,7 @@ cp -Rf "${Home}"/build/common/LEDE/diy/* "${Home}"
 sed -i '/exit 0/i\echo "*/3 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
 sed -i 's/ +luci-theme-rosy//g' package/feeds/luci/luci-theme-rosy/Makefile
 # 修改luci/luci-app-ddns排序
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-ddns/luasrc/controller/ddns.lua" | xargs -i sed -i 's/\"Dynamic DNS\")\, 59/\"Dynamic DNS\")\, 0/g' {}
+find package/*/ feeds/*/ -maxdepth 5 -path "*luci-app-ddns/luasrc/controller/ddns.lua" | xargs -i sed -i 's/\"Dynamic DNS\")\, 59/\"Dynamic DNS\")\, 0/g' {}
 # 修改bypass排序
 find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/luasrc/controller/bypass.lua" | xargs -i sed -i 's/\"Bypass\")\,2/\"Bypass\")\,0/g' {}
 # 修改DNSFilter排序
