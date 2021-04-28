@@ -38,4 +38,4 @@ sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-usb-printer/po/zh-cn/
 sed -i 's/"Web 管理"/"Web"/g' package/lean/luci-app-webadmin/po/zh-cn/webadmin.po
 sed -i 's/"管理权"/"改密码"/g' feeds/luci/modules/luci-base/po/zh-cn/base.po
 sed -i 's/"带宽监控"/"监视"/g' feeds/luci/applications/luci-app-nlbwmon/po/zh-cn/nlbwmon.po
-sed -i 's/"动态 DNS"/"Myddns"/g' feeds/luci/applications/luci-app-ddns/po/zh-cn/ddns.po
+sed -i 's/"动态 DNS"/"OpenDdns"/g' feeds/luci/applications/luci-app-ddns/po/zh-cn/ddns.po
