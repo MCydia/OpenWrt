@@ -12,5 +12,25 @@ cd package
 git clone https://github.com/MCydia/openwrt-package.git
 mkdir openwrt-package
 cd openwrt-package
+git clone https://github.com/frainzy1477/luci-app-clash.git
+git clone https://github.com/destan19/OpenAppFilter.git
+git clone https://github.com/jerrykuku/luci-app-ttnode.git
+git clone https://github.com/linkease/ddnsto-openwrt.git
+git clone https://github.com/lisaac/luci-app-dockerman.git
+git clone https://github.com/lisaac/luci-lib-docker.git
+git clone https://github.com/garypang13/luci-app-dnsfilter.git
 git clone --depth 1 https://github.com/garypang13/smartdns-le
+git clone https://github.com/kuoruan/luci-app-kcptun.git
+git clone https://github.com/project-lede/luci-app-godproxy.git
 svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
+git clone https://github.com/riverscn/openwrt-iptvhelper.git && mv openwrt-iptvhelper/luci-app-iptvhelper/po/zh_Hans openwrt-iptvhelper/luci-app-iptvhelper/po/zh-cn
+svn co https://github.com/Lienol/openwrt/trunk/package/network/fullconenat && rm -f fullconenat/patches/000-printk.patch        
+git clone --depth 1 -b LUCI-LUA-UCITRACK https://github.com/CCnut/feed-netkeeper && mv -n feed-netkeeper/* ./ ; rm -Rf feed-netkeeper
+git clone https://github.com/immortalwrt/openwrt-gowebdav
+git clone --depth 1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
+git clone https://github.com/jerrykuku/luci-app-argon-config
+git clone https://github.com/garypang13/luci-app-eqos.git
+git clone --depth 1 https://github.com/esirplayground/luci-app-LingTiGameAcc
+git clone --depth 1 https://github.com/esirplayground/LingTiGameAcc
+git clone --depth 1 https://github.com/sirpdboy/luci-app-autotimeset
+git clone --depth 1 https://github.com/sirpdboy/luci-theme-opentoks
