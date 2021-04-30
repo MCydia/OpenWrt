@@ -9,9 +9,15 @@
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
 
 cd openwrt-package
-git clone --depth 1 https://github.com/garypang13/smartdns-le       
+# bypass 依赖:
+git clone --depth 1 https://github.com/garypang13/smartdns-le 
+# 游戏加速依赖:
 git clone --depth 1 https://github.com/esirplayground/LingTiGameAcc
+# 定制主题:
 git clone --depth 1 https://github.com/sirpdboy/luci-theme-opentoks
+# 游戏主程序:
 git clone --depth 1 https://github.com/esirplayground/luci-app-LingTiGameAcc
+# fullconenat:
 svn co https://github.com/Lienol/openwrt/trunk/package/network/fullconenat && rm -f fullconenat/patches/000-printk.patch 
-# git clone --depth 1 -b LUCI-LUA-UCITRACK https://github.com/CCnut/feed-netkeeper && mv -n feed-netkeeper/* ./ ; rm -Rf feed-netkeeper
+# 闪讯插件:
+git clone --depth 1 -b LUCI-LUA-UCITRACK https://github.com/CCnut/feed-netkeeper && mv -n feed-netkeeper/* ./ ; rm -Rf feed-netkeeper
