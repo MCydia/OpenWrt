@@ -7,17 +7,3 @@
 # 想要什么插件就单独的拉取什么插件就好，或者告诉我，我把插件放我的插件包就行了
 # 软件包地址：https://github.com/MCydia/openwrt-package.git
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
-
-cd openwrt-package
-# bypass 依赖:
-git clone --depth 1 https://github.com/garypang13/smartdns-le 
-# 游戏加速依赖:
-git clone --depth 1 https://github.com/esirplayground/LingTiGameAcc
-# 定制主题:
-git clone --depth 1 https://github.com/sirpdboy/luci-theme-opentoks
-# 游戏主程序:
-git clone --depth 1 https://github.com/esirplayground/luci-app-LingTiGameAcc
-# fullconenat:
-svn co https://github.com/Lienol/openwrt/trunk/package/network/fullconenat && rm -f fullconenat/patches/000-printk.patch 
-# 闪讯插件:
-git clone --depth 1 -b LUCI-LUA-UCITRACK https://github.com/CCnut/feed-netkeeper && mv -n feed-netkeeper/* ./ ; rm -Rf feed-netkeeper
