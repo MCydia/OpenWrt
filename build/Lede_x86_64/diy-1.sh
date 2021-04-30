@@ -7,3 +7,10 @@
 # 想要什么插件就单独的拉取什么插件就好，或者告诉我，我把插件放我的插件包就行了
 # 软件包地址：https://github.com/MCydia/openwrt-package.git
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
+
+cd package
+git clone https://github.com/MCydia/openwrt-package.git
+mkdir openwrt-package
+cd openwrt-package
+git clone --depth 1 https://github.com/garypang13/smartdns-le
+svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
