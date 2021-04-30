@@ -65,4 +65,3 @@ service() {
 	/etc/init.d/$@
 }
 fi
-
