@@ -12,5 +12,6 @@ cd package
 git clone https://github.com/MCydia/openwrt-package.git
 mkdir openwrt-package
 cd openwrt-package
+git clone https://github.com/destan19/OpenAppFilter.gitgit
 git clone --depth 1 https://github.com/garypang13/smartdns-le
 svn co https://github.com/garypang13/openwrt-packages/trunk/lua-maxminddb
