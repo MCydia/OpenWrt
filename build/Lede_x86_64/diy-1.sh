@@ -10,3 +10,4 @@
 
 cd package
 git clone --depth 1 https://github.com/garypang13/smartdns-le
+git clone https://github.com/immortalwrt/luci-app-unblockneteasemusic.git
