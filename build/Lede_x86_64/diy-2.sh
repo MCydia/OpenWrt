@@ -19,7 +19,7 @@ sed -i "s/OpenWrt /MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g"
 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                      # 设置密码为空
 
-sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                         # 修改内核版本为4.19
+# sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                       # 修改内核版本为4.19
 
 
 # 修改插件名字
