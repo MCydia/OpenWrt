@@ -85,8 +85,6 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -
 find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
 
-
-
 ################################################################################################################
 # LIENOL源码通用diy1.sh文件
 ################################################################################################################
@@ -120,8 +118,6 @@ sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/li
 ################################################################################################################
 Diy_immortalwrt() {
 DIY_GET_COMMON_SH
-rm -rf package/lienol/luci-app-timecontrol
-rm -rf package/lean/luci-theme-rosy 
 git clone https://github.com/garypang13/luci-app-bypass package/MCydia/luci-app-bypass
 }
 
