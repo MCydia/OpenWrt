@@ -40,7 +40,7 @@ popd
 ################################################################################################################
 Diy_lede() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-theme-argon,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-rosy,k3screenctrl}
 sed -i 's/iptables -t nat/# iptables -t nat/g' ${LEZZZ}
 if [[ "${Modelfile}" == "Lede_x86_64" ]]; then
 sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
@@ -62,8 +62,8 @@ Diy_lede2() {
 DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LEDE/files "${Home}"
 cp -Rf "${Home}"/build/common/LEDE/diy/* "${Home}"
-mv -f feeds/danshui/luci-app-oscam feeds/luci/applications
-mv -f feeds/danshui/oscam feeds/packages/net
+mv -f feeds/MCydia/luci-app-oscam feeds/luci/applications
+mv -f feeds/MCydia/oscam feeds/packages/net
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 sed -i 's/ +luci-theme-rosy//g' package/feeds/luci/luci/Makefile
 # 修改luci/luci-app-ddns排序
@@ -93,7 +93,7 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -
 ################################################################################################################
 Diy_lienol() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,k3screenctrl}
+rm -rf package/lean/{luci-app-netdata,luci-theme-rosy,k3screenctrl}
 
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
@@ -111,8 +111,8 @@ Diy_lienol2() {
 DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LIENOL/files "${Home}"
 cp -Rf "${Home}"/build/common/LIENOL/diy/* "${Home}"
-mv -f feeds/danshui/luci-app-oscam feeds/luci/applications
-mv -f feeds/danshui/oscam feeds/packages/net
+mv -f feeds/MCydia/luci-app-oscam feeds/luci/applications
+mv -f feeds/MCydia/oscam feeds/packages/net
 rm -rf feeds/packages/libs/libcap
 svn co https://github.com/coolsnowwolf/packages/trunk/libs/libcap feeds/packages/libs/libcap
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
@@ -137,7 +137,6 @@ sed -i "s/bing_background '0'/bing_background '1'/g" feeds/luci/applications/luc
 sed -i "/exit 0/i\sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" ${IMZZZ}
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
-
 
 ################################################################################################################
 # 判断脚本是否缺少主要文件（如果缺少settings.ini设置文件在检测脚本设置就运行错误了）
@@ -168,7 +167,6 @@ rm -rf ${Home}/build/QUEWENJIANerros
 exit 1
 fi
 }
-
 
 ################################################################################################################
 # 判断插件冲突
@@ -239,7 +237,6 @@ else
 	rm -rf CHONGTU
 fi
 }
-
 
 ################################################################################################################
 # 判断是否选择AdGuard Home是就指定机型给内核
