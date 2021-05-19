@@ -1,5 +1,11 @@
 # OpenWrt X86-64 稳定项目
 
+# 择要
+
+- Lede=18.06=5.4
+- Lienol=19.07=4.14
+- Project=21.02=5.4
+
 ## 固件来源：
 
 - 感谢[coolsnowwolf](https://github.com/coolsnowwolf/lede.git)大神提供的源码
