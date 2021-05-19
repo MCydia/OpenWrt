@@ -220,6 +220,8 @@ jobs:
         fi
         cd bin/targets/*/*
         rm -rf packages && mkdir packages
+        find -name "*rootfs.tar.gz*" | xargs -i mv -f {} packages
+        find -name "*rootfs.img*" | xargs -i mv -f {} packages
         find -name "*buildinfo*" | xargs -i mv -f {} packages
         find -name "*sha256sums*" | xargs -i mv -f {} packages
         find -name "*manifest*" | xargs -i mv -f {} packages
