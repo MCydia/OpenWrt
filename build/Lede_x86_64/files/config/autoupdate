@@ -1,0 +1,7 @@
+config login
+	option forceupdate '0'
+	option minute '0'
+	option enable '1'
+	option hour '17'
+	option github 'https://github.com/ly20202020/2020'
+	option week '6'
