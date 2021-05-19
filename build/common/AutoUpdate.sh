@@ -396,28 +396,19 @@ CURRENT_MD5=$(md5sum ${Firmware} | cut -d ' ' -f1)
 	TIME r "在Detail文件获取 MD5 失败!"
 	exit 1
 }
-CLOUD_SHA256=$(awk -F '[ :]' '/SHA256/ {print $2;exit}' ${Firmware_Detail})
-CURRENT_SHA256=$(sha256sum ${Firmware} | cut -d ' ' -f1)
+CLOUD_SHA256="$(awk -F '[ :]' '/SHA256/ {print $2;exit}' ${Firmware_Detail})"
+CURRENT_SHA256="$(sha256sum ${Firmware} | cut -d ' ' -f1)"
 [[ -z "${CLOUD_SHA256}" ]] || [[ -z "${CURRENT_SHA256}" ]] && {
 	TIME r "在Detail文件获取 SHA256 失败!"
 	exit 1
 }
-TIME h "MD5和SHA256数值获取成功,开始对比[ MD5和SHA256 ]!"
-[[ "${CLOUD_MD5}" == "${CURRENT_MD5}" ]] && {
-	echo -e "\n本地MD5: ${CURRENT_MD5}"
-	echo "云端MD5: ${CLOUD_MD5}"
-	TIME y "MD5 对比通过,继续对比SHA256!"
-} || {
+[[ "${CURRENT_MD5}" != "${CLOUD_MD5}" ]] && {
 	echo -e "\n本地MD5: ${CURRENT_MD5}"
 	echo "云端MD5: ${CLOUD_MD5}"
 	TIME r "MD5 对比失败,请检查网络后重试!"
 	exit 1
 }
-[[ "${CLOUD_SHA256}" == "${CURRENT_SHA256}" ]] && {
-	echo -e "\n本地SHA256: ${CURRENT_SHA256}"
-	echo "云端SHA256: ${CLOUD_SHA256}"
-	TIME y "SHA256 对比通过,继续更新固件!"
-} || {
+[[ "${CURRENT_SHA256}" != "${CLOUD_SHA256}" ]] && {
 	echo -e "\n本地SHA256: ${CURRENT_SHA256}"
 	echo "云端SHA256: ${CLOUD_SHA256}"
 	TIME r "SHA256 对比失败,请检查网络后重试!"
@@ -429,12 +420,13 @@ if [[ "${Compressed_Firmware}" == "YES" ]];then
 	gzip -dk ${Firmware} > /dev/null 2>&1
 	export Firmware="${Firmware_Name}${BOOT_Type}.img"
 	[[ $? == 0 ]] && {
-		TIME y "解压成功,2秒后开始刷写固件..."
+		TIME y "固件解压成功!"
 	} || {
 		TIME r "解压失败,请检查系统可用空间!"
 		exit 1
 	}
 fi
+TIME g "准备就绪,2秒后开始刷写固件..."
 [[ "${Input_Other}" == "-t" ]] && {
 	TIME z "测试模式运行完毕!"
 	rm -rf "${Download_Path}"
@@ -443,7 +435,7 @@ fi
 	exit 0
 }
 sleep 2
-TIME z "正在刷写固件,期间请耐心等待..."
+TIME h "正在刷写固件,期间请耐心等待..."
 sysupgrade ${Upgrade_Options} ${Firmware}
 [[ $? -ne 0 ]] && {
 	TIME r "固件刷写失败,请尝试手动更新固件!"
