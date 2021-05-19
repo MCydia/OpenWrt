@@ -4,14 +4,15 @@
 # matrix.target=${Modelfile}
 
 DIY_GET_COMMON_SH() {
-TYZZZ="package/lean/default-settings/files/zzz-default-settings"
+LEZZZ="package/lean/default-settings/files/zzz-default-settings"
 LIZZZ="package/default-settings/files/zzz-default-settings"
+IMZZZ="package/emortal/default-settings/files/zzz-default-settings"
 }
 
 # 全脚本源码通用diy.sh文件
 Diy_all() {
 DIY_GET_COMMON_SH
-git clone -b $REPO_BRANCH --single-branch https://github.com/MCydia/openwrt-package package/MCydia
+echo -e "\nsrc-git MCydia https://github.com/MCydia/openwrt-package;$REPO_BRANCH" >> feeds.conf.default
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
@@ -24,44 +25,46 @@ fi
 # 全脚本源码通用diy2.sh文件
 Diy_all2() {
 DIY_GET_COMMON_SH
-if [ -n "$(ls -A "${Home}/package/MCydia/ddnsto" 2>/dev/null)" ]; then
-mv package/MCydia/ddnsto package/network/services
-fi
 if [[ `grep -c "# CONFIG_PACKAGE_ddnsto is not set" "${PATH1}/${CONFIG_FILE}"` -eq '0' ]]; then
 sed -i '/CONFIG_PACKAGE_ddnsto/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 echo -e "\nCONFIG_PACKAGE_ddnsto=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
+git clone https://github.com/kongfl888/po2lmo
+pushd po2lmo
+make && sudo make install
+popd
 }
-
 
 ################################################################################################################
 # LEDE源码通用diy1.sh文件
 ################################################################################################################
 Diy_lede() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-rosy,k3screenctrl}
-sed -i 's/iptables -t nat/# iptables -t nat/g' ${TYZZZ}
+rm -rf package/lean/{luci-app-netdata,luci-theme-argon,k3screenctrl}
+sed -i 's/iptables -t nat/# iptables -t nat/g' ${LEZZZ}
 if [[ "${Modelfile}" == "Lede_x86_64" ]]; then
 sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
-
-git clone https://github.com/fw876/helloworld package/MCydia/luci-app-ssr-plus
-git clone https://github.com/xiaorouji/openwrt-passwall package/MCydia/luci-app-passwall
-git clone https://github.com/jerrykuku/luci-app-vssr package/MCydia/luci-app-vssr
-git clone https://github.com/vernesong/OpenClash package/MCydia/OpenClash
-git clone https://github.com/frainzy1477/luci-app-clash package/MCydia/luci-app-clash
-git clone https://github.com/garypang13/luci-app-bypass package/MCydia/luci-app-bypass
+git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
+git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
+git clone https://github.com/vernesong/OpenClash package/luci-app-openclash
+git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
+
 ################################################################################################################
 # LEDE源码通用diy2.sh文件
 Diy_lede2() {
 DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LEDE/files "${Home}"
 cp -Rf "${Home}"/build/common/LEDE/diy/* "${Home}"
-sed -i '/exit 0/i\echo "*/4 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
+mv -f feeds/danshui/luci-app-oscam feeds/luci/applications
+mv -f feeds/danshui/oscam feeds/packages/net
+sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 sed -i 's/ +luci-theme-rosy//g' package/feeds/luci/luci/Makefile
 # 修改luci/luci-app-ddns排序
 find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-ddns/luasrc/controller/ddns.lua" | xargs -i sed -i 's/\"Dynamic DNS\")\, 30/\"Dynamic DNS\")\, 0/g' {}
@@ -90,37 +93,37 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -
 ################################################################################################################
 Diy_lienol() {
 DIY_GET_COMMON_SH
-rm -rf package/diy/luci-app-adguardhome
-rm -rf package/lean/{luci-app-netdata,luci-theme-edge,luci-theme-rosy,k3screenctrl}
-git clone https://github.com/fw876/helloworld package/MCydia/luci-app-ssr-plus
-git clone https://github.com/xiaorouji/openwrt-passwall package/MCydia/luci-app-passwall
-git clone https://github.com/jerrykuku/luci-app-vssr package/MCydia/luci-app-vssr
-git clone https://github.com/vernesong/OpenClash package/MCydia/luci-app-openclash
-git clone https://github.com/frainzy1477/luci-app-clash package/MCydia/luci-app-clash
-git clone https://github.com/garypang13/luci-app-bypass package/MCydia/luci-app-bypass
+rm -rf package/lean/{luci-app-netdata,k3screenctrl}
+
+git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
+git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
+git clone https://github.com/vernesong/OpenClash package/luci-app-openclash
+git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
 find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
+
 ################################################################################################################
 # LIENOL源码通用diy2.sh文件
 Diy_lienol2() {
 DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LIENOL/files "${Home}"
 cp -Rf "${Home}"/build/common/LIENOL/diy/* "${Home}"
-rm -rf feeds/packages/net/adguardhome
-sed -i '/exit 0/i\echo "*/1 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${LIZZZ}
+mv -f feeds/danshui/luci-app-oscam feeds/luci/applications
+mv -f feeds/danshui/oscam feeds/packages/net
+rm -rf feeds/packages/libs/libcap
+svn co https://github.com/coolsnowwolf/packages/trunk/libs/libcap feeds/packages/libs/libcap
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
+sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
-
 
 ################################################################################################################
 # 天灵源码通用diy1.sh文件
 ################################################################################################################
 Diy_immortalwrt() {
 DIY_GET_COMMON_SH
-rm -rf package/lienol/luci-app-timecontrol
-rm -rf package/lean/luci-theme-rosy 
-git clone https://github.com/garypang13/luci-app-bypass package/MCydia/luci-app-bypass
 }
 
 ################################################################################################################
@@ -129,10 +132,10 @@ Diy_immortalwrt2() {
 DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/PROJECT/files "${Home}"
 cp -Rf "${Home}"/build/common/PROJECT/diy/* "${Home}"
-rm -rf feeds/luci/applications/{luci-app-adguardhome,luci-app-argon-config}
-rm -rf feeds/luci/themes/{luci-theme-argonv2,luci-theme-argonv3}
-sed -i '/exit 0/i\echo "*/4 * * * * chmod +x /etc/webweb.sh && source /etc/webweb.sh" >> /etc/crontabs/root' ${TYZZZ}
-sed -i "/exit 0/i\sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" ${TYZZZ}
+sed -i 's/"Argon 主题设置"/"Argon设置"/g' feeds/luci/applications/luci-app-argon-config/po/zh_Hans/argon-config.po
+sed -i "s/bing_background '0'/bing_background '1'/g" feeds/luci/applications/luci-app-argon-config/root/etc/config/argon
+sed -i "/exit 0/i\sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" ${IMZZZ}
+sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
 
 
@@ -166,6 +169,7 @@ exit 1
 fi
 }
 
+
 ################################################################################################################
 # 判断插件冲突
 
@@ -174,28 +178,6 @@ DIY_GET_COMMON_SH
 echo
 echo "				插件冲突信息" > ${Home}/CHONGTU
 
-if [[ `grep -c "CONFIG_PACKAGE_luci-app-bypass_INCLUDE_V2ray=y" ${Home}/.config` -eq '1' ]]; then
-	sed -i 's/CONFIG_PACKAGE_luci-app-bypass_INCLUDE_V2ray=y/# CONFIG_PACKAGE_luci-app-bypass_INCLUDE_V2ray is not set/g' ${Home}/.config
-	echo -e "\nCONFIG_PACKAGE_luci-app-bypass=y" >> ${Home}/.config
-	echo " 您选择的luci-app-bypass勾选了V2ray，Xary已包含V2ray，已删除V2ray" >>CHONGTU
-	echo "插件冲突信息" > ${Home}/Chajianlibiao
-fi
-if [[ `grep -c "CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y" ${Home}/.config` -eq '1' ]]; then
-	sed -i 's/CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y/# CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray is not set/g' ${Home}/.config
-	echo " 您选择的luci-app-ssr-plus勾选了V2ray，Xary已包含V2ray，已删除V2ray" >>CHONGTU
-	echo "插件冲突信息" > ${Home}/Chajianlibiao
-fi
-if [[ `grep -c "CONFIG_PACKAGE_luci-app-samba=y" ${Home}/.config` -eq '1' ]]; then
-	if [[ `grep -c "CONFIG_PACKAGE_luci-app-samba4=y" ${Home}/.config` -eq '1' ]]; then
-		sed -i 's/CONFIG_PACKAGE_autosamba=y/# CONFIG_PACKAGE_autosamba is not set/g' ${Home}/.config
-		sed -i 's/CONFIG_PACKAGE_luci-app-samba=y/# CONFIG_PACKAGE_luci-app-samba is not set/g' ${Home}/.config
-		sed -i 's/CONFIG_PACKAGE_luci-i18n-samba-zh-cn=y/# CONFIG_PACKAGE_luci-i18n-samba-zh-cn is not set/g' ${Home}/.config
-		sed -i 's/CONFIG_PACKAGE_samba36-server=y/# CONFIG_PACKAGE_samba36-server is not set/g' ${Home}/.config
-		echo " 您同时选择luci-app-samba和luci-app-samba4，插件有冲突，已删除luci-app-samba" >>CHONGTU
-		echo "插件冲突信息" > ${Home}/Chajianlibiao
-	fi
-	
-fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-docker=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-app-dockerman=y" ${Home}/.config` -eq '1' ]]; then
 		sed -i 's/CONFIG_PACKAGE_luci-app-dockerman=y/# CONFIG_PACKAGE_luci-app-dockerman is not set/g' ${Home}/.config
@@ -307,7 +289,7 @@ echo " 源码分支: ${REPO_BRANCH}"
 echo " 源码作者: ${ZUOZHE}"
 echo " 编译机型: ${TARGET_PROFILE}"
 echo " 固件作者: ${Author}"
-echo " 仓库地址: ${Github_Repo}"
+echo " 仓库地址: ${User_Repo}"
 echo " 启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
 echo " 编译时间: $(TZ=UTC-8 date "+%Y年%m月%d号-%H时%M分")"
 echo " 您当前使用【${Modelfile}】文件夹编译【${TARGET_PROFILE}】固件"
@@ -371,7 +353,7 @@ if [ -n "$(ls -A "${Home}/EXT4" 2>/dev/null)" ]; then
 	[ -s EXT4 ] && cat EXT4
 	rm -rf EXT4
 fi
-echo " 系统空间      类型   总数  已用  可用 使用率"
+echo "  系统空间      类型   总数  已用  可用 使用率"
 cd ../ && df -hT $PWD && cd openwrt
 echo
 if [ -n "$(ls -A "${Home}/Chajianlibiao" 2>/dev/null)" ]; then
