@@ -24,7 +24,7 @@ GET_TARGET_INFO() {
 	esac
 	case "${REPO_URL}" in
 	"${LEDE}")
-		COMP1="coolsnowwolf"
+		COMP1="coolsnowwolf-18.06"
 		COMP2="lede"
 		if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
 			Up_Firmware="openwrt-x86-64-generic-squashfs-combined.${Firmware_sfxo}"
@@ -42,7 +42,7 @@ GET_TARGET_INFO() {
 		fi
 	;;
 	"${LIENOL}") 
-		COMP1="openwrt"
+		COMP1="openwrt-19.07"
 		COMP2="lienol"
 		if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
 			Up_Firmware="openwrt-x86-64-combined-squashfs.${Firmware_sfxo}"
@@ -60,11 +60,11 @@ GET_TARGET_INFO() {
 		fi
 	;;
 	"${PROJECT}")
-		COMP1="immortalwrt"
+		COMP1="immortalwrt-21.02"
 		COMP2="project"
 		if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
-			Up_Firmware="immortalwrt-x86-64-combined-squashfs.${Firmware_sfxo}"
-			EFI_Up_Firmware="immortalwrt-x86-64-uefi-gpt-squashfs.${Firmware_sfxo}"
+			Up_Firmware="immortalwrt-x86-64-generic-squashfs-combined.${Firmware_sfxo}"
+			EFI_Up_Firmware="immortalwrt-x86-64-generic-squashfs-combined-efi.${Firmware_sfxo}"
 			Firmware_sfx="${Firmware_sfxo}"
 		elif [[ "${TARGET_PROFILE}" == "phicomm-k3" ]]; then
 			Up_Firmware="immortalwrt-bcm53xx-phicomm-k3-squashfs.trx"
@@ -81,9 +81,9 @@ GET_TARGET_INFO() {
 	if [[ ${REGULAR_UPDATE} == "true" ]]; then
 		AutoUpdate_Version=$(awk 'NR==6' package/base-files/files/bin/AutoUpdate.sh | awk -F '[="]+' '/Version/{print $2}')
 	fi
-	Github_Repo="$(grep "https://github.com/[a-zA-Z0-9]" ${GITHUB_WORKSPACE}/.git/config | cut -c8-100)"
+	User_Repo="$(grep "https://github.com/[a-zA-Z0-9]" ${GITHUB_WORKSPACE}/.git/config | cut -c8-100 | sed 's/^[ \t]*//g')"
 	Github_UP_RELEASE="${GITURL}/releases/update_Firmware"
-	AutoBuild_Info=${GITHUB_WORKSPACE}/openwrt/package/base-files/files/etc/openwrt_info
+	In_Firmware_Info="package/base-files/files/etc/openwrt_info"
 	Openwrt_Version="${COMP2}-${TARGET_PROFILE}-${Compile_Date}"
 }
 
@@ -98,18 +98,12 @@ Diy_Part2() {
 	GET_TARGET_INFO
 	[[ -z "${AutoUpdate_Version}" ]] && AutoUpdate_Version="Unknown"
 	[[ -z "${Author}" ]] && Author="Unknown"
-	echo "Author: ${Author}"
-	echo "Openwrt Version: ${Openwrt_Version}"
-	echo "Router: ${TARGET_PROFILE}"
-	echo "Github: ${Github_Repo}"
-	echo "${Openwrt_Version}" > ${AutoBuild_Info}
-	echo "${Github_Repo}" >> ${AutoBuild_Info}
-	echo "${TARGET_PROFILE}" >> ${AutoBuild_Info}
-	echo "Firmware Type: ${Firmware_sfx}"
-	echo "Writting Type: ${Firmware_sfx} to ${AutoBuild_Info} ..."
-	echo "${Firmware_sfx}" >> ${AutoBuild_Info}
-	echo "${COMP1}" >> ${AutoBuild_Info}
-	echo "${COMP2}" >> ${AutoBuild_Info}
+	echo "Github=${User_Repo}" > ${In_Firmware_Info}
+	echo "CURRENT_Version=${Openwrt_Version}" >> ${In_Firmware_Info}
+	echo "DEFAULT_Device=${TARGET_PROFILE}" >> ${In_Firmware_Info}
+	echo "Firmware_Type=${Firmware_sfx}" >> ${In_Firmware_Info}
+	echo "Firmware_COMP1=${COMP1}" >> ${In_Firmware_Info}
+	echo "Firmware_COMP2=${COMP2}" >> ${In_Firmware_Info}
 	
 }
 
