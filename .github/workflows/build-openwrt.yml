@@ -17,7 +17,6 @@ on:
 #定时触发开始编译(把下面两个#去掉开启,时间设置请看定时编译说明)
   schedule:
      - cron: 0 16 * * 6
-
 env:
   LEDE: https://github.com/coolsnowwolf/lede
   LIENOL: https://github.com/Lienol/openwrt
@@ -30,7 +29,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     name: 编译 "${{matrix.target}}"
@@ -38,12 +37,14 @@ jobs:
       fail-fast: false
       matrix:
         target: [Lede_x86_64]
-        # target: [Project_x86_64,Lede_x86_64,Lienol_x86_64]
+
+        # [Lede_x86_64,Lienol_x86_64,Project_x86_64]
+
     steps:
-    - name: 检查项目分支
-      uses: actions/checkout@main
-    
-    - name: 读取配置
+    - name: 准备结束
+      uses: actions/checkout@v2
+
+    - name: 检测脚本设置
       run: |
         source "${GITHUB_WORKSPACE}/build/${{matrix.target}}/settings.ini"
         echo "Modelfile=${{matrix.target}}" >> $GITHUB_ENV
@@ -61,8 +62,6 @@ jobs:
         echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
         echo "SERVERCHAN_SCKEY=${SERVERCHAN_SCKEY}" >> $GITHUB_ENV
         echo "REGULAR_UPDATE=${REGULAR_UPDATE}" >> $GITHUB_ENV
-        echo "Updete_firmware=${Updete_firmware}" >> $GITHUB_ENV
-        echo "Extension=${Extension}" >> $GITHUB_ENV
 
     - name: 电报通知
       run: |
@@ -71,23 +70,21 @@ jobs:
           您正在使用【${{matrix.target}}】文件夹编译固件中(${{env.CangKu}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
         fi
         
-    - name: 设置系统
+    - name: 设置编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         docker rmi `docker images -q`
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
         sudo -E apt-get -qq autoremove --purge
-        sudo apt-get install -y gperf 
-        sudo apt-get install -y antlr3
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
     
-    - name: 下载源码
+    - name: 下载"${{matrix.target}}"源码
       working-directory: /workdir
       run: |
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" "openwrt"
@@ -103,8 +100,11 @@ jobs:
         chmod -R +x "${PATH1}"
         source "${PATH1}/common.sh" && Diy_settings
         rm -rf {build,README.md}
+        if [[ "${{ github.event.inputs.ssh }}" == 'ssh' ]]; then
+          echo "SSHYC=true" >> $GITHUB_ENV
+        fi
         
-    - name: 加载设置
+    - name: 加载源,patch补丁和自定义设置
       run: |
         cd openwrt
         source "${PATH1}/common.sh" && Diy_all
@@ -120,15 +120,15 @@ jobs:
         ./scripts/feeds update -a && ./scripts/feeds install -a
         if [[ "${REPO_URL}" == "${LEDE}" ]]; then
           source "${PATH1}/common.sh" && Diy_lede2
-          echo "NAME2=Lede" >> $GITHUB_ENV
+          echo "NAME1=Lede" >> $GITHUB_ENV
           echo "ZUOZHE=Lean's" >> $GITHUB_ENV
         elif [[ "${REPO_URL}" == "${LIENOL}" ]]; then
           source "${PATH1}/common.sh" && Diy_lienol2
-          echo "NAME2=Lienol" >> $GITHUB_ENV
+          echo "NAME1=Lienol" >> $GITHUB_ENV
           echo "ZUOZHE=lienol's" >> $GITHUB_ENV
         elif [[ "${REPO_URL}" == "${PROJECT}" ]]; then
           source "${PATH1}/common.sh" && Diy_immortalwrt2
-          echo "NAME2=Project" >> $GITHUB_ENV
+          echo "NAME1=Project" >> $GITHUB_ENV
           echo "ZUOZHE=ctcgfw" >> $GITHUB_ENV
         fi
         source "${PATH1}/common.sh" && Diy_all2
@@ -149,14 +149,14 @@ jobs:
           source "${PATH1}/upgrade.sh" && Diy_Part1
         fi
     
-    - name: SSH远程
+    - name: SSH远程连接
       uses: danshui-git/debugger-action@master
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-        
-    - name: 处理冲突
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+    - name: 为编译做最后处理
       run: |
         cd openwrt
         source "${PATH1}/common.sh" && Diy_chajian
@@ -171,8 +171,8 @@ jobs:
         cd openwrt
         source "${PATH1}/upgrade.sh"
         source "${PATH1}/common.sh" && Diy_xinxi
-      
-    - name: 下载DLL
+    
+    - name: 下载软件包
       id: package
       run: |
         cd openwrt
@@ -180,7 +180,7 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
         
-    - name: 开始编译
+    - name: 开始编译固件
       id: compile
       run: |
         cd openwrt
@@ -192,22 +192,20 @@ jobs:
         DEVICE="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)"
         SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)"
         if [ "${DEVICE}" == "x86" ]; then
-         echo "NAME1=x86-${SUBTARGET}" >> $GITHUB_ENV
-        elif [[ ${{matrix.target}} =~ (Lede_phicomm_n1|Project_phicomm_n1) ]]; then
-         echo "NAME1=N1,Vplus,Beikeyun,L1Pro,S9xxx" >> $GITHUB_ENV
+         echo "NAME2=x86-${SUBTARGET}" >> $GITHUB_ENV
         else
-         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > NAME1
-         [ -s NAME1 ] && echo "NAME1=$(cat NAME1)" >> $GITHUB_ENV
+         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > NAME2
+         [ -s NAME2 ] && echo "NAME2=$(cat NAME2)" >> $GITHUB_ENV
         fi
         
-    - name: 上传bin文件夹
+    - name: 上传bin文件夹(固件+ipk)在github actions
       uses: actions/upload-artifact@v2
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: Bin_filename_ipk_${{ env.NAME2 }}_${{ env.NAME1 }}_${{ env.date }}
+        name: Bin_filename+ipk_${{ env.NAME1 }}_${{ env.NAME2 }}_${{ env.date }}
         path: openwrt/bin
-    
-    - name: 整理固件
+
+    - name: 整理固件文件夹
       id: organizer
       run: |
         cd openwrt
@@ -218,6 +216,7 @@ jobs:
         find bin/targets/ -name "*config.buildinfo*" | xargs -i mv -f {} bin/config
         if [ -n "$(ls -A "bin/targets/x86" 2>/dev/null)" ]; then
           find bin/targets/x86/* -name "*kernel*" | xargs -i mv -f {} bin/targets
+          find bin/targets/x86/* -name "*rootfs*" | xargs -i mv -f {} bin/targets
         fi
         cd bin/targets/*/*
         rm -rf packages && mkdir packages
@@ -226,28 +225,26 @@ jobs:
         find -name "*manifest*" | xargs -i mv -f {} packages
         find -name "*vmlinuz*" | xargs -i mv -f {} packages
         find -name "*Image*" | xargs -i mv -f {} packages
-        find -name "*rootfs.tar.gz*" | xargs -i mv -f {} packages
-        find -name "*rootfs.img*" | xargs -i mv -f {} packages
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "BOT=TRUE" >> $GITHUB_ENV
         echo "::set-output name=status::success"
     
-    - name: 上传.config
+    - name: 上传.config配置文件在github actions
       uses: actions/upload-artifact@v2
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_CONFIG == 'true'
       with:
-        name: .config_${{ env.NAME2 }}_${{ env.NAME1 }}_${{ env.date }}
+        name: .config_${{ env.NAME1 }}_${{ env.NAME2 }}_${{ env.date }}
         path: openwrt/bin/config
 
-    - name: 上传固件
+    - name: 上传固件在github actions
       uses: actions/upload-artifact@v2
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
       with:
-        name: OpenWrt-${{ env.NAME2 }}-${{ env.NAME1 }}-firmware-${{ env.date }}
+        name: OpenWrt-${{ env.NAME1 }}-${{ env.NAME2 }}-firmware-${{ env.date }}
         path: ${{ env.FIRMWARE }}
 
-    - name: 网盘转存(7天)
+    - name: 上传固件到「奶牛快传」和「WeTransfer」
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
@@ -256,16 +253,16 @@ jobs:
         ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
         echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
         
-    - name: 定时更新地址
+    - name: 把定时更新固件发布到云端
       uses: softprops/action-gh-release@v1
       if: steps.organizer.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
-        name: 定时升级云端地址
+        name: update_Firmware
         tag_name: update_Firmware
         files: ${{ env.artifact }}/*
-    
+
     - name: 整理发布信息
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       run: |
@@ -280,7 +277,7 @@ jobs:
       uses: ncipollo/release-action@v1
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       with:
-        name: ${{ env.NAME2 }}-${{ env.NAME1 }}
+        name: ${{ env.NAME1 }}-${{ env.NAME2 }}
         tag: ${{ env.date2 }}
         token: ${{ secrets.REPO_TOKEN }}
         bodyFile: "update_log.txt"
