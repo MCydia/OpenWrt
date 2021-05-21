@@ -9,5 +9,6 @@
 # 再次强调请不要一下子就拉取别人一堆插件的插件包,容易造成编译错误的
 
 cd package
-git clone --depth 1 https://github.com/garypang13/smartdns-le
+
+svn co https://github.com/garypang13/openwrt-packages/trunk/smartdns-le package/smartdns-le
 git clone https://github.com/immortalwrt/luci-app-unblockneteasemusic.git
