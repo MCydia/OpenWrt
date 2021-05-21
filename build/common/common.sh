@@ -52,8 +52,6 @@ git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
 git clone https://github.com/vernesong/OpenClash package/luci-app-openclash
 git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
-find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
-find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
 
 ################################################################################################################
@@ -101,8 +99,6 @@ git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
 git clone https://github.com/vernesong/OpenClash package/luci-app-openclash
 git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
-find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
-find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
 
 ################################################################################################################
