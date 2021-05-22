@@ -12,7 +12,7 @@ IMZZZ="package/emortal/default-settings/files/zzz-default-settings"
 # 全脚本源码通用diy.sh文件
 Diy_all() {
 DIY_GET_COMMON_SH
-echo -e "\nsrc-git MCydia https://github.com/MCydia/openwrt-package;$REPO_BRANCH" >> feeds.conf.default
+echo -e "\nsrc-git mcydia https://github.com/MCydia/openwrt-package;$REPO_BRANCH" >> feeds.conf.default
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
@@ -60,8 +60,8 @@ Diy_lede2() {
 DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LEDE/files "${Home}"
 cp -Rf "${Home}"/build/common/LEDE/diy/* "${Home}"
-mv -f feeds/MCydia/luci-app-oscam feeds/luci/applications
-mv -f feeds/MCydia/oscam feeds/packages/net
+mv -f feeds/mcydia/luci-app-oscam feeds/luci/applications
+mv -f feeds/mcydia/oscam feeds/packages/net
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 sed -i 's/ +luci-theme-rosy//g' package/feeds/luci/luci/Makefile
 # 修改luci/luci-app-ddns排序
@@ -80,10 +80,6 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-godproxy/luasrc/controller
 find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-smartdns/luasrc/controller/smartdns.lua" | xargs -i sed -i 's/\"SmartDNS\")\, 4/\"SmartDNS\")\, 3/g' {}
 # 修改甜糖心愿采集排序 
 find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-ttnode/luasrc/controller/ttnode.lua" | xargs -i sed -i 's/0)\.dependent/50)\.dependent/g' {}
-# 修改bypass支持lean源码重命名shadowsocksr-libev-ssr-redir
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
-# 修改bypass支持lean源码重命名shadowsocksr-libev-ssr-server
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 }
 
 ################################################################################################################
@@ -107,8 +103,8 @@ Diy_lienol2() {
 DIY_GET_COMMON_SH
 cp -Rf "${Home}"/build/common/LIENOL/files "${Home}"
 cp -Rf "${Home}"/build/common/LIENOL/diy/* "${Home}"
-mv -f feeds/MCydia/luci-app-oscam feeds/luci/applications
-mv -f feeds/MCydia/oscam feeds/packages/net
+mv -f feeds/mcydia/luci-app-oscam feeds/luci/applications
+mv -f feeds/mcydia/oscam feeds/packages/net
 rm -rf feeds/packages/libs/libcap
 svn co https://github.com/coolsnowwolf/packages/trunk/libs/libcap feeds/packages/libs/libcap
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
