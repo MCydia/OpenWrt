@@ -231,30 +231,23 @@ fi
 }
 
 ################################################################################################################
-# 判断是否选择AdGuard Home是就指定机型给内核
+# 为编译做最后处理
 
 Diy_adgu() {
 DIY_GET_COMMON_SH
 grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
 grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
-sed -i "s/=y//g" Plug-in
-sed -i "s/CONFIG_PACKAGE_//g" Plug-in
-sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
-cat -n Plug-in > Plugin
-sed -i 's/	luci/、luci/g' Plugin
-awk '{print "  " $0}' Plugin > Plug-in
-if [ `grep -c "CONFIG_TARGET_x86_64=y" ${Home}/.config` -eq '1' ]; then
-	TARGET_ADG="x86-64"
-else
-	TARGET_ADG="$(egrep -o "CONFIG_TARGET.*DEVICE.*=y" .config | sed -r 's/.*DEVICE_(.*)=y/\1/')"
-fi
-
+awk '$0=NR$0' Plug-in > Plug-2
+sed -i '/INCLUDE/d' Plug-2 > /dev/null 2>&1
+sed -i 's/CONFIG_PACKAGE_/、/g' Plug-2
+sed -i 's/=y/\"/g' Plug-2
+awk '{print "	" $0}' Plug-2 > Plug-in
+sed -i "s/^/TIME g \"/g" Plug-in
 rm -rf {LICENSE,README,README.md,CONTRIBUTED.md,README_EN.md}
 rm -rf ./*/{LICENSE,README,README.md}
 rm -rf ./*/*/{LICENSE,README,README.md}
 rm -rf ./*/*/*/{LICENSE,README,README.md}
 }
-
 
 ################################################################################################################
 # 编译信息
