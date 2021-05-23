@@ -96,7 +96,9 @@ jobs:
     - name: 整理脚本
       run: |
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
-        cp -Rf "${GITHUB_WORKSPACE}/build/common"/*.sh "${PATH1}"
+        mv -f build/common/Convert.sh "${Home}"
+        chmod -R +x "${Home}/Convert.sh"
+        mv -f build/common/*.sh "${PATH1}"
         chmod -R +x "${PATH1}"
         source "${PATH1}/common.sh" && Diy_settings
         rm -rf {build,README.md}
@@ -117,7 +119,11 @@ jobs:
         fi
         /bin/bash "${PATH1}/$DIY_P1_SH"
         ./scripts/feeds clean
-        ./scripts/feeds update -a && ./scripts/feeds install -a
+        ./scripts/feeds update -a
+        if [[ "${REPO_BRANCH}" =~ (21.02|openwrt-21.02) ]]; then
+          bash ./Convert.sh
+        fi
+        ./scripts/feeds install -a
         if [[ "${REPO_URL}" == "${LEDE}" ]]; then
           source "${PATH1}/common.sh" && Diy_lede2
           echo "NAME1=Lede" >> $GITHUB_ENV
