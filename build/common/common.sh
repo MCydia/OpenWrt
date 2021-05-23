@@ -16,9 +16,9 @@ echo -e "\nsrc-git mcydia https://github.com/MCydia/openwrt-package;$REPO_BRANCH
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
-git clone https://github.com/281677160/luci-app-autoupdate package/luci-app-autoupdate
-mv "${PATH1}"/AutoUpdate.sh package/base-files/files/bin
-chmod +x package/base-files/files/bin/AutoUpdate.sh
+	git clone https://github.com/281677160/luci-app-autoupdate package/luci-app-autoupdate
+	mv "${PATH1}"/AutoUpdate.sh package/base-files/files/bin
+	chmod +x package/base-files/files/bin/AutoUpdate.sh
 fi
 }
 
@@ -128,6 +128,26 @@ sed -i 's/"Argon 主题设置"/"Argon设置"/g' feeds/luci/applications/luci-app
 sed -i "s/bing_background '0'/bing_background '1'/g" feeds/luci/applications/luci-app-argon-config/root/etc/config/argon
 sed -i "/exit 0/i\sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" ${IMZZZ}
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
+curl -fsSL https://raw.githubusercontent.com/281677160/AdGuardHome/main/luci-app-adguardhome/root/etc/config/AdGuardHome.yaml > feeds/luci/applications/luci-app-adguardhome/root/etc/AdGuardHome.yaml
+curl -fsSL https://raw.githubusercontent.com/281677160/AdGuardHome/main/luci-app-adguardhome/po/zh_Hans/adguardhome.po > feeds/luci/applications/luci-app-adguardhome/po/adguardhome.po
+}
+
+TIME() {
+	[[ -z "$1" ]] && {
+		echo -ne " "
+	} || {
+	    case $1 in
+		r) export Color="\e[31m";;
+		g) export Color="\e[32m";;
+		b) export Color="\e[34m";;
+		y) export Color="\e[33m";;
+		z) export Color="\e[35m";;
+		l) export Color="\e[36m";;
+	    esac
+		[[ $# -lt 2 ]] && echo -e "\e[36m\e[0m ${1}" || {
+			echo -e "\e[36m\e[0m ${Color}${2}\e[0m"
+	    }
+	}
 }
 
 ################################################################################################################
