@@ -37,13 +37,13 @@ jobs:
       fail-fast: false
       matrix:
         target: [Lede_x86_64]
-
+        
         # [Lede_x86_64,Lienol_x86_64,Project_x86_64]
 
     steps:
     - name: 准备结束
       uses: actions/checkout@v2
-
+    
     - name: 检测脚本设置
       run: |
         source "${GITHUB_WORKSPACE}/build/${{matrix.target}}/settings.ini"
@@ -62,7 +62,7 @@ jobs:
         echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
         echo "SERVERCHAN_SCKEY=${SERVERCHAN_SCKEY}" >> $GITHUB_ENV
         echo "REGULAR_UPDATE=${REGULAR_UPDATE}" >> $GITHUB_ENV
-
+        
     - name: 电报通知
       run: |
         if [[ "${SERVERCHAN_SCKEY}" == "true" ]]; then
@@ -105,7 +105,6 @@ jobs:
         if [[ "${{ github.event.inputs.ssh }}" == 'ssh' ]]; then
           echo "SSHYC=true" >> $GITHUB_ENV
         fi
-        
     - name: 加载源,patch补丁和自定义设置
       run: |
         cd openwrt
@@ -161,7 +160,7 @@ jobs:
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-
+    
     - name: 为编译做最后处理
       run: |
         cd openwrt
@@ -185,7 +184,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-        
     - name: 开始编译固件
       id: compile
       run: |
@@ -203,14 +201,13 @@ jobs:
          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > NAME2
          [ -s NAME2 ] && echo "NAME2=$(cat NAME2)" >> $GITHUB_ENV
         fi
-        
     - name: 上传bin文件夹(固件+ipk)在github actions
       uses: actions/upload-artifact@v2
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: Bin_filename+ipk_${{ env.NAME1 }}_${{ env.NAME2 }}_${{ env.date }}
         path: openwrt/bin
-
+    
     - name: 整理固件文件夹
       id: organizer
       run: |
@@ -226,8 +223,6 @@ jobs:
         fi
         cd bin/targets/*/*
         rm -rf packages && mkdir packages
-        find -name "*rootfs.tar.gz*" | xargs -i mv -f {} packages
-        find -name "*rootfs.img*" | xargs -i mv -f {} packages
         find -name "*buildinfo*" | xargs -i mv -f {} packages
         find -name "*sha256sums*" | xargs -i mv -f {} packages
         find -name "*manifest*" | xargs -i mv -f {} packages
@@ -260,7 +255,6 @@ jobs:
         echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
         ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
         echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        
     - name: 把定时更新固件发布到云端
       uses: softprops/action-gh-release@v1
       if: steps.organizer.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
@@ -270,7 +264,7 @@ jobs:
         name: update_Firmware
         tag_name: update_Firmware
         files: ${{ env.artifact }}/*
-
+    
     - name: 整理发布信息
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       run: |
