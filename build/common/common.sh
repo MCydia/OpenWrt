@@ -14,7 +14,7 @@ IMZZZ="package/emortal/default-settings/files/zzz-default-settings"
 ################################################################################################################
 Diy_all() {
 DIY_GET_COMMON_SH
-git clone -b $REPO_BRANCH --single-branch https://github.com/MCydia/openwrt-package package/mcydia
+echo -e "\nsrc-git mcydia https://github.com/mcydia/openwrt-package.git;$REPO_BRANCH" >> feeds.conf.default
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
@@ -51,6 +51,8 @@ git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwal
 git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
 git clone https://github.com/vernesong/OpenClash package/luci-app-openclash
 git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
+git clone https://github.com/sirpdboy/luci-app-netdata package/luci-app-netdata
 }
 
 ################################################################################################################
@@ -70,6 +72,7 @@ git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
 git clone https://github.com/vernesong/OpenClash package/luci-app-openclash
 git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
+git clone https://github.com/sirpdboy/luci-app-netdata package/luci-app-netdata
 }
 
 ################################################################################################################
@@ -113,6 +116,8 @@ git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwal
 git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
 git clone https://github.com/vernesong/OpenClash package/luci-app-openclash
 git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
+git clone https://github.com/sirpdboy/luci-app-netdata package/luci-app-netdata
 }
 
 ################################################################################################################
