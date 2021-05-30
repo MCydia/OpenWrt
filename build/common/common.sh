@@ -14,7 +14,7 @@ IMZZZ="package/emortal/default-settings/files/zzz-default-settings"
 ################################################################################################################
 Diy_all() {
 DIY_GET_COMMON_SH
-echo -e "\nsrc-git mcydia https://github.com/MCydia/openwrt-package.git;$REPO_BRANCH" >> feeds.config
+git clone -b $REPO_BRANCH --single-branch https://github.com/MCydia/openwrt-package package/mcydia
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 chmod +x package/base-files/files/bin/AutoBuild_Tools.sh
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
