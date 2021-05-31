@@ -12,7 +12,7 @@ sed -i "/uci commit network/i\uci set network.lan.dns='10.10.10.253'" $ZZZ      
 sed -i "/uci commit network/i\uci set network.lan.delegate='0'" $ZZZ                              # 去掉LAN口使用内置的 IPv6 管理
 echo "close_dhcp" > package/base-files/files/etc/closedhcp                                        # 关闭DHCP服务
 
-sed -i 's/luci-theme-bootstrap/luci-theme-opentomato/g' feeds/luci/collections/luci/Makefile      # 强制选择rosy为默认主题选项
+sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile            # 强制选择rosy为默认主题选项
 
 sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ                   # 修改主机名称为OpenWrt
 
