@@ -11,3 +11,4 @@
 cd package
 svn co https://github.com/garypang13/openwrt-packages/trunk/smartdns-le package/smartdns-le
 git clone https://github.com/immortalwrt/luci-app-unblockneteasemusic.git
+svn co https://github.com/solidus1983/luci-theme-opentomato/trunk/luci/themes/luci-theme-opentomato
