@@ -40,7 +40,7 @@ popd
 ################################################################################################################
 Diy_lede() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-theme-rosy}
+rm -rf package/lean/luci-app-netdata
 sed -i 's/iptables -t nat/# iptables -t nat/g' ${LEZZZ}
 if [[ "${Modelfile}" == "Lede_x86_64" ]]; then
 sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
@@ -60,7 +60,7 @@ git clone https://github.com/sirpdboy/luci-app-netdata package/luci-app-netdata
 ################################################################################################################
 Diy_lede() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-theme-rosy}
+rm -rf package/lean/luci-app-netdata
 sed -i 's/iptables -t nat/# iptables -t nat/g' ${LEZZZ}
 if [[ "${Modelfile}" == "Lede_x86_64" ]]; then
 sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
@@ -109,7 +109,7 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-ttnode/luasrc/controller/t
 ################################################################################################################
 Diy_lienol() {
 DIY_GET_COMMON_SH
-rm -rf package/lean/{luci-app-netdata,luci-theme-rosy}
+rm -rf package/lean/luci-app-netdata
 
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
