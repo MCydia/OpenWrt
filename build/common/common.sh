@@ -112,7 +112,6 @@ find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-ttnode/luasrc/controller/t
 Diy_lienol() {
 DIY_GET_COMMON_SH
 rm -rf package/lean/luci-app-netdata
-
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
