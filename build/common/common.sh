@@ -47,23 +47,6 @@ git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
 
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
-sed -i 's/ +luci-theme-rosy//g' package/feeds/luci/luci/Makefile
-# 修改luci/luci-app-ddns排序
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-ddns/luasrc/controller/ddns.lua" | xargs -i sed -i 's/\"Dynamic DNS\")\, 30/\"Dynamic DNS\")\, 0/g' {}
-# 修改bypass排序
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-bypass/luasrc/controller/bypass.lua" | xargs -i sed -i 's/\"Bypass\")\,2/\"Bypass\")\,0/g' {}
-# 修改DNSFilter排序
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-dnsfilter/luasrc/controller/dnsfilter.lua" | xargs -i sed -i 's/\"DNSFilter\")\,0/\"DNSFilter\")\,3/g' {}
-# 修改openclash排序
-find package/*/ feeds/*/ -maxdepth 8 -path "*OpenClash/luci-app-openclash/luasrc/controller/openclash.lua" | xargs -i sed -i 's/\"OpenClash\")\, 50/\"OpenClash\")\, 1/g' {}
-# 修改ShadowSocksR Plus+排序
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-ssr-plus/luci-app-ssr-plus/luasrc/controller/shadowsocksr.lua" | xargs -i sed -i 's/\"ShadowSocksR Plus+\")\, 10/\"ShadowSocksR Plus+\")\, 0/g' {}
-# 修改GodProxy滤广告排序 重命名为:去TMD广告
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-godproxy/luasrc/controller/koolproxy.lua" | xargs -i sed -i 's/\"GodProxy滤广告\")\,1/\"GodProxy滤广告\")\,10/g' {}
-# 修改luci-app-smartdns排序 
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-smartdns/luasrc/controller/smartdns.lua" | xargs -i sed -i 's/\"SmartDNS\")\, 4/\"SmartDNS\")\, 3/g' {}
-# 修改甜糖心愿采集排序 
-find package/*/ feeds/*/ -maxdepth 8 -path "*luci-app-ttnode/luasrc/controller/ttnode.lua" | xargs -i sed -i 's/0)\.dependent/50)\.dependent/g' {}
 }
 
 
