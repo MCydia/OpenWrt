@@ -42,7 +42,7 @@ jobs:
     - name: 准备结束
       uses: actions/checkout@v2
 
-    - name: 读取功能开关设置
+    - name: 读取功能
       run: |
         source "${GITHUB_WORKSPACE}/build/${{matrix.target}}/settings.ini"
         echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
