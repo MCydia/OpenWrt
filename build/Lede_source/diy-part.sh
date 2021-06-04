@@ -15,9 +15,9 @@ echo "close_dhcp" > package/base-files/files/etc/closedhcp                      
 
 sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile                    # 选择rosy为默认主题
 
-echo "MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d")" > package/base-files/files/etc/openwrt_gxqm        # 增加个性名字MCydia
+sed -i "s/OpenWrt /MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ                     # 增加自己个性名称MCydia
 
-sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ                           # 修改主机名称为OpenWrt-123
+sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ                           # 修改主机名称为OpenWrt
 
 #sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0/$1$PhflQnJ1$yamWfH5Mphs4hXV7UXWQ21:18725/g' $ZZZ          # 替换密码（要替换密码就不能设置密码为空）
 
