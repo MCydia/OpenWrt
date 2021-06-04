@@ -3,7 +3,7 @@
 # AutoBuild Module by Hyy2001
 # AutoUpdate for Openwrt
 
-Version=5.7
+Version=V5.7
 
 Shell_Helper() {
 cat <<EOF
@@ -53,7 +53,7 @@ Install_Pkg() {
 	export PKG_NAME=$1
 	if [[ ! "$(cat ${Download_Path}/Installed_PKG_List)" =~ "${PKG_NAME}" ]];then
     		TIME g "未安装[ ${PKG_NAME} ],执行安装[ ${PKG_NAME} ],请耐心等待..."
-		wget -q -c -P /tmp https://downloads.openwrt.org/snapshots/packages/x86_64/packages/gzip_1.10-3_x86_64.ipk
+		wget --no-cookie --no-check-certificate -q -c -P /tmp https://downloads.openwrt.org/snapshots/packages/x86_64/packages/gzip_1.10-3_x86_64.ipk
 		opkg install /tmp/gzip_1.10-3_x86_64.ipk --force-depends > /dev/null 2>&1
 		if [[ $? -ne 0 ]];then
 			opkg update > /dev/null 2>&1
@@ -102,12 +102,6 @@ TIME() {
 export Input_Option=$1
 export Input_Other=$2
 export Download_Path="/tmp/Downloads"
-export Github_Release="${Github}/releases/download/update_Firmware"
-export Apidz="${Github##*com/}"
-export Author="${Apidz%/*}"
-export Cangku="${Github##*${Author}/}"
-export XiaZai="${Apidz}/releases/download/update_Firmware"
-export Github_Tags="https://api.github.com/repos/${Apidz}/releases/tags/update_Firmware"
 export Overlay_Available="$(df -h | grep ":/overlay" | awk '{print $4}' | awk 'NR==1')"
 rm -rf "${Download_Path}" && TMP_Available="$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')"
 [ ! -d "${Download_Path}" ] && mkdir -p "${Download_Path}"
@@ -138,7 +132,7 @@ x86-64)
   	export Firmware_SFX="${BOOT_Type}.${Firmware_Type}"
   	export Firmware_GESHI=".${Firmware_Type}"
 	export Detail_SFX="${BOOT_Type}.detail"
-	export Space_Min="480"
+	export Space_Min="600"
 ;;
 *)
 	export CURRENT_Device="$(jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_')"
@@ -149,7 +143,7 @@ x86-64)
 esac
 CURRENT_Ver="${CURRENT_Version}${BOOT_Type}"
 cd /etc
-clear && echo "Openwrt-AutoUpdate Script V${Version}"
+clear && echo "Openwrt-AutoUpdate Script ${Version}"
 if [[ -z "${Input_Option}" ]];then
 	export Upgrade_Options="-q"
 	TIME g "执行: 保留配置更新固件[静默模式]"
@@ -356,11 +350,11 @@ echo "下载保存：${Download_Path}"
 }
 cd ${Download_Path}
 TIME g "正在使用${DOWN_LOAD}下载云端固件,请耐心等待..."
-wget -q --no-check-certificate -T 15 -t 4 "${Github_Release}/${Firmware}" -O ${Firmware}
+wget -q --no-cookie --no-check-certificate -T 15 -t 4 "${Github_Release}/${Firmware}" -O ${Firmware}
 if [[ $? -ne 0 ]];then
 	TIME z "${DOWN_LOAD}下载云端固件失败,切换下载模式!"
 	TIME b1 "切换${FastGit}模式继续下载固件,请耐心等待......"
-	wget -q --no-check-certificate -T 15 -t 4 "${Github_Fast}/${Firmware}" -O ${Firmware}
+	wget -q --no-cookie --no-check-certificate -T 15 -t 4 "${Github_Fast}/${Firmware}" -O ${Firmware}
 	if [[ $? -ne 0 ]];then
 		TIME r "下载云端固件失败,请尝试手动安装!"
 		exit 1
@@ -371,13 +365,13 @@ else
 	TIME y "使用${DOWN_LOAD}下载云端固件成功!"
 fi
 TIME g "正在使用${DOWN_LOAD}下载云端[ MD5-SHA256 ],请耐心等待..."
-wget -q --no-check-certificate -T 20 -t 3 "${Github_Release}/${Firmware_Detail}" -O ${Firmware_Detail}
+wget -q --no-cookie --no-check-certificate -T 20 -t 3 "${Github_Release}/${Firmware_Detail}" -O ${Firmware_Detail}
 if [[ $? -ne 0 ]];then
 	curl -fsSL "${Github_Release}/${Firmware_Detail}" -o ${Firmware_Detail} > /dev/null 2>&1
 	if [[ $? -ne 0 ]];then
 		TIME z "使用${DOWN_LOAD}模式下载[ MD5-SHA256 ]失败,切换下载模式!"
 		TIME b1 "切换${FastGit}模式继续下载[ MD5-SHA256 ],请耐心等待......"
-		wget -q --no-check-certificate -T 25 -t 4 "${Github_Fast}/${Firmware_Detail}" -O ${Firmware_Detail}
+		wget -q --no-cookie --no-check-certificate -T 25 -t 4 "${Github_Fast}/${Firmware_Detail}" -O ${Firmware_Detail}
 		if [[ $? -ne 0 ]];then
 			TIME r "下载[ MD5-SHA256 ]失败,请检查网络再尝试!"
 			exit 1
@@ -390,8 +384,8 @@ if [[ $? -ne 0 ]];then
 else
 	TIME y "使用${DOWN_LOAD}下载[ MD5-SHA256 ]成功!"
 fi
-CLOUD_MD5=$(awk -F '[ :]' '/MD5/ {print $2;exit}' ${Firmware_Detail})
-CURRENT_MD5=$(md5sum ${Firmware} | cut -d ' ' -f1)
+CLOUD_MD5="$(awk -F '[ :]' '/MD5/ {print $2;exit}' ${Firmware_Detail})"
+CURRENT_MD5="$(md5sum ${Firmware} | cut -d ' ' -f1)"
 [[ -z "${CLOUD_MD5}" ]] || [[ -z "${CURRENT_MD5}" ]] && {
 	TIME r "在Detail文件获取 MD5 失败!"
 	exit 1
