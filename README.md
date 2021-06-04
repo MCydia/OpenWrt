@@ -2,9 +2,10 @@
 
 # 择要
 
-- Lede=18.06=5.4
-- Lienol=19.07=4.14
-- Project=21.02=5.4
+- Lede_source=18.06=5.4
+- Lienol_source=19.07=4.14
+- Project_source=18.06=4.19
+- Spirit_source=21.02=5.4
 
 ## 固件来源：
 
