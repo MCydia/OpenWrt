@@ -44,7 +44,7 @@ do
 	mv "$e" "${po_new_dir}" 2>"/dev/null"
 done
 
-makefile_file="$({ find|grep Makefile |sed "/Makefile./d"; } 2>"/dev/null")"
+makefile_file="$({ find |grep Makefile |sed "/Makefile./d"; } 2>"/dev/null")"
 for f in ${makefile_file}
 do
 	[ -n "$(grep "zh-cn" "$f")" ] && sed -i "s/zh-cn/zh_Hans/g" "$f"
