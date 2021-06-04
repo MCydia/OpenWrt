@@ -44,6 +44,9 @@ git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwal
 git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
 svn co  https://github.com/vernesong/OpenClash/trunk feeds/luci/luci-app-openclash > /dev/null 2>&1
 git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
+git clone --depth 1 https://github.com/garypang13/smartdns-le
+git clone https://github.com/immortalwrt/luci-app-unblockneteasemusic.git
 
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
@@ -61,6 +64,9 @@ git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwal
 git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
 svn co  https://github.com/vernesong/OpenClash/trunk feeds/luci/luci-app-openclash > /dev/null 2>&1
 git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
+git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
+git clone --depth 1 https://github.com/garypang13/smartdns-le
+git clone https://github.com/immortalwrt/luci-app-unblockneteasemusic.git
 
 curl -fsSL https://raw.githubusercontent.com/281677160/AdGuardHome/main/luci-app-adguardhome/root/etc/config/AdGuardHome.yaml > package/diy/luci-app-adguardhome/root/etc/config/AdGuardHome.yaml
 curl -fsSL https://raw.githubusercontent.com/281677160/AdGuardHome/main/luci-app-adguardhome/po/zh-cn/AdGuardHome.po > package/diy/luci-app-adguardhome/po/zh-cn/AdGuardHome.po
