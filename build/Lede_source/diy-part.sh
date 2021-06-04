@@ -29,7 +29,6 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                          
 # 添加插件源及依赖
 cd package
 git clone --depth 1 https://github.com/garypang13/smartdns-le
-git clone https://github.com/immortalwrt/luci-app-unblockneteasemusic.git
 
 # 修改插件名字
 sed -i 's/"BaiduPCS Web"/"百度网盘"/g' package/lean/luci-app-baidupcs-web/luasrc/controller/baidupcs-web.lua
