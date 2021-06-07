@@ -103,7 +103,7 @@ cp -Rf openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 mv "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
 
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
-	svn co https://github.com/281677160/luci-app-autoupdate/trunk feeds/luci/applications/luci-app-autoupdate > /dev/null 2>&1
+	git clone https://github.com/281677160/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
 	mv "${PATH1}"/AutoUpdate.sh package/base-files/files/bin
 fi
 
