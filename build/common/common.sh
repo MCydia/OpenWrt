@@ -31,13 +31,8 @@ find . -name 'luci-app-netdata' -o -name 'luci-theme-argon' -o -name 'k3screenct
 
 sed -i 's/iptables -t nat/# iptables -t nat/g' "${ZZZ}"
 
-if [[ "${REPO_BRANCH}" == "master" ]]; then
-	sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
-	echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
-fi
-if [ -n "$(ls -A "target/linux/sunxi/base-files/etc/board.d/01_leds" 2>/dev/null)" ]; then
-	chmod -R +x target/linux/sunxi/base-files/etc/board.d/01_leds
-fi
+sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
+echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
