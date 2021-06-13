@@ -43,6 +43,7 @@ git clone https://github.com/jerrykuku/luci-app-vssr package/luci-app-vssr
 git clone https://github.com/frainzy1477/luci-app-clash package/luci-app-clash
 svn co https://github.com/vernesong/OpenClash/trunk feeds/luci/luci-app-openclash > /dev/null 2>&1
 svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman package/luci-app-dockerman
+
  git clone --depth=1 https://github.com/lisaac/luci-lib-docker package/luci-lib-docker
  if [ -e feeds/packages/utils/docker-ce ];then
    sed -i '/dockerd/d' package/luci-app-dockerman/Makefile
