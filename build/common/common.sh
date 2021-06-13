@@ -38,8 +38,6 @@ git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
 git clone --depth=1 https://github.com/garypang13/smartdns-le package/smartdns-le
-find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-redir/shadowsocksr-libev-alt/g' {}
-find package/*/ feeds/*/ -maxdepth 2 -path "*luci-app-bypass/Makefile" | xargs -i sed -i 's/shadowsocksr-libev-ssr-server/shadowsocksr-libev-server/g' {}
 
 svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman package/luci-app-dockerman
  git clone --depth=1 https://github.com/lisaac/luci-lib-docker package/luci-lib-docker
