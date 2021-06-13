@@ -37,7 +37,6 @@ echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
-git clone https://github.com/garypang13/openwrt-packages/tree/master/lua-maxminddb
 git clone --depth=1 https://github.com/garypang13/smartdns-le package/smartdns-le
 svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman package/luci-app-dockerman
  git clone --depth=1 https://github.com/lisaac/luci-lib-docker package/luci-lib-docker
