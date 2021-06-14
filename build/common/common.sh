@@ -21,7 +21,6 @@ TIME() {
       }
 }
 
-
 ################################################################################################################
 # LEDE源码通用diy.sh文件
 ################################################################################################################
@@ -48,7 +47,6 @@ svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
 
-
 ################################################################################################################
 # LIENOL源码通用diy.sh文件
 ################################################################################################################
@@ -61,9 +59,6 @@ git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwal
 
 rm -rf feeds/packages/libs/libcap
 svn co https://github.com/coolsnowwolf/packages/trunk/libs/libcap feeds/packages/libs/libcap > /dev/null 2>&1
-
-curl -fsSL https://raw.githubusercontent.com/281677160/AdGuardHome/main/luci-app-adguardhome/root/etc/config/AdGuardHome.yaml > package/diy/luci-app-adguardhome/root/etc/config/AdGuardHome.yaml
-curl -fsSL https://raw.githubusercontent.com/281677160/AdGuardHome/main/luci-app-adguardhome/po/zh-cn/AdGuardHome.po > package/diy/luci-app-adguardhome/po/zh-cn/AdGuardHome.po
 
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
@@ -81,7 +76,6 @@ sed -i "/exit 0/i\sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" ${ZZZ}
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
 
-
 ################################################################################################################
 # 天灵源码21.02分支diy.sh文件
 ################################################################################################################
@@ -92,7 +86,6 @@ find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon'  | xargs -i rm 
 sed -i "/exit 0/i\sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" "${ZZZ}"
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
-
 
 ################################################################################################################
 # 全部作者源码公共diy.sh文件
@@ -134,7 +127,6 @@ exit 1
 fi
 rm -rf {build,README.md}
 }
-
 
 ################################################################################################################
 # 判断插件冲突
@@ -209,7 +201,6 @@ else
 	rm -rf CHONGTU
 fi
 }
-
 
 ################################################################################################################
 # 为编译做最后处理
