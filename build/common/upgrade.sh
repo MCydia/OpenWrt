@@ -6,7 +6,7 @@
 GET_TARGET_INFO() {
         TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)"
         TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)"
-	[ -f ${GITHUB_WORKSPACE}/Openwrt.info ] && . ${GITHUB_WORKSPACE}/Openwrt.info
+	[ -f ${GITHUB_WORKSPACE}/Openwrt.info ] && . ${GITHUB_WORKSPACE}/Openwrt.info > /dev/null 2>&1
 	case "${TARGET_PROFILE}" in
 	x86-64)
 		if [ `grep -c "CONFIG_TARGET_IMAGES_GZIP=y" ${Home}/.config` -eq '1' ]; then
@@ -140,42 +140,49 @@ Diy_Part3() {
 		EFI_Firmware="${EFI_Up_Firmware}"
 		AutoBuild_Firmware="${COMP1}-${Openwrt_Version}"
 		if [ -f "${Legacy_Firmware}" ];then
+			mkdir -p GDfirmware
 			_MD5=$(md5sum ${Legacy_Firmware} | cut -d ' ' -f1)
 			_SHA256=$(sha256sum ${Legacy_Firmware} | cut -d ' ' -f1)
-			touch ${Home}/bin/Firmware/${AutoBuild_Firmware}.detail
-			echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > ${Home}/bin/Firmware/${AutoBuild_Firmware}-Legacy.detail
-			cp ${Legacy_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-Legacy.${Firmware_sfx}
-			echo "Legacy Firmware is detected !"
+			touch ./GDfirmware/${AutoBuild_Firmware}.detail
+			echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > ./GDfirmware/${AutoBuild_Firmware}-Legacy.detail
+			cp ${Legacy_Firmware} ./GDfirmware/${AutoBuild_Firmware}-Legacy.${Firmware_sfx}
+			find ./GDfirmware -name "*" -type f -size 0c | xargs -n 1 rm -f
+			tar -zcf ${AutoBuild_Firmware}-Legacy.tar.gz GDfirmware --remove-files
+			mv ${AutoBuild_Firmware}-Legacy.tar.gz ${Home}/bin/Firmware
 		fi
 		if [ -f "${EFI_Firmware}" ];then
+			mkdir -p GDfirmware
 			_MD5=$(md5sum ${EFI_Firmware} | cut -d ' ' -f1)
 			_SHA256=$(sha256sum ${EFI_Firmware} | cut -d ' ' -f1)
-			touch ${Home}/bin/Firmware/${AutoBuild_Firmware}-UEFI.detail
-			echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > ${Home}/bin/Firmware/${AutoBuild_Firmware}-UEFI.detail
-			cp ${EFI_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-UEFI.${Firmware_sfx}
-			echo "UEFI Firmware is detected !"
+			touch ./GDfirmware/${AutoBuild_Firmware}-UEFI.detail
+			echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > ./GDfirmware/${AutoBuild_Firmware}-UEFI.detail
+			cp ${EFI_Firmware} ./GDfirmware/${AutoBuild_Firmware}-UEFI.${Firmware_sfx}
+			find ./GDfirmware -name "*" -type f -size 0c | xargs -n 1 rm -f
+			tar -zcf ${AutoBuild_Firmware}-UEFI.tar.gz GDfirmware --remove-files
+			mv ${AutoBuild_Firmware}-UEFI.tar.gz ${Home}/bin/Firmware
 		fi
 	;;
 	*)
-		cd ${Home}
-		Default_Firmware=""${Up_Firmware}""
-		AutoBuild_Firmware="${COMP1}-${Openwrt_Version}.${Firmware_sfx}"
-		AutoBuild_Detail="${COMP1}-${Openwrt_Version}.detail"
-		echo "Firmware: ${AutoBuild_Firmware}"
-		cp ${Firmware_Path}/*${Default_Firmware} bin/Firmware/${AutoBuild_Firmware}
-		_MD5=$(md5sum bin/Firmware/${AutoBuild_Firmware} | cut -d ' ' -f1)
-		_SHA256=$(sha256sum bin/Firmware/${AutoBuild_Firmware} | cut -d ' ' -f1)
-		echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > bin/Firmware/${AutoBuild_Detail}
+		cd ${Firmware_Path}
+		mkdir -p GDfirmware
+		Default_Firmware="${Up_Firmware}"
+		AutoBuild_Firmware="${COMP1}-${Openwrt_Version}"
+		_MD5=$(md5sum ${Default_Firmware} | cut -d ' ' -f1)
+		_SHA256=$(sha256sum ${Default_Firmware} | cut -d ' ' -f1)
+		touch ./GDfirmware/${AutoBuild_Firmware}.detail
+		echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > ./GDfirmware/${AutoBuild_Firmware}.detail
+		cp ${Default_Firmware} ./GDfirmware/${AutoBuild_Firmware}.${Firmware_sfx}
+		find ./GDfirmware -name "*" -type f -size 0c | xargs -n 1 rm -f
+		tar -zcf ${AutoBuild_Firmware}.tar.gz GDfirmware --remove-files
+		mv ${AutoBuild_Firmware}.tar.gz ${Home}/bin/Firmware
 	;;
 	esac
 	cd ${Home}
-	echo "Actions Avaliable: $(df -h | grep "/dev/root" | awk '{printf $4}')"
 }
 
 Mkdir() {
 	_DIR=${1}
 	if [ ! -d "${_DIR}" ];then
-		echo "[$(date "+%H:%M:%S")] Creating new folder [${_DIR}] ..."
 		mkdir -p ${_DIR}
 	fi
 	unset _DIR
