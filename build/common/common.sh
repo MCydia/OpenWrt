@@ -37,12 +37,6 @@ git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
 git clone --depth=1 https://github.com/garypang13/smartdns-le package/smartdns-le
-svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman package/luci-app-dockerman
- git clone --depth=1 https://github.com/lisaac/luci-lib-docker package/luci-lib-docker
- if [ -e feeds/packages/utils/docker-ce ];then
-   sed -i '/dockerd/d' package/luci-app-dockerman/Makefile
-   sed -i 's/+docker/+docker-ce/g' package/luci-app-dockerman/Makefile
- fi
 
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
