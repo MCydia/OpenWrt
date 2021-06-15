@@ -89,8 +89,6 @@ Diy_all() {
 git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/281677160/openwrt-package
 cp -Rf openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 
-cp -Rf "${PATH1}"/AutoBuild_Tools.sh package/base-files/files/bin
-
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
 	git clone https://github.com/281677160/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
 	cp -Rf "${PATH1}"/AutoUpdate.sh package/base-files/files/bin
