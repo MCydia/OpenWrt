@@ -188,14 +188,15 @@ jobs:
         fi
         
     - name: 编译信息
-      run: |
         cd openwrt
         source "${PATH1}/common.sh" && Diy_chuli > /dev/null 2>&1
         if [ "${REGULAR_UPDATE}" == "true" ]; then
           source "${PATH1}/upgrade.sh" && Diy_Part2 > /dev/null 2>&1
         fi
-        source "${PATH1}/upgrade.sh" > /dev/null 2>&1
-        source "${PATH1}/common.sh" && Diy_xinxi
+        if [ "${BY_INFORMATION}" == "true" ]; then
+          source "${PATH1}/upgrade.sh" > /dev/null 2>&1
+          source "${PATH1}/common.sh" && Diy_xinxi
+        fi
         
     - name: 下载软件包
       id: package
