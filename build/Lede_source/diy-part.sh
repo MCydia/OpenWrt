@@ -24,6 +24,8 @@ sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ 
 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                                    # 设置密码为空
 
+sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                         # 修改内核版本为5.4
+
 #sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                                      # 修改内核版本为4.19
 
 
