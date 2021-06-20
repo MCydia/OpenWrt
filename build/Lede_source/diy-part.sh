@@ -11,7 +11,7 @@ sed -i "/uci commit network/i\uci set network.lan.gateway='10.10.10.250'" $ZZZ  
 sed -i "/uci commit network/i\uci set network.lan.broadcast='10.10.10.255'" $ZZZ                          # IPv4 广播
 sed -i "/uci commit network/i\uci set network.lan.dns='10.10.10.253'" $ZZZ                                # DNS(多个DNS要用空格分开)
 sed -i "/uci commit network/i\uci set network.lan.delegate='0'" $ZZZ                                      # 去掉LAN口使用内置的 IPv6 管理
-sed -i "/uci commit network/i\sed -i '/ip6assign/d' /etc/config/network'" $ZZZ                            # 关闭IPv6 分配长度
+#sed -i "/uci commit network/i\sed -i '/ip6assign/d' /etc/config/network'" $ZZZ                           # 关闭IPv6 分配长度
 echo "close_dhcp" > package/base-files/files/etc/closedhcp                                                # 关闭DHCP服务
 
 sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile                    # 选择rosy为默认主题
@@ -24,7 +24,7 @@ sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ 
 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                                    # 设置密码为空
 
-sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                         # 修改内核版本为5.4
+#sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                        # 修改内核版本为5.4
 
 #sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                                      # 修改内核版本为4.19
 
