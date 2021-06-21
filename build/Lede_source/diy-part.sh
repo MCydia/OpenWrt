@@ -4,30 +4,32 @@
 # DIY扩展二合一了，在此处可以增加插件
 #
 
-sed -i 's/192.168.1.1/10.10.10.251/g' package/base-files/files/bin/config_generate                         # IPv4 地址(openwrt后台地址)
-#sed -i "/uci commit fstab/a\uci commit network" $ZZZ
-#sed -i "/uci commit network/i\uci set network.lan.ipaddr='10.10.10.251'" $ZZZ                             # IPv4 地址(openwrt后台地址)
-#sed -i "/uci commit network/i\uci set network.lan.netmask='255.255.255.0'" $ZZZ                           # IPv4 子网掩码
-#sed -i "/uci commit network/i\uci set network.lan.gateway='10.10.10.250'" $ZZZ                            # IPv4 网关
-#sed -i "/uci commit network/i\uci set network.lan.broadcast='10.10.10.255'" $ZZZ                          # IPv4 广播
-#sed -i "/uci commit network/i\uci set network.lan.dns='10.10.10.253'" $ZZZ                                # DNS(多个DNS要用空格分开)
-#sed -i "/uci commit network/i\uci set network.lan.delegate='0'" $ZZZ                                      # 去掉LAN口使用内置的 IPv6 管理
-#sed -i "/uci commit network/i\sed -i '/ip6assign/d' /etc/config/network'" $ZZZ                            # 关闭IPv6 分配长度
-echo "close_dhcp" > package/base-files/files/etc/closedhcp                                                 # 关闭DHCP服务
+# IPv4 地址(openwrt后台地址)
+sed -i 's/192.168.1.1/10.10.10.251/g' package/base-files/files/bin/config_generate                         
 
-sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile                    # 选择rosy为默认主题
+# 修改主机名字，把OpenWrt-123修改你喜欢的就行（不能纯数字或者使用中文）
+sed -i '/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'' package/lean/default-settings/files/zzz-default-settings
 
-sed -i "s/OpenWrt /MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ                     # 增加自己个性名称MCydia
+# 版本号里显示一个自己的名字（MCydia build $(TZ=UTC-8 date "+%Y.%m.%d") @ 这些都是后增加的）
+sed -i "s/OpenWrt /MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
 
-sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ                           # 修改主机名称为OpenWrt
+# 关闭DHCP服务
+echo "close_dhcp" > package/base-files/files/etc/closedhcp                                                 
 
-#sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0/$1$PhflQnJ1$yamWfH5Mphs4hXV7UXWQ21:18725/g' $ZZZ          # 替换密码（要替换密码就不能设置密码为空）
+# 选择rosy为默认主题
+sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile                    
 
-sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                                    # 设置密码为空
+# 替换密码（要替换密码就不能设置密码为空）
+#sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0/$1$PhflQnJ1$yamWfH5Mphs4hXV7UXWQ21:18725/g' $ZZZ          
 
-#sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                        # 修改内核版本为5.4
+# 设置密码为空（安装固件时无需密码登陆，然后自己修改想要的密码）
+sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' package/lean/default-settings/files/zzz-default-settings
 
-#sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                                      # 修改内核版本为4.19
+# 修改内核版本为5.4
+#sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                        
+
+# 修改内核版本为4.19
+#sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                                      
 
 
 # 修改插件名字
