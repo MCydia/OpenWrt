@@ -20,7 +20,7 @@ sed -i '/ip6assign/d' package/base-files/files/bin/config_generate
 echo "close_dhcp" > package/base-files/files/etc/closedhcp                                                 
 
 # 选择rosy为默认主题
-sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile                    
+sed -i 's/luci-theme-bootstrap/luci-theme-opentomcat/g' feeds/luci/collections/luci/Makefile                    
 
 # 替换密码（要替换密码就不能设置密码为空）
 #sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0/$1$PhflQnJ1$yamWfH5Mphs4hXV7UXWQ21:18725/g' $ZZZ          
