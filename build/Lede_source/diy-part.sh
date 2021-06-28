@@ -29,7 +29,7 @@ sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Ma
 sed -i 's@.*CYXluq4wUazHjmCDBCqXF*@#&@g' package/lean/default-settings/files/zzz-default-settings
 
 # 修改内核版本为5.4
-#sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                        
+sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                        
 
 # 修改内核版本为4.19
 #sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                                      
