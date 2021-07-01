@@ -62,7 +62,6 @@ GET_TARGET_INFO() {
 	} || AutoUpdate_Version=OFF
 	In_Firmware_Info="${Home}/package/base-files/files/etc/openwrt_info"
 	Github_Release="${Github}/releases/download/AutoUpdate"
-	Github_Tags="https://api.github.com/repos/${Apidz}/releases/tags/AutoUpdate"
 	Github_UP_RELEASE="${Github}/releases/AutoUpdate"
 	Openwrt_Version="${REPO_Name}-${TARGET_PROFILE}-${Compile_Date}"
 	Egrep_Firmware="${LUCI_Name}-${REPO_Name}-${TARGET_PROFILE}"
@@ -79,8 +78,6 @@ Diy_Part2() {
 	GET_TARGET_INFO
 	cat >${In_Firmware_Info} <<-EOF
 	Github=${Github}
-	Author=${Author}
-	CangKu=${CangKu}
 	Luci_Edition=${OpenWrt_name}
 	CURRENT_Version=${Openwrt_Version}
 	DEFAULT_Device=${TARGET_PROFILE}
@@ -88,7 +85,6 @@ Diy_Part2() {
 	LUCI_Name=${LUCI_Name}
 	REPO_Name=${REPO_Name}
 	Github_Release=${Github_Release}
-	Github_Tags=${Github_Tags}
 	Egrep_Firmware=${Egrep_Firmware}
 	Download_Path=/tmp/Downloads
 	EOF
@@ -107,19 +103,25 @@ Diy_Part3() {
 	case "${TARGET_PROFILE}" in
 	x86-64)
 		[[ -f ${Legacy_Firmware} ]] && {
-			cp ${Legacy_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-Legacy.${Firmware_sfx}
+			MD5=$(md5sum ${Legacy_Firmware} | cut -d ' ' -f1)
+			SHA5BIT="${MD5:0:6}"
+			cp ${Legacy_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-Legacy-${SHA5BIT}.${Firmware_sfx}
 		}
 		[[ -f ${UEFI_Firmware} ]] && {
-			cp ${UEFI_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-UEFI.${Firmware_sfx}
+			MD5=$(md5sum ${UEFI_Firmware} | cut -d ' ' -f1)
+			SHA5BIT="${MD5:0:6}"
+			cp ${UEFI_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-UEFI-${SHA5BIT}.${Firmware_sfx}
 		}
 	;;
-	friendlyarm_nanopi-r2s | friendlyarm_nanopi-r4s | armvirt) 
+	friendlyarm_nanopi-r2s | friendlyarm_nanopi-r4s | armvirt)
 		echo "R2S/R4S/N1/晶晨系列,暂不支持定时更新固件!" > Update_Logs.json
 		cp Update_Logs.json ${Home}/bin/Firmware/Update_Logs.json
 	;;
 	*)
 		[[ -f ${Up_Firmware} ]] && {
-			cp ${Up_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}.${Firmware_sfx}
+			MD5=$(md5sum ${Up_Firmware} | cut -d ' ' -f1)
+			SHA5BIT="${MD5:0:6}"
+			cp ${Up_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-Sysupg-${SHA5BIT}.${Firmware_sfx}
 		} || {
 			echo "Firmware is not detected !"
 		}
