@@ -36,7 +36,7 @@ jobs:
       matrix:
         target: [Lede_source]
 
-        # [Lede_source,Lienol_source,Project_source,Spirit_source]
+        # [Lede_source,Lienol_source,Mortal_source,Openwrt_amlogic]
 
     steps:
     - name: 准备结束
@@ -220,7 +220,7 @@ jobs:
     - name: 整理固件文件夹
       id: organizer
       run: |
-        if [ "${Modelfile}" == "openwrt_amlogic" ]; then
+        if [ "${Modelfile}" == "Openwrt_amlogic" ]; then
           source "${PATH1}/common.sh" && Diy_amlogic
         fi
         cd openwrt
