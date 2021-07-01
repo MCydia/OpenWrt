@@ -15,7 +15,7 @@ echo "close_dhcp" > package/base-files/files/etc/closedhcp                      
 
 sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile                    # 选择argon为默认主题
 
-echo "MCydia Compiled in $(TZ=UTC-8 date "+%Y.%m.%d")" > package/base-files/files/etc/openwrt_gxqm        # 增加个性名字MCydia
+sed -i "s/OpenWrt /${Author} Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ                  # 增加个性名字MCydia
 
 sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ                           # 修改主机名称为OpenWrt-123
 
@@ -23,7 +23,7 @@ sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ 
 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                                    # 设置密码为空
 
-#sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                                      # 修改内核版本为4.19
+#sed -i 's/PATCHVER:=4.14/PATCHVER:=4.19/g' target/linux/x86/Makefile                                     # 默认内核为4.14，修改内核为4.19
 
 
 # 修改插件名字
