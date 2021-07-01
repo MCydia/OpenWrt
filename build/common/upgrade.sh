@@ -4,106 +4,68 @@
 # AutoBuild Functions
 
 GET_TARGET_INFO() {
-        TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)"
-        TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)"
-	[ -f ${GITHUB_WORKSPACE}/Openwrt.info ] && . ${GITHUB_WORKSPACE}/Openwrt.info > /dev/null 2>&1
-	case "${TARGET_PROFILE}" in
-	x86-64)
-		if [ `grep -c "CONFIG_TARGET_IMAGES_GZIP=y" ${Home}/.config` -eq '1' ]; then
-			Firmware_sfxo="img.gz"
-		else
-			Firmware_sfxo="img"
-		fi
-	;;
-	esac
+	[[ ${TARGET_PROFILE} == x86-64 ]] && {
+		[[ `grep -c "CONFIG_TARGET_IMAGES_GZIP=y" ${Home}/.config` -ge '1' ]] && Firmware_sfxo=img.gz || Firmware_sfxo=img 
+	}
 	case "${REPO_BRANCH}" in
 	"master")
-		COMP1="coolsnowwolf-18.06"
-		COMP2="lede"
+		LUCI_Name="18.06"
+		REPO_Name="lede"
 		ZUOZHE="Lean's"
 		if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
-			Up_Firmware="openwrt-x86-64-generic-squashfs-combined.${Firmware_sfxo}"
-			EFI_Up_Firmware="openwrt-x86-64-generic-squashfs-combined-efi.${Firmware_sfxo}"
+			Legacy_Firmware="openwrt-x86-64-generic-squashfs-combined.${Firmware_sfxo}"
+			UEFI_Firmware="openwrt-x86-64-generic-squashfs-combined-efi.${Firmware_sfxo}"
 			Firmware_sfx="${Firmware_sfxo}"
-		elif [[ "${TARGET_PROFILE}" == "phicomm-k3" ]]; then
-			Up_Firmware="openwrt-bcm53xx-generic-phicomm-k3-squashfs.trx"
+		elif [[ "${TARGET_PROFILE}" == "phicomm_k3" ]]; then
+			Up_Firmware="openwrt-bcm53xx-generic-phicomm_k3-squashfs.trx"
 			Firmware_sfx="trx"
-		elif [[ "${TARGET_PROFILE}" =~ (friendlyarm_nanopi-r2s|friendlyarm_nanopi-r4s|armvirt) ]]; then
-			Up_Firmware="暂不支持定时更新"
-			Firmware_sfx="暂不支持定时更新"
 		else
 			Up_Firmware="openwrt-${TARGET_BOARD}-${TARGET_SUBTARGET}-${TARGET_PROFILE}-squashfs-sysupgrade.bin"
 			Firmware_sfx="bin"
 		fi
 	;;
 	"19.07") 
-		COMP1="openwrt-19.07"
-		COMP2="lienol"
+		LUCI_Name="19.07"
+		REPO_Name="lienol"
 		ZUOZHE="Lienol's"
 		if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
-			Up_Firmware="openwrt-x86-64-combined-squashfs.${Firmware_sfxo}"
-			EFI_Up_Firmware="openwrt-x86-64-combined-squashfs-efi.${Firmware_sfxo}"
+			Legacy_Firmware="openwrt-x86-64-combined-squashfs.${Firmware_sfxo}"
+			UEFI_Firmware="openwrt-x86-64-combined-squashfs-efi.${Firmware_sfxo}"
 			Firmware_sfx="${Firmware_sfxo}"
 		elif [[ "${TARGET_PROFILE}" == "phicomm-k3" ]]; then
 			Up_Firmware="openwrt-bcm53xx-phicomm-k3-squashfs.trx"
 			Firmware_sfx="trx"
-		elif [[ "${TARGET_PROFILE}" =~ (friendlyarm_nanopi-r2s|friendlyarm_nanopi-r4s|armvirt) ]]; then
-			Up_Firmware="暂不支持定时更新"
-			Firmware_sfx="暂不支持定时更新"
-		else
-			Up_Firmware="openwrt-${TARGET_BOARD}-${TARGET_SUBTARGET}-${TARGET_PROFILE}-squashfs-sysupgrade.bin"
-			Firmware_sfx="bin"
-		fi
-	;;
-	"openwrt-18.06-k5.4")
-		COMP1="immortalwrt-18.06"
-		COMP2="project"
-		ZUOZHE="ctcgfw"
-		if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
-			Up_Firmware="immortalwrt-x86-64-combined-squashfs.${Firmware_sfxo}"
-			EFI_Up_Firmware="immortalwrt-x86-64-uefi-gpt-squashfs.${Firmware_sfxo}"
-			Firmware_sfx="${Firmware_sfxo}"
-		elif [[ "${TARGET_PROFILE}" == "phicomm-k3" ]]; then
-			Up_Firmware="immortalwrt-bcm53xx-phicomm-k3-squashfs.trx"
-			Firmware_sfx="trx"
-		elif [[ "${TARGET_PROFILE}" =~ (friendlyarm_nanopi-r2s|friendlyarm_nanopi-r4s|armvirt) ]]; then
-			Up_Firmware="暂不支持定时更新"
-			Firmware_sfx="暂不支持定时更新"
 		else
 			Up_Firmware="openwrt-${TARGET_BOARD}-${TARGET_SUBTARGET}-${TARGET_PROFILE}-squashfs-sysupgrade.bin"
 			Firmware_sfx="bin"
 		fi
 	;;
 	"openwrt-21.02")
-		COMP1="ctcgfw-21.02"
-		COMP2="Spirit"
+		LUCI_Name="21.02"
+		REPO_Name="mortal"
 		ZUOZHE="ctcgfw"
 		if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
-			Up_Firmware="immortalwrt-x86-64-generic-squashfs-combined.${Firmware_sfxo}"
-			EFI_Up_Firmware="immortalwrt-x86-64-generic-squashfs-combined-efi.${Firmware_sfxo}"
+			Legacy_Firmware="immortalwrt-x86-64-generic-squashfs-combined.${Firmware_sfxo}"
+			UEFI_Firmware="immortalwrt-x86-64-generic-squashfs-combined-efi.${Firmware_sfxo}"
 			Firmware_sfx="${Firmware_sfxo}"
 		elif [[ "${TARGET_PROFILE}" == "phicomm-k3" ]]; then
 			Up_Firmware="immortalwrt-bcm53xx-phicomm-k3-squashfs.trx"
 			Firmware_sfx="trx"
-		elif [[ "${TARGET_PROFILE}" =~ (friendlyarm_nanopi-r2s|friendlyarm_nanopi-r4s|armvirt) ]]; then
-			Up_Firmware="暂不支持定时更新"
-			Firmware_sfx="暂不支持定时更新"
 		else
 			Up_Firmware="openwrt-${TARGET_BOARD}-${TARGET_SUBTARGET}-${TARGET_PROFILE}-squashfs-sysupgrade.bin"
 			Firmware_sfx="bin"
 		fi
 	;;
 	esac
-	if [[ ${REGULAR_UPDATE} == "true" ]]; then
-		AutoUpdate_Version=$(awk 'NR==6' package/base-files/files/bin/AutoUpdate.sh | awk -F '[="]+' '/Version/{print $2}')
-		[[ -z "${AutoUpdate_Version}" ]] && AutoUpdate_Version="Unknown"
-	fi
+	[ ${REGULAR_UPDATE} == "true" ] && {
+		AutoUpdate_Version=$(egrep -o "V[0-9].+" ${Home}/package/base-files/files/bin/AutoUpdate.sh | awk 'END{print}')
+	} || AutoUpdate_Version=OFF
+	In_Firmware_Info="${Home}/package/base-files/files/etc/openwrt_info"
 	Github_Release="${Github}/releases/download/AutoUpdate"
 	Github_Tags="https://api.github.com/repos/${Apidz}/releases/tags/AutoUpdate"
-	XiaZai="${Apidz}/releases/download/AutoUpdate"
 	Github_UP_RELEASE="${Github}/releases/AutoUpdate"
-	In_Firmware_Info="package/base-files/files/etc/openwrt_info"
-	Openwrt_Version="${COMP2}-${TARGET_PROFILE}-${Compile_Date}"
+	Openwrt_Version="${REPO_Name}-${TARGET_PROFILE}-${Compile_Date}"
+	Egrep_Firmware="${LUCI_Name}-${REPO_Name}-${TARGET_PROFILE}"
 }
 
 Diy_Part1() {
@@ -115,75 +77,52 @@ Diy_Part1() {
 
 Diy_Part2() {
 	GET_TARGET_INFO
-	echo "Github=${Github}" > ${In_Firmware_Info}
-	echo "Author=${Author}" >> ${In_Firmware_Info}
-	echo "CangKu=${CangKu}" >> ${In_Firmware_Info}
-	echo "Luci_Edition=${OpenWrt_name}" >> ${In_Firmware_Info}
-	echo "CURRENT_Version=${Openwrt_Version}" >> ${In_Firmware_Info}
-	echo "DEFAULT_Device=${TARGET_PROFILE}" >> ${In_Firmware_Info}
-	echo "Firmware_Type=${Firmware_sfx}" >> ${In_Firmware_Info}
-	echo "Firmware_COMP1=${COMP1}" >> ${In_Firmware_Info}
-	echo "Firmware_COMP2=${COMP2}" >> ${In_Firmware_Info}
-	echo "Github_Release=${Github_Release}" >> ${In_Firmware_Info}
-	echo "Github_Tags=${Github_Tags}" >> ${In_Firmware_Info}
-	echo "XiaZai=${XiaZai}" >> ${In_Firmware_Info}
+	cat >${In_Firmware_Info} <<-EOF
+	Github=${Github}
+	Author=${Author}
+	CangKu=${CangKu}
+	Luci_Edition=${OpenWrt_name}
+	CURRENT_Version=${Openwrt_Version}
+	DEFAULT_Device=${TARGET_PROFILE}
+	Firmware_Type=${Firmware_sfx}
+	LUCI_Name=${LUCI_Name}
+	REPO_Name=${REPO_Name}
+	Github_Release=${Github_Release}
+	Github_Tags=${Github_Tags}
+	Egrep_Firmware=${Egrep_Firmware}
+	Download_Path=/tmp/Downloads
+	EOF
 }
 
 Diy_Part3() {
 	GET_TARGET_INFO
-	Firmware_Path="bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
-	Mkdir bin/Firmware
+	AutoBuild_Firmware="${LUCI_Name}-${Openwrt_Version}"
+	Firmware_Path="${Home}/upgrade"
+	Mkdir ${Home}/bin/Firmware
+	if [[ `ls ${Home}/upgrade | grep -c "sysupgrade.bin"` -eq '1' ]]; then
+		mv ${Home}/upgrade/*sysupgrade.bin ${Home}/bin/Firmware/${Up_Firmware}
+		mv ${Home}/bin/Firmware/${Up_Firmware} ${Home}/upgrade/${Up_Firmware}
+	fi
+	cd ${Firmware_Path}
 	case "${TARGET_PROFILE}" in
 	x86-64)
-		cd ${Firmware_Path}
-		Legacy_Firmware="${Up_Firmware}"
-		EFI_Firmware="${EFI_Up_Firmware}"
-		AutoBuild_Firmware="${COMP1}-${Openwrt_Version}"
-		if [ -f "${Legacy_Firmware}" ];then
-			mkdir -p GDfirmware
-			_MD5=$(md5sum ${Legacy_Firmware} | cut -d ' ' -f1)
-			_SHA256=$(sha256sum ${Legacy_Firmware} | cut -d ' ' -f1)
-			touch ./GDfirmware/${AutoBuild_Firmware}.detail
-			echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > ./GDfirmware/${AutoBuild_Firmware}-Legacy.detail
-			cp ${Legacy_Firmware} ./GDfirmware/${AutoBuild_Firmware}-Legacy.${Firmware_sfx}
-			find ./GDfirmware -name "*" -type f -size 0c | xargs -n 1 rm -f
-			tar -zcf ${AutoBuild_Firmware}-Legacy.tar.gz GDfirmware --remove-files
-			mv ${AutoBuild_Firmware}-Legacy.tar.gz ${Home}/bin/Firmware
-		fi
-		if [ -f "${EFI_Firmware}" ];then
-			mkdir -p GDfirmware
-			_MD5=$(md5sum ${EFI_Firmware} | cut -d ' ' -f1)
-			_SHA256=$(sha256sum ${EFI_Firmware} | cut -d ' ' -f1)
-			touch ./GDfirmware/${AutoBuild_Firmware}-UEFI.detail
-			echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > ./GDfirmware/${AutoBuild_Firmware}-UEFI.detail
-			cp ${EFI_Firmware} ./GDfirmware/${AutoBuild_Firmware}-UEFI.${Firmware_sfx}
-			find ./GDfirmware -name "*" -type f -size 0c | xargs -n 1 rm -f
-			tar -zcf ${AutoBuild_Firmware}-UEFI.tar.gz GDfirmware --remove-files
-			mv ${AutoBuild_Firmware}-UEFI.tar.gz ${Home}/bin/Firmware
-		fi
+		[[ -f ${Legacy_Firmware} ]] && {
+			cp ${Legacy_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-Legacy.${Firmware_sfx}
+		}
+		[[ -f ${UEFI_Firmware} ]] && {
+			cp ${UEFI_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}-UEFI.${Firmware_sfx}
+		}
 	;;
-	"friendlyarm_nanopi-r2s") 
-		echo "暂不支持定时更新固件"
-	;;
-	"friendlyarm_nanopi-r4s") 
-		echo "暂不支持定时更新固件"
-	;;
-	"armvirt") 
-		echo "暂不支持定时更新固件"
+	friendlyarm_nanopi-r2s | friendlyarm_nanopi-r4s | armvirt) 
+		echo "R2S/R4S/N1/晶晨系列,暂不支持定时更新固件!" > Update_Logs.json
+		cp Update_Logs.json ${Home}/bin/Firmware/Update_Logs.json
 	;;
 	*)
-		cd ${Firmware_Path}
-		mkdir -p GDfirmware
-		Default_Firmware="${Up_Firmware}"
-		AutoBuild_Firmware="${COMP1}-${Openwrt_Version}"
-		_MD5=$(md5sum ${Default_Firmware} | cut -d ' ' -f1)
-		_SHA256=$(sha256sum ${Default_Firmware} | cut -d ' ' -f1)
-		touch ./GDfirmware/${AutoBuild_Firmware}.detail
-		echo -e "\nMD5:${_MD5}\nSHA256:${_SHA256}" > ./GDfirmware/${AutoBuild_Firmware}.detail
-		cp ${Default_Firmware} ./GDfirmware/${AutoBuild_Firmware}.${Firmware_sfx}
-		find ./GDfirmware -name "*" -type f -size 0c | xargs -n 1 rm -f
-		tar -zcf ${AutoBuild_Firmware}.tar.gz GDfirmware --remove-files
-		mv ${AutoBuild_Firmware}.tar.gz ${Home}/bin/Firmware
+		[[ -f ${Up_Firmware} ]] && {
+			cp ${Up_Firmware} ${Home}/bin/Firmware/${AutoBuild_Firmware}.${Firmware_sfx}
+		} || {
+			echo "Firmware is not detected !"
+		}
 	;;
 	esac
 	cd ${Home}
