@@ -208,20 +208,13 @@ jobs:
         cd openwrt
         cp -Rf bin/targets/*/* "${Home}"/upgrade
         cd bin && mkdir config
-        find bin/targets/ -name "*config.buildinfo*" | xargs -i mv -f {} bin/config
-        if [ -n "$(ls -A "bin/targets/x86" 2>/dev/null)" ]; then
-          find bin/targets/x86/* -name "*kernel*" | xargs -i mv -f {} bin/targets
-          find bin/targets/x86/* -name "*rootfs*" | xargs -i mv -f {} bin/targets
-        fi
+        cp -Rf targets/*/*/config.buildinfo "${Home}"/bin/config/config.txt
         cd targets/*/*
-        rm -rf packages && mkdir packages
-        find -name "*buildinfo*" | xargs -i rm -rf {} packages
-        find -name "*rootfs.tar.gz*" | xargs -i mv -f {} packages 
-        find -name "*rootfs.img*" | xargs -i mv -f {} packages 
-        find -name "*sha256sums*" | xargs -i rm -rf {} packages
-        find -name "*manifest*" | xargs -i rm -rf {} packages
-        find -name "*vmlinuz*" | xargs -i rm -rf {} packages
-        find -name "*Image*" | xargs -i rm -rf {} packages
+        find -name "*buildinfo*" | xargs -i rm -rf {}
+        find -name "*sha256sums*" | xargs -i rm -rf {}
+        find -name "*manifest*" | xargs -i rm -rf {}
+        find -name "*vmlinuz*" | xargs -i rm -rf {}
+        find -name "*Image*" | xargs -i rm -rf {}
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "BOT=TRUE" >> $GITHUB_ENV
