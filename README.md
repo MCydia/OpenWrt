@@ -6,8 +6,8 @@
 - Lienol_source=19.07=4.14
 - Mortal_source=21.02=5.4
 - openwrt_amlogic=N1和晶晨系列CPU专用
-- openwrt_amlogic文件夹，编译S905x3, S905x2, S922x, S905x, S905d, s912自动打包您所需的固件
 
+- openwrt_amlogic文件夹，编译S905x3, S905x2, S922x, S905x, S905d, s912自动打包您所需的固件
 ## 固件来源：
 
 - 感谢[coolsnowwolf](https://github.com/coolsnowwolf/lede.git)大神提供的源码
@@ -29,7 +29,7 @@
 
 
 ## 固件说明：
-  - lean源码版本，内核为5.4（ipv4）版
+  - lean源码版本，内核为5.10（ipv4）版
 
  -  自动每7天更新一次，手动不定时更新
 
