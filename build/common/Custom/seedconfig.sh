@@ -151,7 +151,7 @@ svn co https://github.com/xiaorouji/openwrt-passwall/trunk/luci-app-passwall pac
 }
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-[[ $firmware == "openwrt_amlogic" ]] && {
+[[ $firmware == "Openwrt_amlogic" ]] && {
 cat >.config <<-EOF
 CONFIG_TARGET_armvirt=y
 CONFIG_TARGET_armvirt_64=y
