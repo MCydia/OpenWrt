@@ -70,8 +70,12 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		firmware="Lienol_source"
 		Core=".Lienol_core"
 		source openwrt/.Lienol_core
-	elif [[ -n "$(ls -A "openwrt/.amlogic_core" 2>/dev/null)" ]]; then
-		firmware="openwrt_amlogic"
+	elif [[ -n "$(ls -A "openwrt/.Mortal_core" 2>/dev/null)" ]]; then
+		firmware="Mortal_source"
+		Core=".Mortal_core"
+		source openwrt/.Mortal_core
+	elif [[ -n "$(ls -A "Openwrt/.amlogic_core" 2>/dev/null)" ]]; then
+		firmware="Openwrt_amlogic"
 		Core=".amlogic_core"
 		source openwrt/.amlogic_core
 	else
@@ -92,7 +96,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 	else
           	TARGET_PROFILE="armvirt"
 	fi
-	[[ ${firmware} == "openwrt_amlogic" ]] && {
+	[[ ${firmware} == "Openwrt_amlogic" ]] && {
 		clear
 		echo
 		echo
@@ -149,36 +153,43 @@ fi
 	echo
 	echo
 	echo
-	TIME l " 1. Lede_5.10内核版本"
+	TIME l " 1. Lede_5.10内核,LUCI 18.06版本"
 	echo
-	TIME l " 2. Lienol_4.14内核版本"
+	TIME l " 2. Lienol_4.14内核,LUCI 19.07版本"
 	echo
-	TIME l " 3. N1和晶晨系列CPU专用"
+	TIME l " 3. Immortalwrt_5.4内核,LUCI 21.02版本"
 	echo
-	TIME l " 4. 退出编译程序"
+	TIME l " 4. N1和晶晨系列CPU盒子专用"
+	echo
+	TIME l " 5. 退出编译程序"
 	echo
 	echo
 	echo
 	while :; do
-	TIME g "请选择编译源码,输入[ 1、2、3、4 ]然后回车确认您的选择！"
+	TIME g "请选择编译源码,输入[ 1、2、3、4、5 ]然后回车确认您的选择！"
 	read -p " 输入您的选择： " CHOOSE
 	case $CHOOSE in
 		1)
 			firmware="Lede_source"
-			TIME y "您选择了：$firmware源码"
+			TIME y "您选择了：Lede_5.10内核,LUCI 18.06版本"
 		break
 		;;
 		2)
 			firmware="Lienol_source"
-			TIME y "您选择了：$firmware源码"
+			TIME y "您选择了：Lienol_4.14内核,LUCI 19.07版本"
 		break
 		;;
 		3)
-			firmware="openwrt_amlogic"
-			TIME y "您选择了：N1和晶晨系列CPU专用"
+			firmware="Mortal_source"
+			TIME y "您选择了：Immortalwrt_5.4内核,LUCI 21.02版本"
 		break
 		;;
 		4)
+			firmware="Openwrt_amlogic"
+			TIME y "您选择了：N1和晶晨系列CPU盒子专用"
+		break
+		;;
+		5)
 			rm -rf compile.sh
 			TIME r "您选择了退出编译程序"
 			exit 0
@@ -265,9 +276,9 @@ if [[ $firmware == "Lede_source" ]]; then
 	echo -e "\nGit=$Github" >> openwrt/.Lede_core
 elif [[ $firmware == "Lienol_source" ]]; then
 	[[ -d openwrt ]] && {
-		rm -rf openwrtl && git clone -b 19.07 https://github.com/Lienol/openwrt openwrtl
+		rm -rf openwrtl && git clone -b 19.07 --single-branch https://github.com/Lienol/openwrt openwrtl
 	} || {
-		git clone -b 19.07 https://github.com/Lienol/openwrt openwrt
+		git clone -b 19.07 --single-branch https://github.com/Lienol/openwrt openwrt
 	}
 	[[ $? -ne 0 ]] && {
 		TIME r "源码下载失败，请检测网络或更换节点再尝试!"
@@ -281,7 +292,25 @@ elif [[ $firmware == "Lienol_source" ]]; then
 	OpenWrt_name="19.07"
 	echo -e "\nipdz=$ip" > openwrt/.Lienol_core
 	echo -e "\nGit=$Github" >> openwrt/.Lienol_core
-elif [[ $firmware == "openwrt_amlogic" ]]; then
+elif [[ $firmware == "Mortal_source" ]]; then
+	[[ -d openwrt ]] && {
+		rm -rf openwrtl && git clone -b openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt openwrtl
+	} || {
+		git clone -b openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt openwrt
+	}
+	[[ $? -ne 0 ]] && {
+		TIME r "源码下载失败，请检测网络或更换节点再尝试!"
+		rm -rf openwrtl
+		echo
+	 	exit 1
+	} || {
+	[[ -d openwrtl ]] && rm -rf openwrt && mv openwrtl openwrt
+	}
+	ZZZ="package/emortal/default-settings/files/zzz-default-settings"
+	OpenWrt_name="21.02"
+	echo -e "\nipdz=$ip" > openwrt/.Mortal_core
+	echo -e "\nGit=$Github" >> openwrt/.Mortal_core
+elif [[ $firmware == "Openwrt_amlogic" ]]; then
 	[[ -d openwrt ]] && {
 		rm -rf openwrtl && git clone https://github.com/coolsnowwolf/lede openwrtl
 	} || {
@@ -329,7 +358,7 @@ svn co https://github.com/MCydia/OpenWrt/trunk/build $Home/build > /dev/null 2>&
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/281677160/common $Home/build/common
+git clone https://github.com/MCydia/OpenWrt $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -501,7 +530,7 @@ if [ "$?" == "0" ]; then
 	echo
 	echo
 	echo
-	[[ ${firmware} == "openwrt_amlogic" ]] && {
+	[[ ${firmware} == "Openwrt_amlogic" ]] && {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ N1和晶晨系列盒子专用固件 ]顺利编译完成~~~"
 	} || {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ ${TARGET_PROFILE} ]顺利编译完成~~~"
@@ -528,7 +557,7 @@ if [ "$?" == "0" ]; then
 	fi
 	rm -rf $Home/Openwrt.info
 	rm -rf ${Home}/upgrade
-	if [[ $firmware == "openwrt_amlogic" ]]; then
+	if [[ $firmware == "Openwrt_amlogic" ]]; then
 		cp -Rf ${Home}/bin/targets/*/*/*.tar.gz ${Home}/openwrt-armvirt/ && sync
 		TIME l "请输入一键打包命令进行打包固件，打包成功后，固件存放在[openwrt/out]文件夹中"
 	fi
