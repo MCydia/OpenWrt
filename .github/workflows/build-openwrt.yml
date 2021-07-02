@@ -84,14 +84,14 @@ jobs:
           source build/common/common.sh && Diy_tongzhi
         fi
         
-    - name: TG通知
+    - name: Telegram通 知
       run: |
         if [[ "${SERVERCHAN_SCKEY}" == "true" ]]; then
           curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人：
           您正在使用[${{matrix.target}}]固件正在努力耕耘中(${{env.CangKu}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
         fi
         
-    - name: 部署编译环境
+    - name: 部署环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -140,11 +140,11 @@ jobs:
         fi
         
     - name: SSH远程连接（配置固件）
-      uses: danshui-git/debugger-action@master
+      uses: MCydia/debugger-action@master
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
     - name: 生成配置文件
       run: |
@@ -286,7 +286,7 @@ jobs:
         tag_name: AutoUpdate
         files: openwrt/bin/Firmware/*
     
-    - name: 电报机器人信息通知
+    - name: Telegram通 知
       run: |
         if [[ "${BOT}" == "TRUE" ]]; then
           if [[ "${SERVERCHAN_SCKEY}" == "true" ]]; then
