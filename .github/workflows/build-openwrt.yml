@@ -42,7 +42,7 @@ jobs:
     - name: 准备结束
       uses: actions/checkout@v2
 
-    - name: 读取脚本设置
+    - name: 读取脚本
       run: |
         source "${GITHUB_WORKSPACE}/build/${{matrix.target}}/settings.ini"
         echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
@@ -61,31 +61,10 @@ jobs:
         echo "CangKu=${Apidz##*/}" >> $GITHUB_ENV
         echo "Modelfile=${{matrix.target}}" >> $GITHUB_ENV
         
-    - name: 整理脚本
-      run: |
-        chmod -R +x "${GITHUB_WORKSPACE}/build/common"
-        if [[ "${REPO_BRANCH}" == "master" ]]; then
-          echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=Lede" >> $GITHUB_ENV
-          echo "OpenWrt_name=18.06" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "19.07" ]]; then
-          echo "ZZZ=package/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=Lienol" >> $GITHUB_ENV
-          echo "OpenWrt_name=19.07" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
-          echo "ZZZ=package/emortal/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=Project" >> $GITHUB_ENV
-          echo "OpenWrt_name=18.06" >> $GITHUB_ENV
-        elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
-          echo "ZZZ=package/emortal/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
-          echo "CODE=Spirit" >> $GITHUB_ENV
-          echo "OpenWrt_name=21.02" >> $GITHUB_ENV
-        fi
-
+        
     - name: 公 告
       run: |
         chmod -R +x "${GITHUB_WORKSPACE}/build/common"
-        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         if [[ "${REPO_BRANCH}" == "master" ]]; then
           echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
           echo "CODE=Lede" >> $GITHUB_ENV
@@ -104,8 +83,8 @@ jobs:
         else
           source build/common/common.sh && Diy_tongzhi
         fi
-
-    - name: 电报机器人信息通知
+        
+    - name: TG通知
       run: |
         if [[ "${SERVERCHAN_SCKEY}" == "true" ]]; then
           curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人：
@@ -130,13 +109,14 @@ jobs:
       run: |
         git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" openwrt
         cd openwrt
-        ./scripts/feeds clean && ./scripts/feeds update -a > /dev/null 2>&1
+        ./scripts/feeds update -a > /dev/null 2>&1
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         echo "Home=${GITHUB_WORKSPACE}/openwrt" >> $GITHUB_ENV
         echo "PATH1=${GITHUB_WORKSPACE}/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
  
-    - name: 加载源,补丁和自定义设置
+    - name: 自定义设置
       run: |
+        echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
         mv -f "${Home}"/build/common/*.sh "${PATH1}"
         source "${PATH1}/common.sh" && Diy_settings
@@ -151,18 +131,20 @@ jobs:
         fi
         source "${PATH1}/common.sh" && Diy_all
         /bin/bash "${PATH1}/$DIY_PART_SH"
-        ./scripts/feeds update -a && ./scripts/feeds install -a
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a > /dev/null 2>&1
+        ./scripts/feeds install -a
         mv "$PATH1/$CONFIG_FILE" .config
         if [[ "${REGULAR_UPDATE}" == "true" ]]; then
           source "${PATH1}/upgrade.sh" && Diy_Part1
         fi
         
     - name: SSH远程连接（配置固件）
-      uses: MCydia/debugger-action@master
+      uses: danshui-git/debugger-action@master
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: 生成配置文件
       run: |
@@ -220,19 +202,26 @@ jobs:
     - name: 整理固件文件夹
       id: organizer
       run: |
-        if [ "${Modelfile}" == "Openwrt_amlogic" ]; then
+        if [ "${Modelfile}" == "openwrt_amlogic" ]; then
           source "${PATH1}/common.sh" && Diy_amlogic
         fi
         cd openwrt
         cp -Rf bin/targets/*/* "${Home}"/upgrade
         cd bin && mkdir config
-        cp -Rf targets/*/*/config.buildinfo "${Home}"/bin/config/config.txt
+        find bin/targets/ -name "*config.buildinfo*" | xargs -i mv -f {} bin/config
+        if [ -n "$(ls -A "bin/targets/x86" 2>/dev/null)" ]; then
+          find bin/targets/x86/* -name "*kernel*" | xargs -i mv -f {} bin/targets
+          find bin/targets/x86/* -name "*rootfs*" | xargs -i mv -f {} bin/targets
+        fi
         cd targets/*/*
-        find -name "*buildinfo*" | xargs -i rm -rf {}
-        find -name "*sha256sums*" | xargs -i rm -rf {}
-        find -name "*manifest*" | xargs -i rm -rf {}
-        find -name "*vmlinuz*" | xargs -i rm -rf {}
-        find -name "*Image*" | xargs -i rm -rf {}
+        rm -rf packages && mkdir packages
+        find -name "*buildinfo*" | xargs -i rm -rf {} packages
+        find -name "*rootfs.tar.gz*" | xargs -i mv -f {} packages 
+        find -name "*rootfs.img*" | xargs -i mv -f {} packages 
+        find -name "*sha256sums*" | xargs -i rm -rf {} packages
+        find -name "*manifest*" | xargs -i rm -rf {} packages
+        find -name "*vmlinuz*" | xargs -i rm -rf {} packages
+        find -name "*Image*" | xargs -i rm -rf {} packages
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "BOT=TRUE" >> $GITHUB_ENV
@@ -291,7 +280,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: steps.organizer.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }} 
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
       with:
         name: update_Firmware
         tag_name: AutoUpdate
