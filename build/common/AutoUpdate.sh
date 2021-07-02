@@ -36,7 +36,7 @@ Github 地址:		${Github}
 固件作者:		${Author}
 作者仓库:		${CangKu}
 固件名称:		${LUCI_Name}-${CURRENT_Version}${Firmware_SFX}
-固件格式:		${Firmware_GESHI}
+固件格式:		${Firmware_SFX}
 EOF
 [[ "${DEFAULT_Device}" == x86-64 ]] && {
 	echo "GZIP压缩:		${Compressed_Firmware}"
@@ -52,15 +52,26 @@ exit 0
 	TIME r "未检测到更新插件所需文件,无法运行更新程序!"
 	exit 1
 }
-Author="${Apidz%/*}"
-CangKu="${Apidz##*/}"
-Apidz="${Github##*com/}"
-Github_Tags=https://api.github.com/repos/${Apidz}/releases/tags/AutoUpdate
+Install_Pkg() {
+	export PKG_NAME=$1
+	if [[ ! "$(cat ${Download_Path}/Installed_PKG_List)" =~ "${PKG_NAME}" ]];then
+    		TIME g "未安装[ ${PKG_NAME} ],执行安装[ ${PKG_NAME} ],请耐心等待..."
+		opkg update > /dev/null 2>&1
+		opkg install ${PKG_NAME} > /dev/null 2>&1
+		if [[ $? -ne 0 ]];then
+			TIME r "[ ${PKG_NAME} ]安装失败,请尝试手动安装!"
+			exit 1
+		else
+			TIME y "[ ${PKG_NAME} ]安装成功!"
+			TIME g "开始解压固件,请耐心等待..."
+		fi
+	fi
+}
 GengGai_Install() {
 [ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
 wget -q --timeout 5 ${Github_Tags} -O ${Download_Path}/Github_Tags
 [[ ! $? == 0 ]] && {
-	TIME r "获取固件版本信息失败,请检测网络是否翻墙或更换节点再尝试!"
+	TIME r "获取固件版本信息失败,请检测网络是否翻墙或更换节点再尝试,或者您的Github地址为无效地址!"
 	exit 1
 }
 source /etc/openwrt_info
@@ -138,8 +149,6 @@ case $CHOOSE in
 	1)
 		cat >/etc/openwrt_info <<-EOF
 		Github=${Github}
-		Author=${Author}
-		CangKu=${CangKu}
 		Luci_Edition=${Luci_Edition}
 		CURRENT_Version=${CURRENT_Version}
 		DEFAULT_Device=${DEFAULT_Device}
@@ -147,7 +156,6 @@ case $CHOOSE in
 		LUCI_Name=${LUCI_Name}
 		REPO_Name=${REPO_Name}
 		Github_Release=${Github_Release}
-		Github_Tags=${Github_Tags}
 		Egrep_Firmware=${Egrep_Firmware}
 		Download_Path=${Download_Path}
 		EOF
@@ -167,8 +175,12 @@ done
 }
 export Input_Option=$1
 export Input_Other=$2
+export Apidz="${Github##*com/}"
+export Author="${Apidz%/*}"
+export CangKu="${Apidz##*/}"
+export Github_Tags=https://api.github.com/repos/${Apidz}/releases/tags/AutoUpdate
 export Overlay_Available="$(df -h | grep ":/overlay" | awk '{print $4}' | awk 'NR==1')"
-rm -rf "${Download_Path}" && TMP_Available="$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')"
+rm -rf "${Download_Path}" && export TMP_Available="$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')"
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path}
 opkg list | awk '{print $1}' > ${Download_Path}/Installed_PKG_List
 TIME() {
@@ -217,13 +229,12 @@ x86-64)
 	esac
 	export CURRENT_Des="$(jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_')"
 	export CURRENT_Device="${CURRENT_Des} (x86-64)"
-  	export Firmware_SFX="${BOOT_Type}.${Firmware_Type}"
-  	export Firmware_GESHI=".${Firmware_Type}"
+  	export Firmware_SFX=".${Firmware_Type}"
 ;;
 *)
 	export CURRENT_Device="$(jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_')"
 	export Firmware_SFX=".${Firmware_Type}"
-  	export Firmware_GESHI=".${Firmware_Type}"
+	export BOOT_Type="-Sysupg"
 	[[ -z ${Firmware_SFX} ]] && export Firmware_SFX=".bin"
 esac
 CURRENT_Ver="${CURRENT_Version}${BOOT_Type}"
@@ -231,16 +242,20 @@ cd /etc
 clear && echo "Openwrt-AutoUpdate Script ${Version}"
 echo
 if [[ -z "${Input_Option}" ]];then
-	export Upgrade_Options="-v"
+	export Upgrade_Options="-q"
 	TIME g "执行: 保留配置更新固件[静默模式]"
 else
 	case ${Input_Option} in
-	-t | -n | -f | -u | -N | -s)
+	-t | -n | -f | -u | -N | -s | -w)
 		case ${Input_Option} in
 		-t)
 			Input_Other="-t"
 			TIME h "执行: 测试模式"
 			TIME g "测试模式(只运行,不安装,查看更新固件操作流程是否正确)"
+		;;
+
+		-w)
+			Input_Other="-w"
 		;;
 
 		-n | -N)
@@ -255,7 +270,7 @@ else
 
 		-u)
 			export AutoUpdate_Mode=1
-			export Upgrade_Options="-v"
+			export Upgrade_Options="-q"
 		;;
 		esac
 	;;
@@ -263,7 +278,7 @@ else
 			source /etc/openwrt_info
 			TIME h "执行：更换[Github地址]操作"
 			TIME y "地址格式：https://github.com/帐号/仓库"
-			TIME z  "正确地址示例：https://github.com/MCydia/OpenWrt"
+			TIME z  "正确地址示例：https://github.com/281677160/AutoBuild-OpenWrt"
 			TIME h  "现在所用地址为：${Github}"
 			echo
 			read -p "请输入新的Github地址：" Input_Other
@@ -369,24 +384,26 @@ if [[ "$(cat ${Download_Path}/Installed_PKG_List)" =~ curl ]];then
 		TIME y "网络检测成功,您的梯子翻墙成功！"
 	fi
 fi
-[[ -z ${CURRENT_Version} ]] && TIME r "本地固件版本获取失败,请检查/etc/openwrt_info文件的值!" && EXIT 1
-[[ -z ${Github} ]] && TIME r "Github地址获取失败,请检查/etc/openwrt_info文件的值!" && EXIT 1
-[[ -z ${Github_Release} ]] && TIME r "固件下载地址获取失败,请检查/etc/openwrt_info文件的值!" && EXIT 1
-[[ -z ${Github_Tags} ]] && TIME r "解析 API 地址获取失败,请检查/etc/openwrt_info文件的值!" && EXIT 1
-[[ -z ${Firmware_Type} ]] && TIME r "固件后缀获取失败,请检查/etc/openwrt_info文件的值!" && EXIT 1
+[[ -z ${CURRENT_Version} ]] && TIME r "本地固件版本获取失败,请检查/etc/openwrt_info文件的值!" && exit 1
+[[ -z ${Github} ]] && TIME r "Github地址获取失败,请检查/etc/openwrt_info文件的值!" && exit 1
 TIME g "正在获取固件版本信息..."
 [ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
-wget -q --timeout 5 ${Github_Tags} -O ${Download_Path}/Github_Tags
+wget-ssl -q --no-check-certificate -T 5 --no-dns-cache -x ${Github_Tags} -O ${Download_Path}/Github_Tags
 [[ ! $? == 0 ]] && {
-	TIME r "获取固件版本信息失败,请检测网络是否翻墙或更换节点再尝试!"
+	TIME r "获取固件版本信息失败,请检测网络是否翻墙或更换节点再尝试,或者您的Github地址为无效地址!"
 	exit 1
 }
 TIME g "正在比对云端固件和本地安装固件版本..."
-export CLOUD_Firmware="$(egrep -o "${Egrep_Firmware}-[0-9]+${Firmware_SFX}" ${Download_Path}/Github_Tags | awk 'END {print}')"
+export CLOUD_Firmware="$(egrep -o "${Egrep_Firmware}-[0-9]+${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${Download_Path}/Github_Tags | awk 'END {print}')"
 export CLOUD_Version="$(echo ${CLOUD_Firmware} | egrep -o "${REPO_Name}-${DEFAULT_Device}-[0-9]+${BOOT_Type}")"
 [[ -z "${CLOUD_Version}" ]] && {
 	TIME r "比对固件版本失败!"
 	exit 1
+}
+[[ "${Input_Other}" == "-w" ]] && {
+	echo -e "\nCLOUD_Version=${CLOUD_Version}" > /tmp/Version_Tags
+	echo -e "\nCURRENT_Version=${CURRENT_Ver}" >> /tmp/Version_Tags
+	exit 0
 }
 export Firmware_Name="$(echo ${CLOUD_Firmware} | egrep -o "${Egrep_Firmware}-[0-9]+")"
 export Firmware="${CLOUD_Firmware}"
@@ -431,7 +448,7 @@ TIME g "列出详细信息..."
 sleep 1
 echo -e "\n固件作者：${Author}"
 echo "设备名称：${CURRENT_Device}"
-echo "固件格式：${Firmware_GESHI}"
+echo "固件格式：${Firmware_SFX}"
 [[ "${DEFAULT_Device}" == x86-64 ]] && {
 	echo "引导模式：${EFI_Mode}"
 }
@@ -452,6 +469,23 @@ if [[ $? -ne 0 ]];then
 	fi
 else
 	TIME y "下载云端固件成功!"
+fi
+MD5_DB=$(md5sum ${Firmware} | cut -d ' ' -f1) && CURRENT_MD5="${MD5_DB:0:6}"
+CLOUD_MD5=$(echo ${Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+[[ ${CURRENT_MD5} != ${CLOUD_MD5} ]] && {
+	TIME r "本地固件 MD5 与云端对比不通过,固件可能下载时损坏,请检查网络后重试!"
+	exit 1
+}
+if [[ "${Compressed_Firmware}" == "YES" ]];then
+	TIME g "检测到固件为 [.img.gz] 压缩格式,开始解压固件..."
+	Install_Pkg gzip
+	gzip -dk ${Firmware} > /dev/null 2>&1
+	[[ $? == 0 ]] && {
+		TIME y "固件解压成功!"
+	} || {
+		TIME r "解压失败,请检查系统可用空间!"
+		exit 1
+	}
 fi
 TIME g "准备就绪,开始刷写固件..."
 [[ "${Input_Other}" == "-t" ]] && {
