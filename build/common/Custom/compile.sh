@@ -212,7 +212,7 @@ case $MENU in
 esac
 echo
 echo
-[[ ! $firmware == "openwrt_amlogic" ]] && {
+[[ ! $firmware == "Openwrt_amlogic" ]] && {
 	TIME g "是否把定时更新插件编译进固件?"
 	read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " RELE
 	case $RELE in
