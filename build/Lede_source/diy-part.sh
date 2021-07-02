@@ -19,8 +19,8 @@ sed -i '/ip6assign/d' package/base-files/files/bin/config_generate
 # 关闭DHCP服务
 echo "close_dhcp" > package/base-files/files/etc/closedhcp                                                 
 
-# 选择rosy为默认主题
-sed -i 's/luci-theme-bootstrap/luci-theme-opentomcat/g' feeds/luci/collections/luci/Makefile                    
+# 选择opentomcat为默认主题
+sed -i 's/luci-theme-rosy/luci-theme-opentomcat/g' feeds/luci/collections/luci/Makefile                    
 
 # 替换密码（要替换密码就不能设置密码为空）
 #sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0/$1$PhflQnJ1$yamWfH5Mphs4hXV7UXWQ21:18725/g' $ZZZ          
@@ -54,4 +54,4 @@ sed -i 's/"管理权"/"改密码"/g' feeds/luci/modules/luci-base/po/zh-cn/base.
 sed -i 's/"带宽监控"/"监视"/g' feeds/luci/applications/luci-app-nlbwmon/po/zh-cn/nlbwmon.po
 sed -i 's/"动态 DNS"/"Dynamic DNS"/g' feeds/luci/applications/luci-app-ddns/po/zh-cn/ddns.po
 sed -i 's/"解锁网易云灰色歌曲"/"NetEase music"/g' package/lean/luci-app-unblockmusic/po/zh-cn/unblockmusic.po
-sed -i 's/"Frp 内网穿透"/"Frp intranet"/g' package/lean/luci-app-frpc/po/zh-cn/frp.po
+sed -i 's/"Frp 内网穿透"/"Frp Intranet"/g' package/lean/luci-app-frpc/po/zh-cn/frp.po
