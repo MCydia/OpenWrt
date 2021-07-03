@@ -53,19 +53,19 @@ exit 0
 	exit 1
 }
 Install_Pkg() {
-	export PKG_NAME=$1
-	if [[ ! "$(cat ${Download_Path}/Installed_PKG_List)" =~ "${PKG_NAME}" ]];then
-    		TIME g "未安装[ ${PKG_NAME} ],执行安装[ ${PKG_NAME} ],请耐心等待..."
-		opkg update > /dev/null 2>&1
-		opkg install ${PKG_NAME} > /dev/null 2>&1
-		if [[ $? -ne 0 ]];then
-			TIME r "[ ${PKG_NAME} ]安装失败,请尝试手动安装!"
-			exit 1
-		else
-			TIME y "[ ${PKG_NAME} ]安装成功!"
-			TIME g "开始解压固件,请耐心等待..."
-		fi
+export PKG_NAME=$1
+if [[ ! "$(cat ${Download_Path}/Installed_PKG_List)" =~ "${PKG_NAME}" ]];then
+    	TIME g "未安装[ ${PKG_NAME} ],执行安装[ ${PKG_NAME} ],请耐心等待..."
+	opkg update > /dev/null 2>&1
+	opkg install ${PKG_NAME} > /dev/null 2>&1
+	if [[ $? -ne 0 ]];then
+		TIME r "[ ${PKG_NAME} ]安装失败,请尝试手动安装!"
+		exit 1
+	else
+		TIME y "[ ${PKG_NAME} ]安装成功!"
+		TIME g "开始解压固件,请耐心等待..."
 	fi
+fi
 }
 GengGai_Install() {
 [ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
@@ -184,25 +184,32 @@ rm -rf "${Download_Path}" && export TMP_Available="$(df -m | grep "/tmp" | awk '
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path}
 opkg list | awk '{print $1}' > ${Download_Path}/Installed_PKG_List
 TIME() {
-	[ ! -f /tmp/AutoUpdate.log ] && touch ${Download_Path}/AutoUpdate.log
-	[[ -z "$1" ]] && {
-		echo -ne "\n\e[36m[$(date "+%H:%M:%S")]\e[0m "
+	White="\033[0;37m"
+	Yellow="\033[0;33m"
+	Red="\033[1;91m"
+	Blue="\033[0;94m"
+	BLUEB="\033[1;94m"
+	BCyan="\033[1;36m"
+	Grey="\033[1;34m"
+	Green="\033[0;92m"
+	Purple="\033[1;95m"
+	local Color
+	[[ -z $1 ]] && {
+		echo -ne "\n${Grey}[$(date "+%H:%M:%S")]${White} "
 	} || {
 	case $1 in
-		r) export Color="\e[31;1m";;
-		g) export Color="\e[32m";;
-		b) export Color="\e[34m";;
-		B) export Color="\e[34;1m";;
-		y) export Color="\e[33m";;
-		z) export Color="\e[35;1m";;
-		h) export Color="\e[36;1m";;
+		r) Color="${Red}";;
+		g) Color="${Green}";;
+		b) Color="${Blue}";;
+		B) Color="${BLUEB}";;
+		y) Color="${Yellow}";;
+		h) Color="${BCyan}";;
+		z) Color="${Purple}";;
 	esac
 		[[ $# -lt 2 ]] && {
-			echo -e "\n\e[36m[$(date "+%H:%M:%S")]\e[0m ${1}"
-			echo "[$(date "+%H:%M:%S")] ${1}" >> ${Download_Path}/AutoUpdate.log
+			echo -e "\n${Grey}[$(date "+%H:%M:%S")]${White} $1"
 		} || {
-			echo -e "\n\e[36m[$(date "+%H:%M:%S")]\e[0m ${Color}${2}\e[0m"
-			echo "[$(date "+%H:%M:%S")] ${2}" >> ${Download_Path}/AutoUpdate.log
+			echo -e "\n${Grey}[$(date "+%H:%M:%S")]${White} ${Color}$2${White}"
 		}
 	}
 }
@@ -388,7 +395,7 @@ fi
 [[ -z ${Github} ]] && TIME r "Github地址获取失败,请检查/etc/openwrt_info文件的值!" && exit 1
 TIME g "正在获取固件版本信息..."
 [ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
-wget-ssl -q --no-check-certificate -T 5 --no-dns-cache -x ${Github_Tags} -O ${Download_Path}/Github_Tags
+wget -q --no-cookie --no-check-certificate -T 15 -t 4 ${Github_Tags} -O ${Download_Path}/Github_Tags
 [[ ! $? == 0 ]] && {
 	TIME r "获取固件版本信息失败,请检测网络是否翻墙或更换节点再尝试,或者您的Github地址为无效地址!"
 	exit 1
@@ -405,7 +412,7 @@ export CLOUD_Version="$(echo ${CLOUD_Firmware} | egrep -o "${REPO_Name}-${DEFAUL
 	echo -e "\nCURRENT_Version=${CURRENT_Ver}" >> /tmp/Version_Tags
 	exit 0
 }
-export Firmware_Name="$(echo ${CLOUD_Firmware} | egrep -o "${Egrep_Firmware}-[0-9]+")"
+export Firmware_Name="$(echo ${CLOUD_Firmware} | egrep -o "${Egrep_Firmware}-[0-9]+${BOOT_Type}-[a-zA-Z0-9]+")"
 export Firmware="${CLOUD_Firmware}"
 let X=$(grep -n "${Firmware}" ${Download_Path}/Github_Tags | tail -1 | cut -d : -f 1)-4
 let CLOUD_Firmware_Size=$(sed -n "${X}p" ${Download_Path}/Github_Tags | egrep -o "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
@@ -473,13 +480,14 @@ fi
 MD5_DB=$(md5sum ${Firmware} | cut -d ' ' -f1) && CURRENT_MD5="${MD5_DB:0:6}"
 CLOUD_MD5=$(echo ${Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
 [[ ${CURRENT_MD5} != ${CLOUD_MD5} ]] && {
-	TIME r "本地固件 MD5 与云端对比不通过,固件可能下载时损坏,请检查网络后重试!"
+	TIME r "MD5对比失败,固件可能在下载时损坏,请检查网络后重试!"
 	exit 1
 }
 if [[ "${Compressed_Firmware}" == "YES" ]];then
 	TIME g "检测到固件为 [.img.gz] 压缩格式,开始解压固件..."
 	Install_Pkg gzip
 	gzip -dk ${Firmware} > /dev/null 2>&1
+	export Firmware="${Firmware_Name}.img"
 	[[ $? == 0 ]] && {
 		TIME y "固件解压成功!"
 	} || {
@@ -487,6 +495,7 @@ if [[ "${Compressed_Firmware}" == "YES" ]];then
 		exit 1
 	}
 fi
+chmod 777 ${Firmware}
 TIME g "准备就绪,开始刷写固件..."
 [[ "${Input_Other}" == "-t" ]] && {
 	TIME z "测试模式运行完毕!"
@@ -495,10 +504,9 @@ TIME g "准备就绪,开始刷写固件..."
 	echo
 	exit 0
 }
-
-chmod 777 ${Firmware}
 sysupgrade ${Upgrade_Options} ${Firmware}
 [[ $? -ne 0 ]] && {
 	TIME r "固件刷写失败,请尝试手动更新固件!"
 	exit 1
 } || exit 0
+
