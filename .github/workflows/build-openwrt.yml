@@ -202,7 +202,7 @@ jobs:
     - name: 整理固件文件夹
       id: organizer
       run: |
-        if [ "${Modelfile}" == "openwrt_amlogic" ]; then
+        if [ "${Modelfile}" == "Openwrt_amlogic" ]; then
           source "${PATH1}/common.sh" && Diy_amlogic
         fi
         cd openwrt
