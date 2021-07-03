@@ -7,7 +7,6 @@ TIME() {
      case $1 in
 	r) export Color="\e[31;1m";;
 	g) export Color="\e[32;1m";;
-	b) export Color="\e[34;1m";;
 	y) export Color="\e[33;1m";;
 	z) export Color="\e[35;1m";;
 	l) export Color="\e[36;1m";;
@@ -55,13 +54,15 @@ clear
 echo
 echo
 echo
-TIME l " 1. Lede_source"
+TIME l " 1. Lede_5.10内核,LUCI 18.06版本"
 echo
-TIME l " 2. Lienol_source"
+TIME l " 2. Lienol_4.14内核,LUCI 19.07版本"
 echo
-TIME l " 3. N1和晶晨系列盒子专用"
+TIME l " 3. Immortalwrt_5.4内核,LUCI 21.02版本"
 echo
-TIME l " 4. 退出提取.config配置程序"
+TIME l " 4. N1和晶晨系列CPU盒子专用"
+echo
+TIME l " 5. 退出编译程序"
 echo
 echo
 echo
@@ -69,34 +70,53 @@ while :; do
 TIME z "友情提示：本脚本提取的.config为我仓库云编译脚本专用,请正确选择对应源码!"
 echo
 echo
-TIME g "请选择编译源码，提取对应的配置文件,输入[ 1、2、3、4 ]然后回车确认您的选择！"
+TIME g "请选择编译源码，提取对应的配置文件,输入[ 1、2、3、4、5 ]然后回车确认您的选择！"
 echo
 read -p " 输入您的选择： " CHOOSE
 case $CHOOSE in
 	1)
 		REPO_URL="https://github.com/coolsnowwolf/lede"
 		REPO_BRANCH="master"
+		CONFIG="Lede_5.10内核,LUCI 18.06版本"
 		echo
-		TIME y "您选择了：Lede_source 源码"
+		TIME y "您选择了：${CONFIG}"
+		echo
+		TIME y "请耐心等待程序运行至窗口弹出进行机型和插件配置"
 	break
 	;;
 	2)
 		REPO_URL="https://github.com/Lienol/openwrt"
 		REPO_BRANCH="19.07"
+		CONFIG="Lienol_4.14内核,LUCI 19.07版本"
 		echo
-		TIME y "您选择了：Lienol_source 源码"
+		TIME y "您选择了：${CONFIG}"
+		echo
+		TIME y "请耐心等待程序运行至窗口弹出进行机型和插件配置"
 	break
 	;;
 	3)
-		firmware="openwrt_amlogic"
-		REPO_URL="https://github.com/coolsnowwolf/lede"
-		REPO_BRANCH="master"
+		REPO_URL="https://github.com/immortalwrt/immortalwrt"
+		REPO_BRANCH="openwrt-21.02"
+		CONFIG="Immortalwrt_5.4内核,LUCI 21.02版本"
 		echo
-		TIME y "您选择了：N1和晶晨系列盒子专用源码"
+		TIME y "您选择了：${CONFIG}"
+		echo
+		TIME y "请耐心等待程序运行至窗口弹出进行机型和插件配置"
 	break
 	;;
 	4)
-		rm -rf compile.sh
+		REPO_URL="https://github.com/coolsnowwolf/lede"
+		REPO_BRANCH="master"
+		firmware="Openwrt_amlogic"
+		CONFIG="N1和晶晨系列CPU盒子专用源码"
+		echo
+		TIME y "您选择了：${CONFIG}"
+		echo
+		TIME y "请耐心等待程序运行至窗口弹出进行机型和插件配置"
+	break
+	;;
+	5)
+		rm -rf seedconfig.sh
 		TIME r "您选择了退出编译程序"
 		exit 0
 	break
@@ -151,7 +171,7 @@ svn co https://github.com/xiaorouji/openwrt-passwall/trunk/luci-app-passwall pac
 }
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-[[ $firmware == "Openwrt_amlogic" ]] && {
+[[ $firmware == "openwrt_amlogic" ]] && {
 cat >.config <<-EOF
 CONFIG_TARGET_armvirt=y
 CONFIG_TARGET_armvirt_64=y
@@ -166,9 +186,9 @@ clear
 echo
 echo
 echo
-TIME y ".config配置文件提取工作完成！"
+TIME y "[ ${CONFIG} ]的.config配置文件提取工作完成！"
 echo
-TIME g "请用WinSCP工具连接你的ubuntu，在根目录有一份config.txt文件。"
+TIME g "请用WinSCP工具连接你的ubuntu，在ubuntu根目录有一份config.txt文件。"
 echo
 TIME g "把config.txt文件内容全选复制，然后覆盖对应机型.config里面原来的内容就可以了！"
 echo
