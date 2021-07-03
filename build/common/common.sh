@@ -21,6 +21,7 @@ TIME() {
       }
 }
 
+
 ################################################################################################################
 # LEDE源码通用diy.sh文件
 ################################################################################################################
@@ -28,19 +29,41 @@ Diy_lede() {
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' | xargs -i rm -rf {}
 find . -name 'luci-app-ipsec-vpnd' -o -name 'k3screenctrl' | xargs -i rm -rf {}
 
-sed -i 's/iptables -t nat/# iptables -t nat/g' "${ZZZ}"
+sed -i '/to-ports 53/d' $ZZZ
 
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
 git clone --depth=1 https://github.com/garypang13/smartdns-le package/smartdns-le
 
+sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
+
+
 if [[ "${Modelfile}" == "Lede_source" ]]; then
 	sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 	echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
+if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
+	# 修复NTFS格式优盘不自动挂载
+	packages=" \
+	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
+	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
+	kmod-usb2 kmod-usb3 kmod-usb-storage kmod-usb-storage-extras kmod-usb-storage-uas \
+	kmod-usb-net kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 \
+	blkid lsblk parted fdisk cfdisk losetup resize2fs tune2fs pv unzip \
+	lscpu htop iperf3 curl lm-sensors python3 luci-app-amlogic
+	"
+	sed -i '/FEATURES+=/ { s/cpiogz //; s/ext4 //; s/ramdisk //; s/squashfs //; }' \
+    		target/linux/armvirt/Makefile
+	for x in $packages; do
+    		sed -i "/DEFAULT_PACKAGES/ s/$/ $x/" target/linux/armvirt/Makefile
+	done
 
-sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
+	# luci-app-cpufreq修改一些代码适配amlogic
+	sed -i 's/LUCI_DEPENDS.*/LUCI_DEPENDS:=\@\(arm\|\|aarch64\)/g' package/lean/luci-app-cpufreq/Makefile
+	# 为 armvirt 添加 autocore 支持
+	sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
+fi
 }
 
 ################################################################################################################
@@ -62,7 +85,7 @@ sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2
 ################################################################################################################
 Diy_mortal() {
 
-find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon'  | xargs -i rm -rf {}
+find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon' -o -name 'luci-light'  | xargs -i rm -rf {}
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-openwrt' | xargs -i rm -rf {}
 
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
@@ -117,6 +140,7 @@ if [[ ${amlogic_kernel} == "5.12.12_5.4.127" ]]; then
 	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open
 	Make_d="$(grep "./make -d -b" open)" && Make="${Make_d##*-k }"
 	amlogic_kernel="${Make}"
+	[[ -n "${Make_d}" ]] && amlogic_kernel="5.12.14_5.4.129"
 else
 	amlogic_kernel="${amlogic_kernel}"
 fi
@@ -239,6 +263,7 @@ else
 fi
 }
 
+
 ################################################################################################################
 # 为编译做最后处理
 ################################################################################################################
@@ -320,15 +345,15 @@ GET_TARGET_INFO
 	TARGET_kernel="${amlogic_kernel}"
 	TARGET_model="${amlogic_model}"
 }
-PATCHVER=$(egrep -o "KERNEL_PATCHVER:=[0-9].+" target/linux/${TARGET_BOARD}/Makefile)
-KERNEL_PATCHVER="${PATCHVER##*:=}"
+if [[ "${TARGET_PROFILE}" =~ (friendlyarm_nanopi-r2s|friendlyarm_nanopi-r4s|armvirt) ]]; then
+	REGULAR_UPDATE="false"
+fi
 echo
 TIME b "编译源码: ${CODE}"
 TIME b "源码链接: ${REPO_URL}"
 TIME b "源码分支: ${REPO_BRANCH}"
 TIME b "源码作者: ${ZUOZHE}"
 TIME b "Luci版本: ${OpenWrt_name}"
-TIME b "默认内核: ${KERNEL_PATCHVER}"
 [[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME b "编译机型: ${TARGET_model}"
 	TIME b "打包内核: ${TARGET_kernel}"
@@ -400,21 +425,16 @@ if [[ ${REGULAR_UPDATE} == "true" ]]; then
 		TIME b "传统固件: ${Legacy_Firmware}"
 		TIME b "UEFI固件: ${UEFI_Firmware}"
 		TIME b "固件后缀: ${Firmware_sfx}"
-	elif [[ "${TARGET_PROFILE}" =~ (friendlyarm_nanopi-r2s|friendlyarm_nanopi-r4s|armvirt) ]]; then
-		TIME y "暂不支持定时更新插件"
-		Error_Output="1"
 	else
 		TIME b "固件名称: ${Up_Firmware}"
 		TIME b "固件后缀: ${Firmware_sfx}"
 	fi
-	[[ ! ${Error_Output} == "1" ]] && {
-		TIME b "固件版本: ${Openwrt_Version}"
-		TIME b "云端路径: ${Github_UP_RELEASE}"
-		TIME g "《编译成功，会自动把固件发布到指定地址，然后才会生成云端路径》"
-		TIME g "《普通的那个发布固件跟云端的发布路径是两码事，如果你不需要普通发布的可以不用打开发布功能》"
-		TIME g "《请把“REPO_TOKEN”密匙设置好,没设置好密匙不能发布就生成不了云端地址》"
-		echo
-	}
+	TIME b "固件版本: ${Openwrt_Version}"
+	TIME b "云端路径: ${Github_UP_RELEASE}"
+	TIME g "《编译成功，会自动把固件发布到指定地址，然后才会生成云端路径》"
+	TIME g "《普通的那个发布固件跟云端的发布路径是两码事，如果你不需要普通发布的可以不用打开发布功能》"
+	TIME g "《请把“REPO_TOKEN”密匙设置好,没设置好密匙不能发布就生成不了云端地址》"
+	echo
 else
 	echo
 fi
