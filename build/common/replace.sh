@@ -18,59 +18,21 @@ TIME() {
 	 }
       }
 }
-[ -f /etc/openwrt_info ] && chmod +x /etc/openwrt_info
-[ -f /etc/openwrt_info ] && source /etc/openwrt_info || {
-	TIME r "未检测到更换固件所需文件,无法运行固件更换程序!"
-	exit 1
-}
-export Apidz="${Github##*com/}"
-export Author="${Apidz%/*}"
-export CangKu="${Apidz##*/}"
-export Github_Tags=https://api.github.com/repos/${Apidz}/releases/tags/AutoUpdate
+source /etc/openwrt_info
 [ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
-[ -f /bin/AutoUpdate.sh ] && {
-	AutoUpdate_Version=$(egrep -o "V[0-9].+" /bin/AutoUpdate.sh | awk 'END{print}')
-} || AutoUpdate_Version=OFF
 wget -q --no-cookie --no-check-certificate -T 15 -t 4 ${Github_Tags} -O ${Download_Path}/Github_Tags
 [[ ! $? == 0 ]] && {
-	TIME r "获取固件版本信息失败,请检测网络是否翻墙或更换节点再尝试,或者您的Github地址为无效地址!"
+	TIME r "获取固件版本信息失败,请检测网络或您的网络需要翻墙,或者您更改的Github地址为无效地址!"
 	exit 1
 }
 Kernel="$(egrep -o "[0-9]+\.[0-9]+\.[0-9]+" /usr/lib/opkg/info/kernel.control)"
-case ${DEFAULT_Device} in
-x86-64)
-	[ -f /etc/openwrt_boot ] && {
-		export BOOT_Type="-$(cat /etc/openwrt_boot)"
-	} || {
-		[ -d /sys/firmware/efi ] && {
-			export BOOT_Type="-UEFI"
-		} || export BOOT_Type="-Legacy"
-	}
-	[ -f /etc/openwrt_boot ] && {
-		export GESHI_Type="$(cat /etc/openwrt_boot)"
-	} || {
-		[ -d /sys/firmware/efi ] && {
-			export GESHI_Type="UEFI"
-		} || export GESHI_Type="Legacy"
-	}
-	[[ "${Firmware_Type}" == img.gz ]] && {
-		export Firmware_SFX=".img.gz"
-	} || {
-		export Firmware_SFX=".img"
-	}
-;;
-*)
-	export Firmware_SFX=".${Firmware_Type}"
-	export BOOT_Type="-Sysupg"
-	export GESHI_Type="Sysupg"
-esac
-clear && echo "Openwrt-AutoUpdate Script ${AutoUpdate_Version}"
+clear && echo "Openwrt-AutoUpdate Script ${Version}"
 echo
 echo
 TIME h "执行：转换成其他源码固件"
 echo
 echo
-TIME y "您当前固件为：${GESHI_Type}${Firmware_SFX}格式的 ${REPO_Name} ${Luci_Edition} ${Kernel} 内核版!"
+TIME y "您当前固件为：${EFI_Mode}${Firmware_SFX}格式的 ${REPO_Name} ${Luci_Edition} ${Kernel} 内核版!"
 echo
 if [[ "${REPO_Name}" == "lede" ]]; then
 	if [[ `cat ${Download_Path}/Github_Tags | grep -c "19.07-lienol-${DEFAULT_Device}-.*${BOOT_Type}-.*${Firmware_SFX}"` -ge '1' ]]; then
@@ -80,7 +42,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 		ZHUANG2="2"
 	fi
 	if [[ -z "${ZHUANG1}" ]] && [[ -z "${ZHUANG2}" ]]; then
-		TIME r "没有检测到有其他作者相同机型的固件版本或者固件格式不相同!"
+		TIME r "没有检测到有其他作者相同机型的固件版本,或者固件格式不相同!"
 		echo
 		exit 1
 	fi
@@ -98,7 +60,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 		ZHUANG2="2"
 	fi
 	if [[ -z "${ZHUANG1}" ]] && [[ -z "${ZHUANG2}" ]]; then
-		TIME r "没有检测到有其他作者相同机型的固件版本或者固件格式不相同!"
+		TIME r "没有检测到有其他作者相同机型的固件版本,或者固件格式不相同!"
 		echo
 		exit 1
 	fi
@@ -116,7 +78,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 		ZHUANG2="2"
 	fi
 	if [[ -z "${ZHUANG1}" ]] && [[ -z "${ZHUANG2}" ]]; then
-		TIME r "没有检测到有其他作者相同机型的固件版本或者固件格式不相同!"
+		TIME r "没有检测到有其他作者相同机型的固件版本,或者固件格式不相同!"
 		echo
 		exit 1
 	fi
@@ -127,7 +89,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 	fi
 fi
 echo
-TIME z "请注意：选择更改其他源码固件后立即执行不保留配置安装固件"
+TIME z "请注意：选择更换其他源码固件后,立即执行不保留配置安装固件!"
 echo
 echo
 echo
@@ -148,7 +110,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=19.07
-			CURRENT_Version=lienol-${DEFAULT_Device}-202106010101
+			CURRENT_Version=lienol-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=19.07
@@ -159,7 +121,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -192,7 +154,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=21.02
-			CURRENT_Version=mortal-${DEFAULT_Device}-202106010101
+			CURRENT_Version=mortal-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=21.02
@@ -203,7 +165,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -239,7 +201,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=19.07
-			CURRENT_Version=lienol-${DEFAULT_Device}-202106010101
+			CURRENT_Version=lienol-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=19.07
@@ -250,7 +212,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -259,7 +221,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=21.02
-			CURRENT_Version=mortal-${DEFAULT_Device}-202106010101
+			CURRENT_Version=mortal-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=21.02
@@ -270,7 +232,7 @@ if [[ "${REPO_Name}" == "lede" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -308,7 +270,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=18.06
-			CURRENT_Version=lede-${DEFAULT_Device}-202106010101
+			CURRENT_Version=lede-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=18.06
@@ -319,7 +281,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -353,7 +315,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=21.02
-			CURRENT_Version=mortal-${DEFAULT_Device}-202106010101
+			CURRENT_Version=mortal-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=21.02
@@ -364,7 +326,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -400,7 +362,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=18.06
-			CURRENT_Version=lede-${DEFAULT_Device}-202106010101
+			CURRENT_Version=lede-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=18.06
@@ -411,7 +373,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -420,7 +382,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=21.02
-			CURRENT_Version=mortal-${DEFAULT_Device}-202106010101
+			CURRENT_Version=mortal-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=21.02
@@ -431,7 +393,7 @@ if [[ "${REPO_Name}" == "lienol" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -469,7 +431,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=18.06
-			CURRENT_Version=lede-${DEFAULT_Device}-202106010101
+			CURRENT_Version=lede-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=18.06
@@ -480,7 +442,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -514,7 +476,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=19.07
-			CURRENT_Version=lienol-${DEFAULT_Device}-202106010101
+			CURRENT_Version=lienol-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=19.07
@@ -525,7 +487,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -561,7 +523,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=18.06
-			CURRENT_Version=lede-${DEFAULT_Device}-202106010101
+			CURRENT_Version=lede-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=18.06
@@ -572,7 +534,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
@@ -581,7 +543,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 			cat >/etc/openwrt_info <<-EOF
 			Github=${Github}
 			Luci_Edition=19.07
-			CURRENT_Version=lienol-${DEFAULT_Device}-202106010101
+			CURRENT_Version=lienol-${DEFAULT_Device}-202107010100
 			DEFAULT_Device=${DEFAULT_Device}
 			Firmware_Type=${Firmware_Type}
 			LUCI_Name=19.07
@@ -592,7 +554,7 @@ if [[ "${REPO_Name}" == "mortal" ]]; then
 			EOF
 			echo
 			TIME y "转换固件成功，开始安装新源码的固件,请稍后...！"
-			sleep 5
+			sleep 2
 			bash /bin/AutoUpdate.sh	-s
 			exit 0
 		break
