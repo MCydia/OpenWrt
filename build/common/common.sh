@@ -43,7 +43,7 @@ if [[ "${Modelfile}" == "Lede_source" ]]; then
 	sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 	echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
-if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
+if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
 	# 修复NTFS格式优盘不自动挂载
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
@@ -127,6 +127,8 @@ fi
 if [ -n "$(ls -A "${PATH1}/patches" 2>/dev/null)" ]; then
 	find "${PATH1}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
 fi
+sed -i "/exit 0/i\sed -i 's/<a href/<\!--<a href/g' /usr/lib/lua/luci/view/themes/*/footer.htm" $ZZZ
+sed -i "/exit 0/i\sed -i 's/%>)<\\\/a> \\\//%>)<\\\/a> \\\/-->/g' /usr/lib/lua/luci/view/themes/*/footer.htm" $ZZZ
 }
 
 ################################################################################################################
@@ -263,7 +265,6 @@ else
 fi
 }
 
-
 ################################################################################################################
 # 为编译做最后处理
 ################################################################################################################
@@ -310,17 +311,37 @@ GONGGAO() {
 
 Diy_gonggao() {
 GONGGAO z "《Lede_source文件，Luci版本为18.06，内核版本为5.10》"
-GONGGAO g "《Lienol_source文件，Luci版本为19.07，内核版本为4.14》"
+GONGGAO y "《Lienol_source文件，Luci版本为19.07，内核版本为4.14》"
 GONGGAO g "《Mortal_source文件，Luci版本为21.02，内核版本为5.4》"
 GONGGAO z "《openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci版本为18.06，内核版本为5.4》"
-GONGGAO y "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
-GONGGAO y "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
+GONGGAO g "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
+GONGGAO g "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 GONGGAO r "《如果编译脚本在这里就出现错误的话，意思就是不得不更新脚本了，怎么更新我会在这里写明》"
+GONGGAO y "7月7号晚优化有使用自动更新插件可以在线更换其他作者固件的文件"
+GONGGAO y "7月7号晚去掉去掉大部分主题右下角LUCI一大串的链接显示"
+GONGGAO y "7月7号发布最新仓库，前几天因为优化自动更新固件的文件，搞的自动更新一直不正常，至今天应该全部修复完了"
+GONGGAO y "如果以前有用自动更新的，请把以前的发布全部删除了"
+GONGGAO y "大家如果在使用中发现问题可以提出来的，能修复就修复，不能修复我也是没办法"
+GONGGAO y "自动更新的原理很简单的，就下载固件跟用命令安装固件而已，如果你的路由器能用命令安装固件就可以用自动更新"
+GONGGAO y "我在自动更新的说明那里有写的，不清楚的可以去看看"
+GONGGAO y "请大家保留好配置文件，然后重新拉取一次我的仓库吧，谢谢！感谢大家一直的支持。"
+GONGGAO y "还有就是要感谢自动更新的原作者，以前不支持21.02的，经过沟通，他立马就修复了"
+GONGGAO y "如有感兴趣的可以到他的仓库瞧瞧 https://github.com/Hyy2001X/AutoBuild-Actions"
 echo
 echo
 }
 
 Diy_tongzhi() {
+GONGGAO y "7月7号发布最新仓库，前几天因为优化自动更新固件的文件，搞的自动更新一直不正常，至今天应该全部修复完了"
+GONGGAO y "如果以前有用自动更新的，请把以前的发布全部删除了"
+GONGGAO y "大家如果在使用中发现问题可以提出来的，能修复就修复，不能修复我也是没办法"
+GONGGAO y "自动更新的原理很简单的，就下载固件跟用命令安装固件而已，如果你的路由器能用命令安装固件就可以用自动更新"
+GONGGAO y "我在自动更新的说明那里有写的，不清楚的可以去看看"
+GONGGAO y "请大家保留好配置文件，然后重新拉取一次我的仓库吧，谢谢！感谢大家一直的支持。"
+GONGGAO y "还有就是要感谢自动更新的原作者，以前不支持21.02的，经过沟通，他立马就修复了"
+GONGGAO y "如有感兴趣的可以到他的仓库瞧瞧 https://github.com/Hyy2001X/AutoBuild-Actions"
+
+
 GONGGAO r "6月26号凌晨修改最新版,用我仓库的请重新拉取我整个仓库"
 GONGGAO r "修改了一下定时更新插件获取固件方式，取消对比MD5，MD5主要是用于查看固件下载的完整性的，感觉好像不对比也可以"
 GONGGAO r "修改了一下定时更新固件的版本号，如果有用定时更新的请把以前发布的固件都删除了再重新编译新固件发布"
