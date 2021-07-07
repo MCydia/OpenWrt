@@ -78,7 +78,7 @@ jobs:
           echo "CODE=Mortal" >> $GITHUB_ENV
           echo "OpenWrt_name=21.02" >> $GITHUB_ENV
         fi
-        if [ -n "$(ls -A build/common/0626gg 2>/dev/null)" ]; then
+        if [ -n "$(ls -A build/common/0707gg 2>/dev/null)" ]; then
           source build/common/common.sh && Diy_gonggao
         else
           source build/common/common.sh && Diy_tongzhi
