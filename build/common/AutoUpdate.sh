@@ -22,9 +22,9 @@ echo -e "${Purple}
 ===============================================================================================
 ${White}"
 echo
-[ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
-wget -q --no-cookie --no-check-certificate -T 15 -t 4 ${Github_Tags} -O ${Download_Path}/Github_Tags
-[[ -n ${Download_Path}/Github_Tags ]] && export CLOUD_Name="$(egrep -o "${LUCI_Name}-${CURRENT_Version}${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${Download_Path}/Github_Tags | awk 'END {print}')"
+rm -rf ${Download_Path}/Github_Tags
+wget -q --no-cookie --no-check-certificate -T 15 -t 4 ${Github_Tags} -O ${Download_Tags}
+[[ -n ${Download_Tags} ]] && export CLOUD_Name="$(egrep -o "${LUCI_Name}-${CURRENT_Version}${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${Download_Tags} | awk 'END {print}')"
 [[ -z ${CLOUD_Name} ]] && export CLOUD_Name="${LUCI_Name}-${CURRENT_Version}${Firmware_SFX}"
 echo -e "${Green}详细参数：
 /overlay 可用:					${Overlay_Available}
@@ -36,6 +36,7 @@ echo -e "${Green}详细参数：
 Github 地址:					${Github}
 解析 API 地址:					${Github_Tags}
 固件下载地址:					${Github_Release}
+更新运行日志:					${AutoUpdate_Log_Path}/AutoUpdate.log
 固件作者:					${Author}
 作者仓库:					${CangKu}
 固件名称:					${CLOUD_Name}
@@ -66,6 +67,7 @@ export Apidz="${Github##*com/}"
 export Author="${Apidz%/*}"
 export CangKu="${Apidz##*/}"
 export Github_Tags=https://api.github.com/repos/${Apidz}/releases/tags/AutoUpdate
+export Kernel="$(egrep -o "[0-9]+\.[0-9]+\.[0-9]+" /usr/lib/opkg/info/kernel.control)"
 export Overlay_Available="$(df -h | grep ":/overlay" | awk '{print $4}' | awk 'NR==1')"
 rm -rf "${Download_Path}" && export TMP_Available="$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')"
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path}
@@ -127,10 +129,13 @@ x86-64)
 	export CURRENT_Device="$(jsonfilter -e '@.model.id' < /etc/board.json | tr ',' '_')"
 	export Firmware_SFX=".${Firmware_Type}"
 	export BOOT_Type="-Sysupg"
+	export EFI_Mode=""
 	[[ -z "${Firmware_Type}" ]] && export Firmware_SFX=".bin"
 esac
 CURRENT_Ver="${CURRENT_Version}${BOOT_Type}"
-[[ ${DEFAULT_Device} == x86-64 ]] && echo "CURRENT_Version=${CURRENT_Ver}" > /etc/openwrt_version
+echo "CURRENT_Version=${CURRENT_Version}" > /etc/openwrt_ver
+echo -e "\nCURRENT_Model=${EFI_Mode}${Firmware_SFX}" >> /etc/openwrt_ver
+echo -e "\nNEI_Luci=${Kernel} - ${Luci_Edition}" >> /etc/openwrt_ver
 cd /etc
 clear && echo "Openwrt-AutoUpdate Script ${Version}"
 echo
@@ -146,21 +151,17 @@ else
 			TIME h "执行: 测试模式"
 			TIME g "测试模式(只运行,不安装,查看更新固件操作流程是否正确)"
 		;;
-
 		-w)
 			Input_Other="-w"
 		;;
-
 		-n | -N)
 			export Upgrade_Options="-n"
 			TIME h "执行: 更新固件(不保留配置)"
 		;;
-
 		-s)
 			export Upgrade_Options="-F -n"
 			TIME h "执行: 强制更新固件(不保留配置)"
 		;;
-
 		-u)
 			export AutoUpdate_Mode=1
 			export Upgrade_Options="-q"
@@ -223,13 +224,13 @@ fi
 [[ -z ${Github} ]] && TIME r "Github地址获取失败,请检查/etc/openwrt_info文件的值!" && exit 1
 TIME g "正在获取云端固件版本信息..."
 [ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
-wget -q --no-cookie --no-check-certificate -T 15 -t 4 ${Github_Tags} -O ${Download_Path}/Github_Tags
+wget -q --no-cookie --no-check-certificate -T 15 -t 4 ${Github_Tags} -O ${Download_Tags}
 [[ ! $? == 0 ]] && {
 	TIME r "获取固件版本信息失败,请检测网络或您的网络需要翻墙,或者您更改的Github地址为无效地址!"
 	exit 1
 }
 TIME g "正在比对云端固件和本地安装固件版本..."
-export CLOUD_Firmware="$(egrep -o "${Egrep_Firmware}-[0-9]+${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${Download_Path}/Github_Tags | awk 'END {print}')"
+export CLOUD_Firmware="$(egrep -o "${Egrep_Firmware}-[0-9]+${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${Download_Tags} | awk 'END {print}')"
 export CLOUD_sion="$(echo ${CLOUD_Firmware} | egrep -o "${REPO_Name}-${DEFAULT_Device}-[0-9]+")"
 export CLOUD_Version="$(echo ${CLOUD_Firmware} | egrep -o "${REPO_Name}-${DEFAULT_Device}-[0-9]+${BOOT_Type}")"
 [[ -z "${CLOUD_Version}" ]] && {
@@ -237,20 +238,14 @@ export CLOUD_Version="$(echo ${CLOUD_Firmware} | egrep -o "${REPO_Name}-${DEFAUL
 	exit 1
 }
 [[ "${Input_Other}" == "-w" ]] && {
-	[[ ${DEFAULT_Device} == x86-64 ]] && {
-		echo -e "\nCLOUD_Version=${CLOUD_Version}" > /tmp/Version_Tags
-		echo -e "\nCURRENT_Version=${CURRENT_Ver}" >> /tmp/Version_Tags
-		exit 0
-	} || {
-		echo -e "\nCLOUD_Version=${CLOUD_sion}" > /tmp/Version_Tags
-		echo -e "\nCURRENT_Version=${CURRENT_Version}" >> /tmp/Version_Tags
-		exit 0
-	}
+	echo -e "\nCLOUD_Version=${CLOUD_sion}" > /tmp/Version_Tags
+	echo -e "\nCURRENT_Version=${CURRENT_Version}" >> /tmp/Version_Tags
+	exit 0
 }
 export Firmware_Name="$(echo ${CLOUD_Firmware} | egrep -o "${Egrep_Firmware}-[0-9]+${BOOT_Type}-[a-zA-Z0-9]+")"
 export Firmware="${CLOUD_Firmware}"
-let X=$(grep -n "${Firmware}" ${Download_Path}/Github_Tags | tail -1 | cut -d : -f 1)-4
-let CLOUD_Firmware_Size=$(sed -n "${X}p" ${Download_Path}/Github_Tags | egrep -o "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
+let X=$(grep -n "${Firmware}" ${Download_Tags} | tail -1 | cut -d : -f 1)-4
+let CLOUD_Firmware_Size=$(sed -n "${X}p" ${Download_Tags} | egrep -o "[0-9]+" | awk '{print ($1)/1048576}' | awk -F. '{print $1}')+1
 echo -e "\n本地版本：${CURRENT_Ver}"
 echo "云端版本：${CLOUD_Version}"	
 [[ "${TMP_Available}" -lt "${CLOUD_Firmware_Size}" ]] && {
@@ -319,16 +314,15 @@ CLOUD_MD5=$(echo ${Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "
 	exit 1
 }
 chmod 777 ${Firmware}
-TIME g "准备就绪,开始刷写固件..."
+TIME g "准备更新固件,更新期间请不要断开电源或重启设备 ..."
 [[ "${Input_Other}" == "-t" ]] && {
 	TIME z "测试模式运行完毕!"
 	rm -rf "${Download_Path}"
-	opkg remove gzip > /dev/null 2>&1
 	echo
 	exit 0
 }
-REPO_Name=mortal
-rm -rf ${AutoUpdate_Log_Path}/AutoUpdate.log
+sleep 3
+TIME g "正在更新固件,请耐心等待 ..."
 sysupgrade ${Upgrade_Options} ${Firmware}
 [[ $? -ne 0 ]] && {
 	[[ "${REPO_Name}" == "mortal" ]] && {
