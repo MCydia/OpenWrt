@@ -61,7 +61,6 @@ GET_TARGET_INFO() {
 		AutoUpdate_Version=$(egrep -o "V[0-9].+" ${Home}/package/base-files/files/bin/AutoUpdate.sh | awk 'END{print}')
 	} || AutoUpdate_Version=OFF
 	In_Firmware_Info="${Home}/package/base-files/files/etc/openwrt_info"
-	Ve_Firmware_Info="${Home}/package/base-files/files/etc/openwrt_version"
 	Github_Release="${Github}/releases/download/AutoUpdate"
 	Github_UP_RELEASE="${Github}/releases/AutoUpdate"
 	Openwrt_Version="${REPO_Name}-${TARGET_PROFILE}-${Compile_Date}"
@@ -88,8 +87,9 @@ Diy_Part2() {
 	Github_Release=${Github_Release}
 	Egrep_Firmware=${Egrep_Firmware}
 	Download_Path=/tmp/Downloads
+	Version=${AutoUpdate_Version}
+	Download_Tags=/tmp/Downloads/Github_Tags
 	EOF
-	echo "CURRENT_Version=${Openwrt_Version}" > ${Ve_Firmware_Info}
 }
 
 Diy_Part3() {
