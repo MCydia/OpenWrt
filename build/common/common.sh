@@ -66,6 +66,7 @@ if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
 fi
 }
 
+
 ################################################################################################################
 # LIENOL源码通用diy.sh文件
 ################################################################################################################
@@ -80,6 +81,7 @@ sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/li
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
 
+
 ################################################################################################################
 # 天灵源码21.02 diy.sh文件
 ################################################################################################################
@@ -90,6 +92,7 @@ find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-openwrt'
 
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
+
 
 ################################################################################################################
 # 全部作者源码公共diy.sh文件
@@ -140,11 +143,14 @@ svn co https://github.com/ophub/amlogic-s9xxx-openwrt/trunk/amlogic-s9xxx $GITHU
 curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/make >$GITHUB_WORKSPACE/make
 source $GITHUB_WORKSPACE/amlogic_openwrt
 if [[ ${amlogic_kernel} == "5.12.12_5.4.127" ]]; then
-	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open
-	Make_d="$(grep "./make -d -b" open)" && Make="${Make_d##*-k }"
-	amlogic_kernel="${Make}"
+	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open.yml
+	Make_kernel="$(cat open.yml | grep ./make | cut -d "k" -f3 | sed s/[[:space:]]//g)"
+	amlogic_kernel="${Make_kernel}"
 else
 	amlogic_kernel="${amlogic_kernel}"
+fi
+if [[ -z "${Make_kernel}" ]];then
+	amlogic_kernel="5.12.12_5.4.127"
 fi
 minsize="$(egrep -o "ROOT_MB=+.*?[0-9]" $GITHUB_WORKSPACE/make)"
 rootfssize="ROOT_MB=${rootfs_size}"
@@ -179,6 +185,7 @@ exit 1
 fi
 rm -rf {build,README.md}
 }
+
 
 ################################################################################################################
 # 判断插件冲突
@@ -265,6 +272,7 @@ else
 fi
 }
 
+
 ################################################################################################################
 # 为编译做最后处理
 ################################################################################################################
@@ -300,6 +308,7 @@ if [[ "${PATCHVER}" != "unknown" ]]; then
 	PATCHVER=$(egrep -o "${PATCHVER}.[0-9]+" ${Home}/include/kernel-version.mk)
 fi
 }
+
 
 ################################################################################################################
 # 公告
@@ -384,14 +393,14 @@ TIME b "编译源码: ${CODE}"
 TIME b "源码链接: ${REPO_URL}"
 TIME b "源码分支: ${REPO_BRANCH}"
 TIME b "源码作者: ${ZUOZHE}"
-TIME b "默认内核: ${PATCHVER}"
-TIME b "Luci版本: ${OpenWrt_name}"
 [[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME b "编译机型: ${TARGET_model}"
 	TIME b "打包内核: ${TARGET_kernel}"
 } || {
 	TIME b "编译机型: ${TARGET_PROFILE}"
 }
+TIME b "默认内核: ${PATCHVER}"
+TIME b "Luci版本: ${OpenWrt_name}"
 TIME b "固件作者: ${Author}"
 TIME b "仓库地址: ${Github}"
 TIME b "启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
