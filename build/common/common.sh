@@ -98,6 +98,7 @@ Diy_all() {
 git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/281677160/openwrt-package
 cp -Rf openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 
+# 此处为控制后台自动更新固件，如需需要此功能请自行修改“false”为"true" 默认我关闭此功能。
 if [[ ${REGULAR_UPDATE} == "false" ]]; then
 	git clone https://github.com/281677160/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
 	cp -Rf "${PATH1}"/{AutoUpdate.sh,replace.sh} package/base-files/files/bin
@@ -289,6 +290,16 @@ CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
 rm -rf CPU
 find . -name 'LICENSE' -o -name 'README' -o -name 'README.md' | xargs -i rm -rf {}
 find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'DEVICE_NAME' | xargs -i rm -rf {}
+if [[ `grep -c "KERNEL_PATCHVER:=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
+	PATCHVER=$(grep KERNEL_PATCHVER:= ${Home}/target/linux/${TARGET_BOARD}/Makefile | cut -c18-100)
+elif [[ `grep -c "KERNEL_PATCHVER=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
+	PATCHVER=$(grep KERNEL_PATCHVER= ${Home}/target/linux/${TARGET_BOARD}/Makefile | cut -c17-100)
+else
+	PATCHVER=unknown
+fi
+if [[ "${PATCHVER}" != "unknown" ]]; then
+	PATCHVER=$(egrep -o "${PATCHVER}.[0-9]+" ${Home}/include/kernel-version.mk)
+fi
 }
 
 ################################################################################################################
@@ -374,6 +385,7 @@ TIME b "编译源码: ${CODE}"
 TIME b "源码链接: ${REPO_URL}"
 TIME b "源码分支: ${REPO_BRANCH}"
 TIME b "源码作者: ${ZUOZHE}"
+TIME b "默认内核: ${PATCHVER}"
 TIME b "Luci版本: ${OpenWrt_name}"
 [[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME b "编译机型: ${TARGET_model}"
