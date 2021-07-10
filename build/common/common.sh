@@ -4,6 +4,7 @@
 # matrix.target=${Modelfile}
 
 TIME() {
+Compte=$(date +%Y年%m月%d号%H时%M分)
 [[ -z "$1" ]] && {
 	echo -ne " "
 } || {
@@ -35,7 +36,7 @@ git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwal
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
 git clone --depth=1 https://github.com/garypang13/smartdns-le package/smartdns-le
 
-sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
+sed -i "/exit 0/i\chmod +x /bin/webweb.sh && source /bin/webweb.sh" $ZZZ
 
 
 if [[ "${Modelfile}" == "Lede_source" ]]; then
@@ -76,7 +77,7 @@ git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
-sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
+sed -i "/exit 0/i\chmod +x /bin/webweb.sh && source /bin/webweb.sh" $ZZZ
 }
 
 ################################################################################################################
@@ -86,8 +87,6 @@ Diy_mortal() {
 
 find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon' -o -name 'luci-light'  | xargs -i rm -rf {}
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-openwrt' | xargs -i rm -rf {}
-
-sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh > /dev/null 2>&1" package/base-files/files/etc/rc.local
 }
 
 ################################################################################################################
@@ -127,8 +126,6 @@ fi
 if [ -n "$(ls -A "${PATH1}/patches" 2>/dev/null)" ]; then
 	find "${PATH1}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
 fi
-sed -i "/exit 0/i\sed -i 's/<a href/<\!--<a href/g' /usr/lib/lua/luci/view/themes/*/footer.htm" $ZZZ
-sed -i "/exit 0/i\sed -i 's/%>)<\\\/a> \\\//%>)<\\\/a> \\\/-->/g' /usr/lib/lua/luci/view/themes/*/footer.htm" $ZZZ
 }
 
 ################################################################################################################
@@ -191,10 +188,9 @@ echo "TIME b \"					插件冲突信息\"" > ${Home}/CHONGTU
 
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-docker=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-app-dockerman=y" ${Home}/.config` -eq '1' ]]; then
-		sed -i 's/CONFIG_PACKAGE_luci-app-dockerman=y/# CONFIG_PACKAGE_luci-app-dockerman is not set/g' ${Home}/.config
-		sed -i 's/CONFIG_PACKAGE_luci-lib-docker=y/# CONFIG_PACKAGE_luci-lib-docker is not set/g' ${Home}/.config
-		sed -i 's/CONFIG_PACKAGE_luci-i18n-dockerman-zh-cn=y/# CONFIG_PACKAGE_luci-i18n-dockerman-zh-cn is not set/g' ${Home}/.config
-		echo "TIME r \"您同时选择luci-app-docker和luci-app-dockerman，插件有冲突，相同功能插件只能二选一，已删除luci-app-dockerman\"" >>CHONGTU
+		sed -i 's/CONFIG_PACKAGE_luci-app-docker=y/# CONFIG_PACKAGE_luci-app-docker=y is not set/g' ${Home}/.config
+		sed -i 's/CONFIG_PACKAGE_luci-i18n-docker-zh-cn=y/# CONFIG_PACKAGE_luci-i18n-docker-zh-cn=y is not set/g' ${Home}/.config
+		echo "TIME r \"您同时选择luci-app-docker和luci-app-dockerman，插件有冲突，相同功能插件只能二选一，已删除luci-app-docker\"" >>CHONGTU
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
@@ -301,6 +297,10 @@ fi
 if [[ "${PATCHVER}" != "unknown" ]]; then
 	PATCHVER=$(egrep -o "${PATCHVER}.[0-9]+" ${Home}/include/kernel-version.mk)
 fi
+if [[ "${REPO_BRANCH}" == "master" ]]; then
+	sed -i 's/distversion)%>/distversion)%><!--/g' package/lean/autocore/files/*/index.htm
+	sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
+fi
 }
 
 ################################################################################################################
@@ -329,35 +329,16 @@ GONGGAO z "《openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci
 GONGGAO g "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 GONGGAO g "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 GONGGAO r "《如果编译脚本在这里就出现错误的话，意思就是不得不更新脚本了，怎么更新我会在这里写明》"
-GONGGAO y "7月7号晚优化有使用自动更新插件可以在线更换其他作者固件的文件"
-GONGGAO y "7月7号晚去掉去掉大部分主题右下角LUCI一大串的链接显示"
-GONGGAO y "7月7号发布最新仓库，前几天因为优化自动更新固件的文件，搞的自动更新一直不正常，至今天应该全部修复完了"
-GONGGAO y "如果以前有用自动更新的，请把以前的发布全部删除了"
-GONGGAO y "大家如果在使用中发现问题可以提出来的，能修复就修复，不能修复我也是没办法"
-GONGGAO y "自动更新的原理很简单的，就下载固件跟用命令安装固件而已，如果你的路由器能用命令安装固件就可以用自动更新"
-GONGGAO y "我在自动更新的说明那里有写的，不清楚的可以去看看"
-GONGGAO y "请大家保留好配置文件，然后重新拉取一次我的仓库吧，谢谢！感谢大家一直的支持。"
-GONGGAO y "还有就是要感谢自动更新的原作者，以前不支持21.02的，经过沟通，他立马就修复了"
-GONGGAO y "如有感兴趣的可以到他的仓库瞧瞧 https://github.com/Hyy2001X/AutoBuild-Actions"
+GONGGAO y "7月11号修复定时更新不保存改过的IP、DNS、DHCP的问题，修复不保存adguardhome配置文件问题"
+GONGGAO y "7月11号暂时移除luci-app-ddnsto插件,没搞明白这个放源码里面会出现个别情况编译不成功的问题"
 echo
 echo
 }
 
 Diy_tongzhi() {
-GONGGAO y "7月7号发布最新仓库，前几天因为优化自动更新固件的文件，搞的自动更新一直不正常，至今天应该全部修复完了"
-GONGGAO y "如果以前有用自动更新的，请把以前的发布全部删除了"
-GONGGAO y "大家如果在使用中发现问题可以提出来的，能修复就修复，不能修复我也是没办法"
-GONGGAO y "自动更新的原理很简单的，就下载固件跟用命令安装固件而已，如果你的路由器能用命令安装固件就可以用自动更新"
-GONGGAO y "我在自动更新的说明那里有写的，不清楚的可以去看看"
-GONGGAO y "请大家保留好配置文件，然后重新拉取一次我的仓库吧，谢谢！感谢大家一直的支持。"
-GONGGAO y "还有就是要感谢自动更新的原作者，以前不支持21.02的，经过沟通，他立马就修复了"
-GONGGAO y "如有感兴趣的可以到他的仓库瞧瞧 https://github.com/Hyy2001X/AutoBuild-Actions"
-
-
-GONGGAO r "6月26号凌晨修改最新版,用我仓库的请重新拉取我整个仓库"
-GONGGAO r "修改了一下定时更新插件获取固件方式，取消对比MD5，MD5主要是用于查看固件下载的完整性的，感觉好像不对比也可以"
-GONGGAO r "修改了一下定时更新固件的版本号，如果有用定时更新的请把以前发布的固件都删除了再重新编译新固件发布"
-GONGGAO r "增加了N1和晶晨系列盒子的一键编译自动打包的文件夹"
+GONGGAO r "7月11号修复定时更新不保存改过的IP、DNS、DHCP的问题，修复不保存adguardhome配置文件问题"
+GONGGAO r "7月11号暂时移除luci-app-ddnsto插件,没搞明白这个放源码里面会出现个别情况编译不成功的问题"
+GONGGAO y "更新仓库只要复制我仓库的build-openwrt.yml跟对应源码的diy-part.sh内容粘贴到你仓库就可以了"
 echo
 echo
 exit 1
@@ -397,7 +378,7 @@ TIME b "Luci版本: ${OpenWrt_name}"
 TIME b "固件作者: ${Author}"
 TIME b "仓库地址: ${Github}"
 TIME b "启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
-TIME b "编译时间: ${Compile_Date}"
+TIME b "编译时间: ${Compte}"
 [[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_model}】固件"
 } || {
