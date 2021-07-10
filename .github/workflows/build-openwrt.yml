@@ -36,7 +36,7 @@ jobs:
       matrix:
         target: [Lede_source]
 
-        # [Lede_source,Lienol_source,Mortal_source,Openwrt_amlogic]
+        # [Lede_source,Lienol_source,Mortal_source,openwrt_amlogic]
 
     steps:
     - name: 准备结束
@@ -61,9 +61,10 @@ jobs:
         echo "CangKu=${Apidz##*/}" >> $GITHUB_ENV
         echo "Modelfile=${{matrix.target}}" >> $GITHUB_ENV
         
-        
     - name: 公 告
       run: |
+        echo
+        git clone --depth 1 -b main https://github.com/281677160/common build/common > /dev/null 2>&1
         chmod -R +x "${GITHUB_WORKSPACE}/build/common"
         if [[ "${REPO_BRANCH}" == "master" ]]; then
           echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
@@ -78,7 +79,8 @@ jobs:
           echo "CODE=Mortal" >> $GITHUB_ENV
           echo "OpenWrt_name=21.02" >> $GITHUB_ENV
         fi
-        if [ -n "$(ls -A build/common/0707gg 2>/dev/null)" ]; then
+        echo "NETIP=package/base-files/files/bin/networkip" >> $GITHUB_ENV
+        if [ -n "$(ls -A build/common/0711gg 2>/dev/null)" ]; then
           source build/common/common.sh && Diy_gonggao
         else
           source build/common/common.sh && Diy_tongzhi
@@ -91,7 +93,7 @@ jobs:
           您正在使用[${{matrix.target}}]固件正在努力耕耘中(${{env.CangKu}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
         fi
         
-    - name: 部署环境
+    - name: 部署编译
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -114,7 +116,7 @@ jobs:
         echo "Home=${GITHUB_WORKSPACE}/openwrt" >> $GITHUB_ENV
         echo "PATH1=${GITHUB_WORKSPACE}/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
  
-    - name: 自定义设置
+    - name: 加载自定义
       run: |
         echo "Compile_Date=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
         cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
@@ -140,11 +142,11 @@ jobs:
         fi
         
     - name: SSH远程连接（配置固件）
-      uses: MCydia/debugger-action@master
+      uses: danshui-git/debugger-action@master
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: 生成配置文件
       run: |
@@ -202,7 +204,7 @@ jobs:
     - name: 整理固件文件夹
       id: organizer
       run: |
-        if [ "${Modelfile}" == "Openwrt_amlogic" ]; then
+        if [ "${Modelfile}" == "openwrt_amlogic" ]; then
           source "${PATH1}/common.sh" && Diy_amlogic
         fi
         cd openwrt
