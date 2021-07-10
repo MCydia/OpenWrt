@@ -3,7 +3,7 @@
 # AutoBuild Module by Hyy2001
 # AutoUpdate for Openwrt
 
-Version=V6.0
+Version=V6.1
 
 Shell_Helper() {
 echo
@@ -52,9 +52,9 @@ BCyan="\033[1;36m"
 Grey="\033[1;34m"
 Green="\033[0;92m"
 Purple="\033[1;95m"
-[ -f /etc/openwrt_info ] && {
-	chmod +x /etc/openwrt_info
-	source /etc/openwrt_info 
+[ -f /bin/openwrt_info ] && {
+	chmod +x /bin/openwrt_info
+	source /bin/openwrt_info 
 } || {
 	echo -e "\n${Red}未检测到更新插件所需文件,无法运行更新程序!${White}"
 	echo
@@ -139,7 +139,8 @@ cd /etc
 clear && echo "Openwrt-AutoUpdate Script ${Version}"
 echo
 if [[ -z "${Input_Option}" ]];then
-	export Upgrade_Options="-q"
+	export Upgrade_Options="sysupgrade -q"
+	export Update_Mode=1
 	TIME h "执行: 保留配置更新固件[静默模式]"
 else
 	case ${Input_Option} in
@@ -154,21 +155,21 @@ else
 			Input_Other="-w"
 		;;
 		-n | -N)
-			export Upgrade_Options="-n"
+			export Upgrade_Options="sysupgrade -n"
 			TIME h "执行: 更新固件(不保留配置)"
 		;;
 		-s)
-			export Upgrade_Options="-F -n"
+			export Upgrade_Options="sysupgrade -F -n"
 			TIME h "执行: 强制更新固件(不保留配置)"
 		;;
 		-u)
 			export AutoUpdate_Mode=1
-			export Upgrade_Options="-q"
+			export Upgrade_Options="sysupgrade -q"
 		;;
 		esac
 	;;
 	-c)
-			source /etc/openwrt_info
+			source /bin/openwrt_info
 			TIME h "执行：更换[Github地址]操作"
 			TIME y "地址格式：https://github.com/帐号/仓库"
 			TIME z  "正确地址示例：https://github.com/MCydia/OpenWrt"
@@ -186,7 +187,7 @@ else
 			}
 			Input_Other="${Input_Other:-"$Github"}"
 			[[ "${Github}" != "${Input_Other}" ]] && {
-				sed -i "s?${Github}?${Input_Other}?g" /etc/openwrt_info
+				sed -i "s?${Github}?${Input_Other}?g" /bin/openwrt_info
 				unset Input_Other
 				exit 0
 			} || {
@@ -219,8 +220,8 @@ if [[ "$(cat ${Download_Path}/Installed_PKG_List)" =~ curl ]];then
 		TIME y "网络检测成功,您的梯子翻墙成功！"
 	fi
 fi
-[[ -z ${CURRENT_Version} ]] && TIME r "本地固件版本获取失败,请检查/etc/openwrt_info文件的值!" && exit 1
-[[ -z ${Github} ]] && TIME r "Github地址获取失败,请检查/etc/openwrt_info文件的值!" && exit 1
+[[ -z ${CURRENT_Version} ]] && TIME r "本地固件版本获取失败,请检查/bin/openwrt_info文件的值!" && exit 1
+[[ -z ${Github} ]] && TIME r "Github地址获取失败,请检查/bin/openwrt_info文件的值!" && exit 1
 TIME g "正在获取云端固件版本信息..."
 [ ! -d ${Download_Path} ] && mkdir -p ${Download_Path}
 wget -q --no-cookie --no-check-certificate -T 15 -t 4 ${Github_Tags} -O ${Download_Tags}
@@ -320,14 +321,24 @@ TIME g "准备更新固件,更新期间请不要断开电源或重启设备 ..."
 	echo
 	exit 0
 }
-sleep 3
 TIME g "正在更新固件,请耐心等待 ..."
-sysupgrade ${Upgrade_Options} ${Firmware}
-[[ $? -ne 0 ]] && {
+if [[ "${AutoUpdate_Mode}" == 1 ]] || [[ "${Update_Mode}" == 1 ]]; then
+	cp -Rf /etc/config/network /mnt/network
+	sysupgrade -b /mnt/back.tar.gz
+	[[ $? == 0 ]] && {
+		export Upgrade_Options="sysupgrade -f /mnt/back.tar.gz"
+	} || {
+		export Upgrade_Options="sysupgrade -q"
+	}
+fi
+sleep 3
+${Upgrade_Options} ${Firmware}
+
+if [[ ! $? == 0 ]]; then
 	[[ "${REPO_Name}" == "mortal" ]] && {
 		exit 0
 	} || {
 	TIME r "固件刷写失败,请尝试手动更新固件!"
 	exit 1
 	} 
-}
+fi
