@@ -10,7 +10,8 @@
 
 # 第一次使用请看如下：
 
-- 云编译需要 [在此](https://github.com/settings/tokens) 创建个token,然后在此仓库Settings->Secrets中添加个名字为REPO_TOKEN的Secret,填入token值,否者无法触发编译
+- 云编译需要 [在此](https://github.com/settings/tokens) 创建个token,勾选：repo, workflow
+- 然后在此仓库Settings->Secrets中添加个名字为REPO_TOKEN的Secret,填入token值,否者无法触发编译
 
 - Secrets中添加 SCKEY 可通过[Server酱](http://sc.ftqq.com) 推送编译结果到微信
 
