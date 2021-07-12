@@ -43,7 +43,7 @@ if [[ "${Modelfile}" == "Lede_source" ]]; then
 	sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 	echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
-if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
+if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
 	# 修复NTFS格式优盘不自动挂载
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
@@ -71,6 +71,7 @@ fi
 ################################################################################################################
 Diy_lienol() {
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' | xargs -i rm -rf {}
+find . -name 'luci-app-adguardhome' -o -name 'adguardhome' | xargs -i rm -rf {}
 rm -rf feeds/packages/libs/libcap
 
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
