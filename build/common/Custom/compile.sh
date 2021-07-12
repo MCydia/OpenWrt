@@ -49,13 +49,14 @@ XTbit=`getconf LONG_BIT`
 	sleep 2s
 	sudo apt-get update -y
 	sudo apt-get full-upgrade -y
-	sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl swig rsync
+	sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler libpcap0.8-dev g++-multilib antlr3 gperf wget curl swig rsync
 	[[ $? -ne 0 ]] && {
 		clear
 		echo
 		TIME r "环境部署失败，请检测网络或更换节点再尝试!"
 		exit 1
 	} || {
+	sudo apt-get autoremove --purge
 	sudo apt-get clean
 	sudo timedatectl set-timezone Asia/Shanghai
 	echo "compile" > .compile
@@ -74,8 +75,8 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		firmware="Mortal_source"
 		Core=".Mortal_core"
 		source openwrt/.Mortal_core
-	elif [[ -n "$(ls -A "Openwrt/.amlogic_core" 2>/dev/null)" ]]; then
-		firmware="Openwrt_amlogic"
+	elif [[ -n "$(ls -A "openwrt/.amlogic_core" 2>/dev/null)" ]]; then
+		firmware="openwrt_amlogic"
 		Core=".amlogic_core"
 		source openwrt/.amlogic_core
 	else
@@ -86,7 +87,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		TIME r "没检测到openwrt文件夹有执行文件，自动转换成首次编译命令编译固件，请稍后..."
 		rm -rf {openwrt,openwrtl,dl,.bf_config,compile.sh}
 		rm -rf {.Lede_core,.Lienol_core,.amlogic_core}
-		bash <(curl -fsSL git.io/JckP8)
+		bash <(curl -fsSL git.io/JcGDV)
 	fi
 	echo
 	if [[ `grep -c "CONFIG_TARGET_x86_64=y" openwrt/.bf_config` -eq '1' ]]; then
@@ -96,7 +97,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 	else
           	TARGET_PROFILE="armvirt"
 	fi
-	[[ ${firmware} == "Openwrt_amlogic" ]] && {
+	[[ ${firmware} == "openwrt_amlogic" ]] && {
 		clear
 		echo
 		echo
@@ -118,7 +119,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 			TIME r "您选择更改源码，正在清理旧文件中，请稍后..."
 			rm -rf {openwrt,openwrtl,dl,.bf_config,compile.sh}
 			rm -rf {.Lede_core,.Lienol_core,.amlogic_core}
-			bash <(curl -fsSL git.io/JckP8)
+			bash <(curl -fsSL git.io/JcGDV)
 		;;
 		*)
 			YUAN_MA="false"
@@ -127,8 +128,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		;;
 	esac
 fi
-Ubuntu_lv="$(df -h | grep "/dev/*/" | awk '{print $4}' | awk 'NR==1')"
-Ubuntu_kj="${Ubuntu_lv%?}"
+Ubuntu_kj="$(df -h | grep "/dev/*/" | awk '{print $4}' | awk 'NR==1' | sed 's/.$//g')"
 if [[ "${Ubuntu_kj}" -lt "20" ]];then
 	echo
 	TIME z "您当前系统可用空间为${Ubuntu_kj}G"
@@ -185,7 +185,7 @@ fi
 		break
 		;;
 		4)
-			firmware="Openwrt_amlogic"
+			firmware="openwrt_amlogic"
 			TIME y "您选择了：N1和晶晨系列CPU盒子专用"
 		break
 		;;
@@ -223,7 +223,7 @@ case $MENU in
 esac
 echo
 echo
-[[ ! $firmware == "Openwrt_amlogic" ]] && {
+[[ ! $firmware == "openwrt_amlogic" ]] && {
 	TIME g "是否把定时更新插件编译进固件?"
 	read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " RELE
 	case $RELE in
@@ -232,12 +232,12 @@ echo
 		;;
 		*)
 			TIME r "您已关闭把‘定时更新插件’编译进固件！"
-			Github="https://github.com/MCydia/OpenWrt"
+			Github="https://github.com/281677160/AutoBuild-OpenWrt"
 		;;
 	esac
 }
 [[ "${REG_UPDATE}" == "true" ]] && {
-	[[ ! ${YUAN_MA} == "false" ]] && Git="https://github.com/MCydia/OpenWrt"
+	[[ ! ${YUAN_MA} == "false" ]] && Git="https://github.com/281677160/AutoBuild-OpenWrt"
 	TIME g "设置Github地址,定时更新固件需要把固件传至对应地址的Releases"
 	TIME z "回车默认为：$Git"
 	read -p " 请输入Github地址：" Github
@@ -310,7 +310,7 @@ elif [[ $firmware == "Mortal_source" ]]; then
 	OpenWrt_name="21.02"
 	echo -e "\nipdz=$ip" > openwrt/.Mortal_core
 	echo -e "\nGit=$Github" >> openwrt/.Mortal_core
-elif [[ $firmware == "Openwrt_amlogic" ]]; then
+elif [[ $firmware == "openwrt_amlogic" ]]; then
 	[[ -d openwrt ]] && {
 		rm -rf openwrtl && git clone https://github.com/coolsnowwolf/lede openwrtl
 	} || {
@@ -353,12 +353,12 @@ rm -rf {.bf_config,compile.sh,dl}
 rm -rf {.Lede_core,.Lienol_core,.amlogic_core}
 echo "Compile_Date=$(date +%Y%m%d%H%M)" > $Home/Openwrt.info
 [ -f $Home/Openwrt.info ] && . $Home/Openwrt.info
-svn co https://github.com/MCydia/OpenWrt/trunk/build $Home/build > /dev/null 2>&1
+svn co https://github.com/281677160/AutoBuild-OpenWrt/trunk/build $Home/build > /dev/null 2>&1
 [[ $? -ne 0 ]] && {
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/MCydia/OpenWrt $Home/build/common
+git clone https://github.com/281677160/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -530,7 +530,7 @@ if [ "$?" == "0" ]; then
 	echo
 	echo
 	echo
-	[[ ${firmware} == "Openwrt_amlogic" ]] && {
+	[[ ${firmware} == "openwrt_amlogic" ]] && {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ N1和晶晨系列盒子专用固件 ]顺利编译完成~~~"
 	} || {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ ${TARGET_PROFILE} ]顺利编译完成~~~"
@@ -557,7 +557,7 @@ if [ "$?" == "0" ]; then
 	fi
 	rm -rf $Home/Openwrt.info
 	rm -rf ${Home}/upgrade
-	if [[ $firmware == "Openwrt_amlogic" ]]; then
+	if [[ $firmware == "openwrt_amlogic" ]]; then
 		cp -Rf ${Home}/bin/targets/*/*/*.tar.gz ${Home}/openwrt-armvirt/ && sync
 		TIME l "请输入一键打包命令进行打包固件，打包成功后，固件存放在[openwrt/out]文件夹中"
 	fi
