@@ -36,7 +36,7 @@ git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwal
 git clone https://github.com/garypang13/luci-app-bypass package/luci-app-bypass
 git clone --depth=1 https://github.com/garypang13/smartdns-le package/smartdns-le
 
-sed -i "/exit 0/i\chmod +x /bin/webweb.sh && source /bin/webweb.sh" $ZZZ
+sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh" $ZZZ
 
 
 if [[ "${Modelfile}" == "Lede_source" ]]; then
@@ -77,7 +77,7 @@ git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
-sed -i "/exit 0/i\chmod +x /bin/webweb.sh && source /bin/webweb.sh" $ZZZ
+sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh" $ZZZ
 }
 
 ################################################################################################################
@@ -237,6 +237,13 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-sfe=y" ${Home}/.config` -eq '1' ]]; then
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
 fi
+if [[ `grep -c "CONFIG_PACKAGE_luci-i18n-qbittorrent-zh-cn=y" ${Home}/.config` -eq '0' ]]; then
+	sed -i 's/CONFIG_PACKAGE_luci-app-qbittorrent_static=y/# CONFIG_PACKAGE_luci-app-qbittorrent_static is not set/g' ${Home}/.config
+	sed -i 's/CONFIG_DEFAULT_luci-app-qbittorrent=y/# CONFIG_DEFAULT_luci-app-qbittorrent is not set/g' ${Home}/.config
+	sed -i 's/CONFIG_PACKAGE_luci-app-qbittorrent_dynamic=y/# CONFIG_PACKAGE_luci-app-qbittorrent_dynamic is not set/g' ${Home}/.config
+	sed -i 's/CONFIG_PACKAGE_qBittorrent-static=y/# CONFIG_PACKAGE_qBittorrent-static is not set/g' ${Home}/.config
+	sed -i 's/CONFIG_PACKAGE_qbittorrent=y/# CONFIG_PACKAGE_qbittorrent is not set/g' ${Home}/.config
+fi
 if [[ `grep -c "CONFIG_TARGET_ROOTFS_EXT4FS=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_TARGET_ROOTFS_PARTSIZE" ${Home}/.config` -eq '0' ]]; then
 		sed -i '/CONFIG_TARGET_ROOTFS_PARTSIZE/d' ${Home}/.config > /dev/null 2>&1
@@ -274,6 +281,9 @@ if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
 fi
 grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
 grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
+if [[ `grep -c "CONFIG_PACKAGE_luci-i18n-qbittorrent-zh-cn=y" ${Home}/.config` -eq '0' ]]; then
+	sed -i '/qbittorrent/d' Plug-in
+fi
 sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
 sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
 sed -i 's/=y/\"/g' Plug-in
@@ -301,6 +311,16 @@ if [[ "${REPO_BRANCH}" == "master" ]]; then
 	sed -i 's/distversion)%>/distversion)%><!--/g' package/lean/autocore/files/*/index.htm
 	sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
 fi
+[[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
+[[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
+	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open.yml
+	Make_ker="$(cat open.yml | grep ./make | cut -d "k" -f3 | sed s/[[:space:]]//g)"
+	TARGET_kernel="${Make_ker}"
+	TARGET_model="${amlogic_model}"
+} || {
+	TARGET_kernel="${amlogic_kernel}"
+	TARGET_model="${amlogic_model}"
+}
 }
 
 ################################################################################################################
@@ -331,14 +351,24 @@ GONGGAO g "拉取插件应该单独拉取某一个你需要的插件，别一下
 GONGGAO r "《如果编译脚本在这里就出现错误的话，意思就是不得不更新脚本了，怎么更新我会在这里写明》"
 GONGGAO y "7月11号修复定时更新不保存改过的IP、DNS、DHCP的问题，修复不保存adguardhome配置文件问题"
 GONGGAO y "7月11号暂时移除luci-app-ddnsto插件,没搞明白这个放源码里面会出现个别情况编译不成功的问题"
+GONGGAO g "7月12号修复LEDE源码不选择qbittorrent都会显示带有这个插件的问题"
+GONGGAO g "LEDE源码默认是带两套qbittorrent插件的，一套完整版，一套精简版"
+GONGGAO g "精简版不管你选择没选择qbittorrentd都会默认编译进固件的，就是在页面不显示而已"
+GONGGAO g "我写了个判断，如果不选择qbittorrentd就把相关的默认选项都去除了"
+GONGGAO g "重新改了一下定时更新插件的MD5对比方式,有用定时更新插件的更新仓库后重新编译的固件自己手动安装一次,以后才会对比MD5成功,要不然一直对比失败的"
 echo
 echo
 }
 
 Diy_tongzhi() {
-GONGGAO r "7月11号修复定时更新不保存改过的IP、DNS、DHCP的问题，修复不保存adguardhome配置文件问题"
-GONGGAO r "7月11号暂时移除luci-app-ddnsto插件,没搞明白这个放源码里面会出现个别情况编译不成功的问题"
-GONGGAO y "更新仓库只要复制我仓库的build-openwrt.yml跟对应源码的diy-part.sh内容粘贴到你仓库就可以了"
+GONGGAO r "7月12号修复LEDE源码不选择qbittorrent都会显示带有这个插件的问题"
+GONGGAO r "LEDE源码默认是带两套qbittorrent插件的，一套完整版，一套精简版"
+GONGGAO r "精简版不管你选择没选择qbittorrentd都会默认编译进固件的，就是在页面不显示而已"
+GONGGAO r "我写了个判断，如果不选择qbittorrentd就把相关的默认选项都去除了"
+GONGGAO y "重新改了一下定时更新插件的MD5对比方式,有用定时更新插件的更新仓库后重新编译的固件自己手动安装一次,以后才会对比MD5成功,要不然一直对比失败的"
+GONGGAO y "手动安装的意思就是编译好固件后，下载出来，然后在openwrt后台自己更新一次不保存配置的更新"
+GONGGAO y "最近更新的比较频繁，希望大家理解，谢谢！"
+GONGGAO g "这一次更新，你们只要复制我仓库的build-openwrt.yml内容覆盖到你仓库的build-openwrt.yml上就可以了，麻烦大家了！"
 echo
 echo
 exit 1
@@ -349,16 +379,6 @@ exit 1
 ################################################################################################################
 Diy_xinxi_Base() {
 GET_TARGET_INFO
-[[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
-[[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
-	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open
-	Make_d="$(grep "./make -d -b" open)" && Make="${Make_d##*-k }"
-	TARGET_kernel="${Make}"
-	TARGET_model="${amlogic_model}"
-} || {
-	TARGET_kernel="${amlogic_kernel}"
-	TARGET_model="${amlogic_model}"
-}
 if [[ "${TARGET_PROFILE}" =~ (friendlyarm_nanopi-r2s|friendlyarm_nanopi-r4s|armvirt) ]]; then
 	REGULAR_UPDATE="false"
 fi
