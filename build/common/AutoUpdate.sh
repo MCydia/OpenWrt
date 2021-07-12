@@ -3,7 +3,7 @@
 # AutoBuild Module by Hyy2001
 # AutoUpdate for Openwrt
 
-Version=V6.1
+Version=V6.2
 
 Shell_Helper() {
 echo
@@ -271,7 +271,7 @@ if [[ ! "${Force_Update}" == 1 ]];then
 	fi
   	if [[ "${CURRENT_Version}" -lt "${CLOUD_Version}" ]];then
 		[[ "${AutoUpdate_Mode}" == 1 ]] && exit 0
-		TIME && read -p "当前版本高于云端最新版,是否强制覆盖固件?[Y/n]:" Choose
+		TIME && read -p "云端最高版本,低于您现在的版本,是否强制覆盖现有固件?[Y/n]:" Choose
 		[[ "${Choose}" == Y ]] || [[ "${Choose}" == y ]] && {
 			TIME z "正在开始使用云端版本覆盖现有固件..."
 		} || {
@@ -307,10 +307,17 @@ if [[ $? -ne 0 ]];then
 else
 	TIME y "下载云端固件成功!"
 fi
-MD5_DB=$(md5sum ${Firmware} | cut -d ' ' -f1) && CURRENT_MD5="${MD5_DB:0:6}"
-CLOUD_MD5=$(echo ${Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+CLOUD_MD5=$(md5sum ${Firmware} | cut -c1-3)
+CLOUD_256=$(sha256sum ${Firmware} | cut -c1-3)
+MD5_256=$(echo ${Firmware} | egrep -o "[a-zA-Z0-9]+${Firmware_SFX}" | sed -r "s/(.*)${Firmware_SFX}/\1/")
+CURRENT_MD5="$(echo "${MD5_256}" | cut -c1-3)"
+CURRENT_256="$(echo "${MD5_256}" | cut -c 4-)"
 [[ ${CURRENT_MD5} != ${CLOUD_MD5} ]] && {
 	TIME r "MD5对比失败,固件可能在下载时损坏,请检查网络后重试!"
+	exit 1
+}
+[[ ${CURRENT_256} != ${CLOUD_256} ]] && {
+	TIME r "SHA256对比失败,固件可能在下载时损坏,请检查网络后重试!"
 	exit 1
 }
 chmod 777 ${Firmware}
@@ -321,6 +328,7 @@ TIME g "准备更新固件,更新期间请不要断开电源或重启设备 ..."
 	echo
 	exit 0
 }
+sleep 2
 TIME g "正在更新固件,请耐心等待 ..."
 if [[ "${AutoUpdate_Mode}" == 1 ]] || [[ "${Update_Mode}" == 1 ]]; then
 	cp -Rf /etc/config/network /mnt/network
@@ -331,14 +339,7 @@ if [[ "${AutoUpdate_Mode}" == 1 ]] || [[ "${Update_Mode}" == 1 ]]; then
 		export Upgrade_Options="sysupgrade -q"
 	}
 fi
-sleep 3
+
 ${Upgrade_Options} ${Firmware}
 
-if [[ ! $? == 0 ]]; then
-	[[ "${REPO_Name}" == "mortal" ]] && {
-		exit 0
-	} || {
-	TIME r "固件刷写失败,请尝试手动更新固件!"
-	exit 1
-	} 
-fi
+exit 0
