@@ -71,7 +71,6 @@ fi
 ################################################################################################################
 Diy_lienol() {
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' | xargs -i rm -rf {}
-find . -name 'luci-app-adguardhome' -o -name 'adguardhome' | xargs -i rm -rf {}
 rm -rf feeds/packages/libs/libcap
 
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
@@ -351,7 +350,7 @@ GONGGAO g "第一次用我仓库的，请不要拉取任何插件，先SSH进入
 GONGGAO g "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 GONGGAO r "《如果编译脚本在这里就出现错误的话，意思就是不得不更新脚本了，怎么更新我会在这里写明》"
 GONGGAO y "7月11号修复定时更新不保存改过的IP、DNS、DHCP的问题，修复不保存adguardhome配置文件问题"
-GONGGAO y "7月11号暂时移除luci-app-ddnsto插件,没搞明白这个放源码里面会出现个别情况编译不成功的问题"
+GONGGAO g "7月12号把luci-app-ddnsto插件,重新加入插件包"
 GONGGAO g "7月12号修复LEDE源码不选择qbittorrent都会显示带有这个插件的问题"
 GONGGAO g "LEDE源码默认是带两套qbittorrent插件的，一套完整版，一套精简版"
 GONGGAO g "精简版不管你选择没选择qbittorrentd都会默认编译进固件的，就是在页面不显示而已"
@@ -388,14 +387,14 @@ TIME b "编译源码: ${CODE}"
 TIME b "源码链接: ${REPO_URL}"
 TIME b "源码分支: ${REPO_BRANCH}"
 TIME b "源码作者: ${ZUOZHE}"
+TIME b "默认内核: ${PATCHVER}"
+TIME b "Luci版本: ${OpenWrt_name}"
 [[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME b "编译机型: ${TARGET_model}"
 	TIME b "打包内核: ${TARGET_kernel}"
 } || {
 	TIME b "编译机型: ${TARGET_PROFILE}"
 }
-TIME b "默认内核: ${PATCHVER}"
-TIME b "Luci版本: ${OpenWrt_name}"
 TIME b "固件作者: ${Author}"
 TIME b "仓库地址: ${Github}"
 TIME b "启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
@@ -423,9 +422,9 @@ else
 	TIME r "上传BIN文件夹(固件+IPK): 关闭"
 fi
 if [[ ${UPLOAD_COWTRANSFER} == "true" ]]; then
-	TIME y "上传固件到到【奶牛快传】和【WETRANSFER】: 开启"
+	TIME y "上传固件至【奶牛快传】和【WETRANSFER】: 开启"
 else
-	TIME r "上传固件到到【奶牛快传】和【WETRANSFER】: 关闭"
+	TIME r "上传固件至【奶牛快传】和【WETRANSFER】: 关闭"
 fi
 if [[ ${UPLOAD_RELEASE} == "true" ]]; then
 	TIME y "发布固件: 开启"
