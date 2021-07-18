@@ -26,7 +26,7 @@ Compte=$(date +%Y年%m月%d号%H时%M分)
 # LEDE源码通用diy.sh文件
 ################################################################################################################
 Diy_lede() {
-find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' | xargs -i rm -rf {}
+find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' -o -name 'mentohust' | xargs -i rm -rf {}
 find . -name 'luci-app-ipsec-vpnd' -o -name 'k3screenctrl' -o -name 'luci-app-fileassistant' | xargs -i rm -rf {}
 find . -name 'luci-theme-netgear' | xargs -i rm -rf {}
 
@@ -97,7 +97,7 @@ Diy_all() {
 git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/281677160/openwrt-package
 cp -Rf openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 
-# 此处为控制后台自动更新固件，如需需要此功能请自行修改“false”为"true" 默认我关闭此功能。
+# 此处为控制后台自动更新固件，如需需要此功能请自行修改“false”为"true" 默认关闭此功能。
 if [[ ${REGULAR_UPDATE} == "false" ]]; then
 	git clone https://github.com/281677160/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
 	cp -Rf "${PATH1}"/{AutoUpdate.sh,replace.sh} package/base-files/files/bin
@@ -322,6 +322,35 @@ fi
 	TARGET_kernel="${amlogic_kernel}"
 	TARGET_model="${amlogic_model}"
 }
+
+if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${Home}/.config` -eq '1' ]]; then
+	Arch="amd64"
+elif [[ `grep -c "CONFIG_ARCH=\"i386\"" ${Home}/.config` -eq '1' ]]; then
+	Arch="i386"
+elif [[ `grep -c "CONFIG_ARCH=\"aarch64\"" ${Home}/.config` -eq '1' ]]; then
+	Arch="arm64"
+elif [[ `grep -c "CONFIG_ARCH=\"mips\"" ${Home}/.config` -eq '1' ]]; then
+	Arch="mips_softfloat"
+elif [[ `grep -c "CONFIG_ARCH=\"mipsel\"" ${Home}/.config` -eq '1' ]]; then
+	Arch="mipsle_softfloat"
+elif [[ `grep -c "CONFIG_ARCH=\"armeb\"" ${Home}/.config` -eq '1' ]]; then
+	Arch="armeb"
+fi
+if [[ `grep -c "CONFIG_ARCH=\"arm\"" ${Home}/.config` -eq '1' ]]; then
+	if [[ `grep -c "CONFIG_arm_v7=y" ${Home}/.config` -eq '1' ]]; then
+		Arch="armv7"
+	fi	
+fi
+if [[ ! "${REPO_BRANCH}" == "master" ]]; then
+	downloader="curl -L -k --retry 2 --connect-timeout 20 -o"
+	latest_ver="$($downloader - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null|grep -E 'tag_name' |grep -E 'v[0-9.]+' -o 2>/dev/null)"
+	wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz
+	tar -zxvf AdGuardHome_linux_${Arch}.tar.gz -C ${Home}
+	mkdir -p files/usr/bin
+	mv -f AdGuardHome/AdGuardHome files/usr/bin
+	chmod 777 files/usr/bin/AdGuardHome
+	rm -rf {AdGuardHome_linux_${Arch}.tar.gz,AdGuardHome}
+fi
 }
 
 ################################################################################################################
