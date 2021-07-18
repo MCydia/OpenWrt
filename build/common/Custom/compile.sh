@@ -46,11 +46,12 @@ XTbit=`getconf LONG_BIT`
 	TIME z "|              编译环境部署                 |"
 	TIME g "|                                           |"
 	TIME r "|*******************************************|"
-	sleep 2s
+	echo
+	echo
 	sudo apt-get update -y
 	sudo apt-get full-upgrade -y
-	sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler libpcap0.8-dev g++-multilib antlr3 gperf wget curl swig rsync
-	[[ $? -ne 0 ]] && {
+	sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler libpcap0.8-dev g++-multilib antlr3 gperf wget curl rename swig rsync
+	[[ ! $? == 0 ]] && {
 		clear
 		echo
 		TIME r "环境部署失败，请检测网络或更换节点再尝试!"
@@ -62,6 +63,7 @@ XTbit=`getconf LONG_BIT`
 	echo "compile" > .compile
 	}
 }
+rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core,.bf_config}
 if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 	if [[ -n "$(ls -A "openwrt/.Lede_core" 2>/dev/null)" ]]; then
 		firmware="Lede_source"
@@ -86,7 +88,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		echo
 		TIME r "没检测到openwrt文件夹有执行文件，自动转换成首次编译命令编译固件，请稍后..."
 		rm -rf {openwrt,openwrtl,dl,.bf_config,compile.sh}
-		rm -rf {.Lede_core,.Lienol_core,.amlogic_core}
+		rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
 		bash <(curl -fsSL git.io/JcGDV)
 	fi
 	echo
@@ -97,7 +99,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 	else
           	TARGET_PROFILE="armvirt"
 	fi
-	[[ ${firmware} == "Openwrt_amlogic" ]] && {
+	[[ ${firmware} == "openwrt_amlogic" ]] && {
 		clear
 		echo
 		echo
@@ -117,8 +119,9 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 			echo
 			echo
 			TIME r "您选择更改源码，正在清理旧文件中，请稍后..."
-			rm -rf {openwrt,openwrtl,dl,.bf_config,compile.sh}
-			rm -rf {.Lede_core,.Lienol_core,.amlogic_core}
+			rm -rf openwrt
+			rm -rf {openwrtl,dl,.bf_config,compile.sh}
+			rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
 			bash <(curl -fsSL git.io/JcGDV)
 		;;
 		*)
@@ -128,6 +131,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		;;
 	esac
 fi
+Ubuntu_mz="$(cat /etc/group | grep adm | cut -f2 -d,)"
 Ubuntu_kj="$(df -h | grep "/dev/*/" | awk '{print $4}' | awk 'NR==1' | sed 's/.$//g')"
 if [[ "${Ubuntu_kj}" -lt "20" ]];then
 	echo
@@ -171,21 +175,25 @@ fi
 	case $CHOOSE in
 		1)
 			firmware="Lede_source"
+			CODE="lede"
 			TIME y "您选择了：Lede_5.10内核,LUCI 18.06版本"
 		break
 		;;
 		2)
 			firmware="Lienol_source"
+			CODE="lienol"
 			TIME y "您选择了：Lienol_4.14内核,LUCI 19.07版本"
 		break
 		;;
 		3)
 			firmware="Mortal_source"
+			CODE="mortal"
 			TIME y "您选择了：Immortalwrt_5.4内核,LUCI 21.02版本"
 		break
 		;;
 		4)
-			firmware="openwrt_amlogic"
+			firmware="Openwrt_amlogic"
+			CODE="lede"
 			TIME y "您选择了：N1和晶晨系列CPU盒子专用"
 		break
 		;;
@@ -232,7 +240,7 @@ echo
 		;;
 		*)
 			TIME r "您已关闭把‘定时更新插件’编译进固件！"
-			Github="https://github.com/MCydia/OpenWrt"
+			Github="https://github.com/281677160/AutoBuild-OpenWrt"
 		;;
 	esac
 }
@@ -252,7 +260,8 @@ echo
 	echo -e "\nipdz=$ip" > ${Core}
 	echo -e "\nGit=$Github" >> ${Core}
 }
-Begin="$(TZ=UTC-8 date "+%Y/%m/%d-%H.%M")"
+Begin="$(date "+%Y/%m/%d-%H.%M")"
+date1="$(date +'%m.%d')"
 echo
 TIME g "正在下载源码中,请耐心等候~~~"
 echo
@@ -310,7 +319,7 @@ elif [[ $firmware == "Mortal_source" ]]; then
 	OpenWrt_name="21.02"
 	echo -e "\nipdz=$ip" > openwrt/.Mortal_core
 	echo -e "\nGit=$Github" >> openwrt/.Mortal_core
-elif [[ $firmware == "Openwrt_amlogic" ]]; then
+elif [[ $firmware == "openwrt_amlogic" ]]; then
 	[[ -d openwrt ]] && {
 		rm -rf openwrtl && git clone https://github.com/coolsnowwolf/lede openwrtl
 	} || {
@@ -346,19 +355,20 @@ elif [[ $firmware == "Openwrt_amlogic" ]]; then
 	echo -e "\nipdz=$ip" > openwrt/.amlogic_core
 	echo -e "\nGit=$Github" >> openwrt/.amlogic_core
 fi
+Dan="$PWD"
 Home="$PWD/openwrt"
 PATH1="$PWD/openwrt/build/${firmware}"
 [[ -e ${Core} ]] && cp -Rf {.bf_config,compile.sh,${Core},dl} $Home
 rm -rf {.bf_config,compile.sh,dl}
-rm -rf {.Lede_core,.Lienol_core,.amlogic_core}
+rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
 echo "Compile_Date=$(date +%Y%m%d%H%M)" > $Home/Openwrt.info
 [ -f $Home/Openwrt.info ] && . $Home/Openwrt.info
-svn co https://github.com/281677160/AutoBuild-OpenWrt/trunk/build $Home/build > /dev/null 2>&1
+svn co https://github.com/MCydia/OpenWrt/trunk/build $Home/build > /dev/null 2>&1
 [[ $? -ne 0 ]] && {
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/281677160/common $Home/build/common
+svn co https://github.com/MCydia/OpenWrt/trunk/build/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -422,6 +432,7 @@ TIME g "正在加载源和安装源,请耐心等候~~~"
 echo
 sed -i "/uci commit fstab/a\uci commit network" $ZZZ
 sed -i "/uci commit network/i\uci set network.lan.ipaddr='$ip'" $ZZZ
+sed -i "s/OpenWrt /${Ubuntu_mz} Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 echo
 sed -i 's/"管理权"/"改密码"/g' `grep "管理权" -rl ./feeds/luci/modules/luci-base`
@@ -456,6 +467,10 @@ else
 fi
 if [ "${REGULAR_UPDATE}" == "true" ]; then
           source build/$firmware/upgrade.sh && Diy_Part2
+fi
+if [[ "${REPO_BRANCH}" == "master" ]]; then
+	sed -i 's/distversion)%>/distversion)%><!--/g' package/lean/autocore/files/*/index.htm
+	sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
 fi
 echo
 TIME g "正在下载DL文件,请耐心等待..."
@@ -501,36 +516,41 @@ clear
 echo
 echo
 echo
-TIME y "您的CPU型号为[ ${CPUNAME} ]"
+TIME l "您的CPU型号为[ ${CPUNAME} ]"
 echo
 echo
-TIME y "在Ubuntu使用核心数为[ ${CPUCORES} ],线程数为[ $(nproc) ]"
+TIME l "在Ubuntu使用核心数为[ ${CPUCORES} ],线程数为[ $(nproc) ]"
 echo
 echo
 if [[ "$(nproc)" == "1" ]]; then
-	TIME y "正在使用[$(nproc)线程]编译固件,预计要[3.5]小时左右,请耐心等待..."
+	TIME l "正在使用[$(nproc)线程]编译固件,预计要[3.5]小时左右,请耐心等待..."
 elif [[ "$(nproc)" =~ (2|3) ]]; then
-	TIME y "正在使用[$(nproc)线程]编译固件,预计要[3]小时左右,请耐心等待..."
+	TIME l "正在使用[$(nproc)线程]编译固件,预计要[3]小时左右,请耐心等待..."
 elif [[ "$(nproc)" =~ (4|5) ]]; then
-	TIME y "正在使用[$(nproc)线程]编译固件,预计要[2.5]小时左右,请耐心等待..."
+	TIME l "正在使用[$(nproc)线程]编译固件,预计要[2.5]小时左右,请耐心等待..."
 elif [[ "$(nproc)" =~ (6|7) ]]; then
-	TIME y "正在使用[$(nproc)线程]编译固件,预计要[2]小时左右,请耐心等待..."
+	TIME l "正在使用[$(nproc)线程]编译固件,预计要[2]小时左右,请耐心等待..."
 elif [[ "$(nproc)" =~ (8|9) ]]; then
-	TIME y "正在使用[$(nproc)线程]编译固件,预计要[1.5]小时左右,请耐心等待..."
+	TIME l "正在使用[$(nproc)线程]编译固件,预计要[1.5]小时左右,请耐心等待..."
 else
-	TIME y "正在使用[$(nproc)线程]编译固件,预计要[1]小时左右,请耐心等待..."
+	TIME l "正在使用[$(nproc)线程]编译固件,预计要[1]小时左右,请耐心等待..."
 fi
 sleep 15s
 make -j$(nproc) V=s 2>&1 |tee build.log
 
 if [ "$?" == "0" ]; then
-	End="$(TZ=UTC-8 date "+%Y/%m/%d-%H.%M")"
+	[[ `grep -c "please re-run with -j1 to see" build.log` -ge '1' ]] && {
+		TIME r "编译失败~~!"
+		TIME y "请不要使用桌面版ubuntu编译，或者检测网络或者更换节点再尝试"
+		exit 1
+	}
+	End="$(date "+%Y/%m/%d-%H.%M")"
 	rm -rf $Home/build.log
 	clear
 	echo
 	echo
 	echo
-	[[ ${firmware} == "Openwrt_amlogic" ]] && {
+	[[ ${firmware} == "openwrt_amlogic" ]] && {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ N1和晶晨系列盒子专用固件 ]顺利编译完成~~~"
 	} || {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ ${TARGET_PROFILE} ]顺利编译完成~~~"
@@ -555,12 +575,17 @@ if [ "$?" == "0" ]; then
 		TIME g "加入‘定时升级固件插件’的固件已经放入[bin/Firmware]文件夹中"
 		echo
 	fi
-	rm -rf $Home/Openwrt.info
-	rm -rf ${Home}/upgrade
-	if [[ $firmware == "Openwrt_amlogic" ]]; then
+	if [[ $firmware == "openwrt_amlogic" ]]; then
 		cp -Rf ${Home}/bin/targets/*/*/*.tar.gz ${Home}/openwrt-armvirt/ && sync
 		TIME l "请输入一键打包命令进行打包固件，打包成功后，固件存放在[openwrt/out]文件夹中"
 	fi
+	rm -rf $Home/Openwrt.info
+	rm -rf ${Home}/upgrade
+	cd ${Home}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}
+	rename -v "s/^openwrt/${date1}-${CODE}/" * > /dev/null 2>&1
+	cd ${Home}
+	sleep 5
+	exit 0
 else
 	echo
 	echo
@@ -570,10 +595,10 @@ else
 	echo
 	TIME y "在电脑上查看build.log文件日志详情！"
 	echo
+	sleep 5
+	exit 1
 fi
-cd ../
+cd ${Dan}
 rm -rf compile.sh
-sleep 2s
-echo
-echo
+sleep 10
 exit 0
