@@ -72,6 +72,7 @@ fi
 ################################################################################################################
 Diy_lienol() {
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' -o -name 'luci-app-fileassistant' | xargs -i rm -rf {}
+find . -name 'ddns-scripts_aliyun' -o -name 'ddns-scripts_dnspod' | xargs -i rm -rf {}
 rm -rf feeds/packages/libs/libcap
 
 git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
@@ -329,8 +330,6 @@ elif [[ `grep -c "CONFIG_ARCH=\"i386\"" ${Home}/.config` -eq '1' ]]; then
 	Arch="i386"
 elif [[ `grep -c "CONFIG_ARCH=\"aarch64\"" ${Home}/.config` -eq '1' ]]; then
 	Arch="arm64"
-elif [[ `grep -c "CONFIG_ARCH=\"mips\"" ${Home}/.config` -eq '1' ]]; then
-	Arch="mips_softfloat"
 elif [[ `grep -c "CONFIG_ARCH=\"mipsel\"" ${Home}/.config` -eq '1' ]]; then
 	Arch="mipsle_softfloat"
 elif [[ `grep -c "CONFIG_ARCH=\"armeb\"" ${Home}/.config` -eq '1' ]]; then
