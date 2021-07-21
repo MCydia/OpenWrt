@@ -192,7 +192,7 @@ fi
 		break
 		;;
 		4)
-			firmware="Openwrt_amlogic"
+			firmware="openwrt_amlogic"
 			CODE="lede"
 			TIME y "您选择了：N1和晶晨系列CPU盒子专用"
 		break
@@ -231,7 +231,7 @@ case $MENU in
 esac
 echo
 echo
-[[ ! $firmware == "openwrt_amlogic" ]] && {
+[[ ! $firmware == "Openwrt_amlogic" ]] && {
 	TIME g "是否把定时更新插件编译进固件?"
 	read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " RELE
 	case $RELE in
@@ -240,7 +240,7 @@ echo
 		;;
 		*)
 			TIME r "您已关闭把‘定时更新插件’编译进固件！"
-			Github="https://github.com/281677160/AutoBuild-OpenWrt"
+			Github="https://github.com/MCydia/OpenWrt"
 		;;
 	esac
 }
@@ -319,7 +319,7 @@ elif [[ $firmware == "Mortal_source" ]]; then
 	OpenWrt_name="21.02"
 	echo -e "\nipdz=$ip" > openwrt/.Mortal_core
 	echo -e "\nGit=$Github" >> openwrt/.Mortal_core
-elif [[ $firmware == "openwrt_amlogic" ]]; then
+elif [[ $firmware == "Openwrt_amlogic" ]]; then
 	[[ -d openwrt ]] && {
 		rm -rf openwrtl && git clone https://github.com/coolsnowwolf/lede openwrtl
 	} || {
@@ -368,7 +368,7 @@ svn co https://github.com/MCydia/OpenWrt/trunk/build $Home/build > /dev/null 2>&
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-svn co https://github.com/MCydia/OpenWrt/trunk/build/common $Home/build/common
+git clone https://github.com/MCydia/OpenWrt/trunk/build/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -544,13 +544,14 @@ if [ "$?" == "0" ]; then
 		TIME y "请不要使用桌面版ubuntu编译，或者检测网络或者更换节点再尝试"
 		exit 1
 	}
+	byend="1"
 	End="$(date "+%Y/%m/%d-%H.%M")"
 	rm -rf $Home/build.log
 	clear
 	echo
 	echo
 	echo
-	[[ ${firmware} == "openwrt_amlogic" ]] && {
+	[[ ${firmware} == "Openwrt_amlogic" ]] && {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ N1和晶晨系列盒子专用固件 ]顺利编译完成~~~"
 	} || {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ ${TARGET_PROFILE} ]顺利编译完成~~~"
@@ -595,10 +596,12 @@ else
 	echo
 	TIME y "在电脑上查看build.log文件日志详情！"
 	echo
+	byend="1"
 	sleep 5
 	exit 1
 fi
-cd ${Dan}
-rm -rf compile.sh
-sleep 10
-exit 0
+if [[ "${byend}" == "1" ]]; then
+	sleep 5
+	exit 0
+fi
+
