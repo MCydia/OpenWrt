@@ -7,7 +7,7 @@
 cat >$NETIP <<-EOF
 uci set network.lan.ipaddr='192.168.2.3'                                    # IPv4 地址(openwrt后台地址)
 uci set network.lan.netmask='255.255.255.0'                                 # IPv4 子网掩码
-uci set network.lan.gateway='192.168.2.253'                                 # IPv4 网关
+uci set network.lan.gateway='192.168.2.1'                                   # IPv4 网关
 uci set network.lan.broadcast='192.168.2.255'                               # IPv4 广播
 uci set network.lan.dns='223.6.6.6'                                         # DNS(多个DNS要用空格分开)
 uci set network.lan.delegate='0'                                            # 去掉LAN口使用内置的 IPv6 管理
@@ -43,7 +43,7 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 #sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile  
 # 自定义软件源
 sed -i '$a src-git kenzok https://github.com/kenzok8/openwrt-packages' feeds.conf.default           # 常用插件源
-sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default                       # 常用插件源_依赖安装
+#sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default                       # 常用插件源_依赖安装
 
 # 自定义插件
 sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
