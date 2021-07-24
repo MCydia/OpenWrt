@@ -7,7 +7,7 @@
 cat >$NETIP <<-EOF
 uci set network.lan.ipaddr='192.168.2.3'                                    # IPv4 地址(openwrt后台地址)
 uci set network.lan.netmask='255.255.255.0'                                 # IPv4 子网掩码
-uci set network.lan.gateway='192.168.2.250'                                 # IPv4 网关
+uci set network.lan.gateway='192.168.2.1'                                   # IPv4 网关
 uci set network.lan.broadcast='192.168.2.255'                               # IPv4 广播
 uci set network.lan.dns='223.6.6.6'                                         # DNS(多个DNS要用空格分开)
 uci set network.lan.delegate='0'                                            # 去掉LAN口使用内置的 IPv6 管理
@@ -18,14 +18,14 @@ uci set system.@system[0].hostname='jellyfin'                                # �
 EOF
 
 # 版本号里显示一个自己的名字（MCydia build $(TZ=UTC-8 date "+%Y.%m.%d") @ 这些都是后增加的）
-sed -i "s/OpenWrt /${jellyfin} Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
+sed -i "s/OpenWrt /jellyfin Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 # 修改机器名称
 sed -i 's/OpenWrt/jellyfin/g' package/base-files/files/bin/config_generate
 # 关闭IPv6 分配长度
 sed -i '/ip6assign/d' package/base-files/files/bin/config_generate
                                                 
 # 选择opentomcat为默认主题
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile                    
+sed -i 's/luci-theme-bootstrap/luci-theme-edge/g' feeds/luci/collections/luci/Makefile                    
 
 # 替换密码（要替换密码就不能设置密码为空）
 #sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0/$1$PhflQnJ1$yamWfH5Mphs4hXV7UXWQ21:18725/g' $ZZZ          
@@ -37,14 +37,27 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 #sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                        
 
 # 修改内核版本为4.19
-#sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile                                      
+#sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile  
+# 自定义软件源
+sed -i '$a src-git kenzok https://github.com/kenzok8/openwrt-packages' feeds.conf.default           # 常用插件源
+sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default                       # 常用插件源_依赖安装
+
+#docker
+svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman package/luci-app-dockerman
+git clone --depth=1 https://github.com/lisaac/luci-lib-docker
+if [ -e feeds/packages/utils/docker-ce ];then
+	sed -i '/dockerd/d' package/luci-app-dockerman/Makefile
+	sed -i 's/+docker/+docker-ce/g' package/luci-app-dockerman/Makefile
+fi
+
 # 自定义插件
-rm -rf ./package/lean/luci-theme-argon
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
 git clone https://github.com/jerrykuku/luci-app-argon-config.git package/lean/luci-app-argon-config  # 主题设置
-sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul 
-# firewall custom
+sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
+
+# 增加防火墙规则
 echo "iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/config/firewall/files/firewall.user
+
 # 修改插件名字
 sed -i 's/"BaiduPCS Web"/"百度网盘"/g' package/lean/luci-app-baidupcs-web/luasrc/controller/baidupcs-web.lua
 sed -i 's/("qBittorrent"))/("BT下载"))/g' package/lean/luci-app-qbittorrent/luasrc/controller/qbittorrent.lua
@@ -58,6 +71,7 @@ sed -i 's/"Turbo ACC 网络加速"/"网络加速"/g' package/lean/luci-app-turbo
 sed -i 's/"实时流量监测"/"流量"/g' package/lean/luci-app-wrtbwmon/po/zh-cn/wrtbwmon.po
 sed -i 's/"上网时间控制"/"上网控制"/g' package/lean/luci-app-accesscontrol/po/zh-cn/mia.po
 sed -i 's/"KMS 服务器"/"KMS激活"/g' package/lean/luci-app-vlmcsd/po/zh-cn/vlmcsd.po
+sed -i 's/"Dynamic DNS"/"动态DNS"/g' package/lean/luci-app-ddns/po/zh-cn/ddns.po
 sed -i 's/"TTYD 终端"/"shell终端"/g' package/lean/luci-app-ttyd/po/zh-cn/terminal.po
 sed -i 's/"USB 打印服务器"/"打印服务"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
