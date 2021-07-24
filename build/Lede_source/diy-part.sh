@@ -18,7 +18,9 @@ uci set system.@system[0].hostname='jellyfin'                                # �
 EOF
 
 # 版本号里显示一个自己的名字（MCydia build $(TZ=UTC-8 date "+%Y.%m.%d") @ 这些都是后增加的）
-sed -i "s/OpenWrt /jellyfin Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
+sed -i 's/OpenWrt /jellyfin build $(TZ=UTC-8 date "%Y-%m-%d") @ OpenWrt /g' openwrt/package/lean/default-settings/files/zzz-default-settings
+sed -i "s/OpenWrt /jellyfin build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
+#sed -i "s/OpenWrt /jellyfin Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 # 修改机器名称
 sed -i 's/OpenWrt/jellyfin/g' package/base-files/files/bin/config_generate
 # 关闭IPv6 分配长度
@@ -51,8 +53,6 @@ if [ -e feeds/packages/utils/docker-ce ];then
 fi
 
 # 自定义插件
-git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
-git clone https://github.com/jerrykuku/luci-app-argon-config.git package/lean/luci-app-argon-config  # 主题设置
 sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
 
 # 增加防火墙规则
