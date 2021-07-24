@@ -262,7 +262,7 @@ jobs:
       with:
         name: ${{ env.CODE }}-${{ env.TARGET_PROFILE }}
         tag: ${{ env.date }}
-        token: ${{ secrets.actions_jellyfin }}
+        token: ${{ secrets.actions_jellyfin_op }}
         bodyFile: "update_log.txt"
         artifacts: "${{ env.FIRMWARE }}/*"
         
