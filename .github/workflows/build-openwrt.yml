@@ -276,7 +276,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: steps.organizer.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       env:
-        GITHUB_TOKEN: ${{ secrets.actions_jellyfin }}
+        GITHUB_TOKEN: ${{ secrets.actions_jellyfin_op }}
       with:
         name: update_Firmware
         tag_name: AutoUpdate
