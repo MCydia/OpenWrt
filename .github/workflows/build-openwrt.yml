@@ -34,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [Openwrt_amlogic]
+        target: [Lede_source]
 
         # [Lede_source,Lienol_source,Mortal_source,Openwrt_amlogic]
 
@@ -262,7 +262,7 @@ jobs:
       with:
         name: ${{ env.CODE }}-${{ env.TARGET_PROFILE }}
         tag: ${{ env.date }}
-        token: ${{ secrets.REPO_TOKEN }}
+        token: ${{ secrets.actions_jellyfin }}
         bodyFile: "update_log.txt"
         artifacts: "${{ env.FIRMWARE }}/*"
         
@@ -276,7 +276,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: steps.organizer.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.actions_jellyfin }}
       with:
         name: update_Firmware
         tag_name: AutoUpdate
