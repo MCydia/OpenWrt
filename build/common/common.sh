@@ -98,8 +98,8 @@ Diy_all() {
 git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/281677160/openwrt-package
 cp -Rf openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 
-# 此处为控制后台自动更新固件，如需需要此功能请自行修改“false”为"true" 默认关闭此功能。
-if [[ ${REGULAR_UPDATE} == "false" ]]; then
+# 此处为控制后台自动更新固件，如需需要此功能请自行修改“false”为"true" 默认开启此功能。
+if [[ ${REGULAR_UPDATE} == "true" ]]; then
 	git clone https://github.com/281677160/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
 	cp -Rf "${PATH1}"/{AutoUpdate.sh,replace.sh} package/base-files/files/bin
 fi
