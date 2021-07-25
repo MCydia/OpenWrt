@@ -44,6 +44,31 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 # 自定义软件源
 #sed -i '$a src-git kenzok https://github.com/kenzok8/openwrt-packages' feeds.conf.default           # 常用插件源
 #sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default                       # 常用插件源_依赖安装
+# 删除自带插件
+rm -rf ./package/lean/luci-app-xlnetacc          # 删除迅雷快鸟
+rm -rf ./package/lean/uugamebooster              # 删除UU游戏加速
+rm -rf ./package/lean/luci-app-uugamebooster     # 删除UU游戏加速
+rm -rf ./feeds/kenzok/luci-app-ssr-plus          # 删除SSR-PLUS
+rm -rf ./feeds/garypang/luci-app-ssr-plus        # 删除SSR-PLUS
+rm -rf ./package/lean/adbyby                     # 删除广告大师
+rm -rf ./package/lean/luci-app-adbyby-plus       # 删除广告大师
+rm -rf ./feeds/luci/applications/luci-app-aria2
+rm -rf ./feeds/packages/net/aria2
+rm -rf ./feeds/luci/applications/luci-app-nlbwmon
+rm -rf ./package/lean/luci-app-pptp-server
+rm -rf ./package/lean/luci-app-qbittorrent
+rm -rf ./package/lean/qBittorrent-static
+rm -rf ./package/lean/luci-app-qbittorrent_static
+rm -rf ./feeds/luci/applications/luci-app-samba
+rm -rf ./feeds/luci/applications/luci-app-upnp
+rm -rf ./feeds/luci/applications/luci-app-wol
+rm -rf ./package/lean/luci-app-pptp-server
+rm -rf ./feeds/packages/net/zerotier
+rm -rf ./package/lean/luci-app-zerotier
+rm -rf ./package/lean/luci-app-unblockmusic
+rm -rf ./package/lean/UnblockNeteaseMusic-Go
+rm -rf ./package/lean/luci-app-zerotier
+rm -rf ./package/lean/qBittorrent-static
 
 # 自定义插件
 sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
