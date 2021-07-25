@@ -42,7 +42,7 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 # 修改内核版本为4.19
 #sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile  
 # 自定义软件源
-sed -i '$a src-git kenzok https://github.com/kenzok8/openwrt-packages' feeds.conf.default           # 常用插件源
+#sed -i '$a src-git kenzok https://github.com/kenzok8/openwrt-packages' feeds.conf.default           # 常用插件源
 #sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default                       # 常用插件源_依赖安装
 
 # 自定义插件
