@@ -45,30 +45,29 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 #sed -i '$a src-git kenzok https://github.com/kenzok8/openwrt-packages' feeds.conf.default           # 常用插件源
 #sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default                       # 常用插件源_依赖安装
 # 删除自带插件
-rm -rf ./package/lean/luci-app-xlnetacc          # 删除迅雷快鸟
-rm -rf ./package/lean/uugamebooster              # 删除UU游戏加速
-rm -rf ./package/lean/luci-app-uugamebooster     # 删除UU游戏加速
-rm -rf ./feeds/kenzok/luci-app-ssr-plus          # 删除SSR-PLUS
-rm -rf ./feeds/garypang/luci-app-ssr-plus        # 删除SSR-PLUS
-rm -rf ./package/lean/adbyby                     # 删除广告大师
-rm -rf ./package/lean/luci-app-adbyby-plus       # 删除广告大师
-rm -rf ./feeds/luci/applications/luci-app-aria2
-rm -rf ./feeds/packages/net/aria2
-rm -rf ./feeds/luci/applications/luci-app-nlbwmon
-rm -rf ./package/lean/luci-app-pptp-server
-rm -rf ./package/lean/luci-app-qbittorrent
-rm -rf ./package/lean/qBittorrent-static
-rm -rf ./package/lean/luci-app-qbittorrent_static
-rm -rf ./feeds/luci/applications/luci-app-samba
-rm -rf ./feeds/luci/applications/luci-app-upnp
-rm -rf ./feeds/luci/applications/luci-app-wol
-rm -rf ./package/lean/luci-app-pptp-server
-rm -rf ./feeds/packages/net/zerotier
-rm -rf ./package/lean/luci-app-zerotier
-rm -rf ./package/lean/luci-app-unblockmusic
-rm -rf ./package/lean/UnblockNeteaseMusic-Go
-rm -rf ./package/lean/luci-app-zerotier
-rm -rf ./package/lean/qBittorrent-static
+# rm -rf ./feeds/kenzok/luci-app-ssr-plus               # 删除SSR-PLUS
+# rm -rf ./feeds/garypang/luci-app-ssr-plus             # 删除SSR-PLUS
+rm -rf ./package/luci-app-ssr-plus/luci-app-ssr-plus    # 删除SSR-PLUS
+rm -rf ./feeds/packages/net/aria2                       # 删除aria2
+rm -rf ./feeds/packages/net/ariang                      # 删除aria2
+rm -rf ./feeds/luci/applications/luci-app-aria2         # 删除aria2
+rm -rf ./feeds/luci/applications/luci-app-samba         # 删除samba 不能与samba4同时编译
+rm -rf ./feeds/luci/applications/luci-app-upnp          # 删除upnp自动端口映射
+rm -rf ./feeds/luci/applications/luci-app-wol           # 删除wol网络唤醒
+rm -rf ./feeds/luci/applications/luci-app-nlbwmon       # 删除nlbwmon流量监控
+rm -rf ./package/lean/luci-app-pptp-server              # 删除PPTP-VPN服务端
+rm -rf ./package/lean/luci-app-qbittorrent              # 删除qbittorrent
+rm -rf ./package/lean/qBittorrent-static                # 删除qbittorrent
+rm -rf ./package/lean/luci-app-qbittorrent_static       # 删除qbittorrent
+rm -rf ./feeds/packages/net/zerotier                    # 删除zerotier内网穿透
+rm -rf ./package/lean/luci-app-zerotier                 # 删除zerotier内网穿透
+rm -rf ./package/lean/luci-app-unblockmusic             # 删除网易云音乐解锁
+rm -rf ./package/lean/UnblockNeteaseMusic-Go            # 删除网易云音乐解锁
+rm -rf ./package/lean/adbyby                            # 删除广告大师
+rm -rf ./package/lean/luci-app-adbyby-plus              # 删除广告大师
+rm -rf ./package/lean/luci-app-xlnetacc                 # 删除迅雷快鸟
+rm -rf ./package/lean/uugamebooster                     # 删除UU游戏加速
+rm -rf ./package/lean/luci-app-uugamebooster            # 删除UU游戏加速
 
 # 自定义插件
 sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
