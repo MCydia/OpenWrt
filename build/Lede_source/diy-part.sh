@@ -25,8 +25,13 @@ sed -i "s/OpenWrt /jellyfin build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" pac
 #sed -i 's/OpenWrt/jellyfin/g' package/base-files/files/bin/config_generate
 # 关闭IPv6 分配长度
 sed -i '/ip6assign/d' package/base-files/files/bin/config_generate
+
+# 添加新版argon主题
+git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
+git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
+rm -rf ../lean/luci-theme-argon
                                                 
-# 选择opentomcat为默认主题
+# 选择edge为默认主题
 sed -i 's/luci-theme-bootstrap/luci-theme-edge/g' feeds/luci/collections/luci/Makefile
 sed -i "/commit luci/i\uci set luci.main.mediaurlbase='/luci-static/edge'" package/lean/default-settings/files/zzz-default-settings
 
