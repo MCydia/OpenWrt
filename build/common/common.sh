@@ -88,7 +88,7 @@ sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh" $ZZZ
 Diy_mortal() {
 
 find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon' -o -name 'luci-light' -o -name 'luci-app-fileassistant'  | xargs -i rm -rf {}
-find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-openwrt' | xargs -i rm -rf {}
+find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-openwrt' -o -name 'luci-app-cifs' | xargs -i rm -rf {}
 }
 
 ################################################################################################################
@@ -98,7 +98,6 @@ Diy_all() {
 git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/281677160/openwrt-package
 cp -Rf openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 
-# 此处为控制后台自动更新固件，如需需要此功能请自行修改“false”为"true" 默认开启此功能。
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
 	git clone https://github.com/281677160/luci-app-autoupdate feeds/luci/applications/luci-app-autoupdate
 	cp -Rf "${PATH1}"/{AutoUpdate.sh,replace.sh} package/base-files/files/bin
@@ -134,8 +133,9 @@ fi
 # s905x3_s905x2_s905x_s905d_s922x_s912 一键打包脚本
 ################################################################################################################
 Diy_amlogic() {
-svn co https://github.com/ophub/amlogic-s9xxx-openwrt/trunk/amlogic-s9xxx $GITHUB_WORKSPACE/amlogic-s9xxx > /dev/null 2>&1
-curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/make >$GITHUB_WORKSPACE/make
+git clone https://github.com/ophub/amlogic-s9xxx-openwrt
+mv amlogic-s9xxx-openwrt/{amlogic-s9xxx,make} $GITHUB_WORKSPACE
+rm -rf amlogic-s9xxx-openwrt
 source $GITHUB_WORKSPACE/amlogic_openwrt
 if [[ ${amlogic_kernel} == "5.12.12_5.4.127" ]]; then
 	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open.yml
@@ -299,6 +299,7 @@ CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
 rm -rf CPU
 find . -name 'LICENSE' -o -name 'README' -o -name 'README.md' | xargs -i rm -rf {}
 find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'DEVICE_NAME' | xargs -i rm -rf {}
+
 if [[ `grep -c "KERNEL_PATCHVER:=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
 	PATCHVER=$(grep KERNEL_PATCHVER:= ${Home}/target/linux/${TARGET_BOARD}/Makefile | cut -c18-100)
 elif [[ `grep -c "KERNEL_PATCHVER=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
@@ -308,10 +309,6 @@ else
 fi
 if [[ "${PATCHVER}" != "unknown" ]]; then
 	PATCHVER=$(egrep -o "${PATCHVER}.[0-9]+" ${Home}/include/kernel-version.mk)
-fi
-if [[ "${REPO_BRANCH}" == "master" ]]; then
-	sed -i 's/distversion)%>/distversion)%><!--/g' package/lean/autocore/files/*/index.htm
-	sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
 fi
 [[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
 [[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
@@ -323,6 +320,11 @@ fi
 	TARGET_kernel="${amlogic_kernel}"
 	TARGET_model="${amlogic_model}"
 }
+
+if [[ "${REPO_BRANCH}" == "master" ]]; then
+	sed -i 's/distversion)%>/distversion)%><!--/g' package/lean/autocore/files/*/index.htm
+	sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
+fi
 
 if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${Home}/.config` -eq '1' ]]; then
 	Arch="amd64"
@@ -397,7 +399,7 @@ GONGGAO r "我写了个判断，如果不选择qbittorrentd就把相关的默认
 GONGGAO y "重新改了一下定时更新插件的MD5对比方式,有用定时更新插件的更新仓库后重新编译的固件自己手动安装一次,以后才会对比MD5成功,要不然一直对比失败的"
 GONGGAO y "手动安装的意思就是编译好固件后，下载出来，然后在openwrt后台自己更新一次不保存配置的更新"
 GONGGAO y "最近更新的比较频繁，希望大家理解，谢谢！"
-GONGGAO g "这一次更新，你们只要复制我仓库的build-openwrt.yml内容覆盖到你仓库的build-openwrt.yml上就可以了，麻烦大家了！"
+GONGGAO g "这一次更新，你们只要复制我仓库的针对性内容（如大雕：LEDE，就复制LEDE）覆盖到你仓库的上就可以了，麻烦大家了！"
 echo
 echo
 exit 1
@@ -418,7 +420,7 @@ TIME b "源码分支: ${REPO_BRANCH}"
 TIME b "源码作者: ${ZUOZHE}"
 TIME b "默认内核: ${PATCHVER}"
 TIME b "Luci版本: ${OpenWrt_name}"
-[[ "${Modelfile}" == "openwrt_amlogic" ]] && {
+[[ "${Modelfile}" == "Openwrt_amlogic" ]] && {
 	TIME b "编译机型: ${TARGET_model}"
 	TIME b "打包内核: ${TARGET_kernel}"
 } || {
@@ -428,7 +430,7 @@ TIME b "固件作者: ${Author}"
 TIME b "仓库地址: ${Github}"
 TIME b "启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
 TIME b "编译时间: ${Compte}"
-[[ "${Modelfile}" == "openwrt_amlogic" ]] && {
+[[ "${Modelfile}" == "Openwrt_amlogic" ]] && {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_model}】固件"
 } || {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_PROFILE}】固件"
@@ -497,7 +499,8 @@ if [[ ${REGULAR_UPDATE} == "true" ]]; then
 	TIME b "云端路径: ${Github_UP_RELEASE}"
 	TIME g "《编译成功，会自动把固件发布到指定地址，然后才会生成云端路径》"
 	TIME g "《普通的那个发布固件跟云端的发布路径是两码事，如果你不需要普通发布的可以不用打开发布功能》"
-	TIME g "《请把“REPO_TOKEN”密匙设置好,没设置好密匙不能发布就生成不了云端地址》"
+	TIME g "《请把“REPO_TOKEN”密匙设置好,没设置好密匙运行到 “把定时更新固件发布到云端” 步骤就会出错,生成不了云端地址》"
+	TIME g "《设置密匙教程： https://github.com/danshui-git/shuoming/blob/master/jm.md 》"
 	echo
 else
 	echo
