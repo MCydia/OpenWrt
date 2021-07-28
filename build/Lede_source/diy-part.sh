@@ -83,7 +83,10 @@ echo "iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/c
 # 修改插件名字
 sed -i 's/"BaiduPCS Web"/"百度网盘"/g' package/lean/luci-app-baidupcs-web/luasrc/controller/baidupcs-web.lua
 sed -i 's/("qBittorrent"))/("BT 下载"))/g' package/lean/luci-app-qbittorrent/luasrc/controller/qbittorrent.lua
-sed -i 's/("Dynamic DNS"), 59)/("动态DNS"), 59)/g' package/lean/luci-app-qbittorrent/luasrc/controller/qbittorrent.lua
+sed -i 's/("Dynamic DNS"), 59)/("动态 DNS"), 59)/g' package/lean/luci-app-ddns/luasrc/controller/ddns.lua
+sed -i 's/("socat"), 100)/("端口转发"), 100)/g' package/lean/luci-app-socat/luasrc/controller/socat.lua
+sed -i 's/("信息推送"), 30)/("信息推送"), 30)/g' package/lean/luci-app-serverchan/luasrc/controller/serverchan.lua
+sed -i 's/('京东签到服务'), 10)/("京东签到"), 10)/g' package/lean/luci-app-jd-dailybonus/luasrc/controller/jd-dailybonus.lua
 sed -i 's/"aMule设置"/"电驴下载"/g' package/lean/luci-app-amule/po/zh-cn/amule.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-amule/po/zh-cn/amule.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-vsftpd/po/zh-cn/vsftpd.po
@@ -94,7 +97,6 @@ sed -i 's/"Turbo ACC 网络加速"/"网络加速"/g' package/lean/luci-app-turbo
 sed -i 's/"实时流量监测"/"流量"/g' package/lean/luci-app-wrtbwmon/po/zh-cn/wrtbwmon.po
 sed -i 's/"上网时间控制"/"上网控制"/g' package/lean/luci-app-accesscontrol/po/zh-cn/mia.po
 sed -i 's/"KMS 服务器"/"KMS激活"/g' package/lean/luci-app-vlmcsd/po/zh-cn/vlmcsd.po
-sed -i 's/"Dynamic DNS"/"动态DNS"/g' package/lean/luci-app-ddns/po/zh-cn/ddns.po
 sed -i 's/"TTYD 终端"/"shell终端"/g' package/lean/luci-app-ttyd/po/zh-cn/terminal.po
 sed -i 's/"USB 打印服务器"/"打印服务"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
