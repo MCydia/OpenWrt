@@ -63,7 +63,7 @@ XTbit=`getconf LONG_BIT`
 	echo "compile" > .compile
 	}
 }
-rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core,.bf_config}
+rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core,dl,.bf_config,compile.sh}
 if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 	if [[ -n "$(ls -A "openwrt/.Lede_core" 2>/dev/null)" ]]; then
 		firmware="Lede_source"
@@ -87,7 +87,8 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		echo
 		echo
 		TIME r "没检测到openwrt文件夹有执行文件，自动转换成首次编译命令编译固件，请稍后..."
-		rm -rf {openwrt,openwrtl,dl,.bf_config,compile.sh}
+		rm -rf openwrt
+		rm -rf {dl,.bf_config,compile.sh,.compile}
 		rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
 		bash <(curl -fsSL git.io/JcGDV)
 	fi
@@ -120,13 +121,13 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 			echo
 			TIME r "您选择更改源码，正在清理旧文件中，请稍后..."
 			rm -rf openwrt
-			rm -rf {openwrtl,dl,.bf_config,compile.sh}
+			rm -rf openwrtl
+			rm -rf {dl,.bf_config,compile.sh}
 			rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
-			bash <(curl -fsSL git.io/JcGDV)
 		;;
 		*)
 			YUAN_MA="false"
-			TIME y "您已关闭更换源码编译固件，保存配置中，请稍后..."
+			TIME y "您已关闭更换源码，保存配置中，请稍后..."
 			cp -Rf openwrt/{.bf_config,compile.sh,${Core},dl} ./
 		;;
 	esac
@@ -319,7 +320,7 @@ elif [[ $firmware == "Mortal_source" ]]; then
 	OpenWrt_name="21.02"
 	echo -e "\nipdz=$ip" > openwrt/.Mortal_core
 	echo -e "\nGit=$Github" >> openwrt/.Mortal_core
-elif [[ $firmware == "Openwrt_amlogic" ]]; then
+elif [[ $firmware == "openwrt_amlogic" ]]; then
 	[[ -d openwrt ]] && {
 		rm -rf openwrtl && git clone https://github.com/coolsnowwolf/lede openwrtl
 	} || {
@@ -355,20 +356,20 @@ elif [[ $firmware == "Openwrt_amlogic" ]]; then
 	echo -e "\nipdz=$ip" > openwrt/.amlogic_core
 	echo -e "\nGit=$Github" >> openwrt/.amlogic_core
 fi
-Dan="$PWD"
 Home="$PWD/openwrt"
 PATH1="$PWD/openwrt/build/${firmware}"
+NETIP="package/base-files/files/etc/networkip"
 [[ -e ${Core} ]] && cp -Rf {.bf_config,compile.sh,${Core},dl} $Home
 rm -rf {.bf_config,compile.sh,dl}
 rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
 echo "Compile_Date=$(date +%Y%m%d%H%M)" > $Home/Openwrt.info
 [ -f $Home/Openwrt.info ] && . $Home/Openwrt.info
-svn co https://github.com/MCydia/OpenWrt/trunk/build $Home/build > /dev/null 2>&1
+svn co https://github.com/281677160/AutoBuild-OpenWrt/trunk/build $Home/build > /dev/null 2>&1
 [[ $? -ne 0 ]] && {
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/MCydia/OpenWrt/trunk/build/common $Home/build/common
+git clone https://github.com/281677160/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -401,7 +402,7 @@ source build/${firmware}/common.sh && Diy_all
 	echo
 	exit 1
 }
-if [[ $firmware == "openwrt_amlogic" ]]; then
+if [[ $firmware == "Openwrt_amlogic" ]]; then
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
 	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
@@ -430,9 +431,11 @@ fi
 echo
 TIME g "正在加载源和安装源,请耐心等候~~~"
 echo
-sed -i "/uci commit fstab/a\uci commit network" $ZZZ
-sed -i "/uci commit network/i\uci set network.lan.ipaddr='$ip'" $ZZZ
-sed -i "s/OpenWrt /${Ubuntu_mz} Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
+cat >$NETIP <<-EOF
+uci set network.lan.ipaddr='$ip'
+uci commit network
+EOF
+sed -i "s/OpenWrt /${Ubuntu_mz} compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 echo
 sed -i 's/"管理权"/"改密码"/g' `grep "管理权" -rl ./feeds/luci/modules/luci-base`
@@ -551,7 +554,7 @@ if [ "$?" == "0" ]; then
 	echo
 	echo
 	echo
-	[[ ${firmware} == "Openwrt_amlogic" ]] && {
+	[[ ${firmware} == "openwrt_amlogic" ]] && {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ N1和晶晨系列盒子专用固件 ]顺利编译完成~~~"
 	} || {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ ${TARGET_PROFILE} ]顺利编译完成~~~"
@@ -604,4 +607,3 @@ if [[ "${byend}" == "1" ]]; then
 	sleep 5
 	exit 0
 fi
-
