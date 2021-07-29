@@ -83,10 +83,10 @@ echo "iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/c
 # 修改插件名字
 sed -i 's/"BaiduPCS Web"/"百度网盘"/g' package/lean/luci-app-baidupcs-web/luasrc/controller/baidupcs-web.lua
 sed -i 's/("qBittorrent"))/("BT 下载"))/g' package/lean/luci-app-qbittorrent/luasrc/controller/qbittorrent.lua
-sed -i 's/("Dynamic DNS"), 59)/("动态 DNS"), 59)/g' package/lean/luci-app-ddns/luasrc/controller/ddns.lua
-sed -i 's/("socat"), 100)/("端口转发"), 100)/g' package/lean/luci-app-socat/luasrc/controller/socat.lua
-sed -i 's/("信息推送"), 30)/("信息推送"), 30)/g' package/lean/luci-app-serverchan/luasrc/controller/serverchan.lua
-sed -i 's/('京东签到服务'), 10)/("京东签到"), 10)/g' package/lean/luci-app-jd-dailybonus/luasrc/controller/jd-dailybonus.lua
+sed -i 's/_("Dynamic DNS"), 59)/_("动态 DNS"), 59)/g' package/lean/luci-app-ddns/luasrc/controller/ddns.lua
+sed -i 's/_("socat"), 100)/_("端口转发"), 100)/g' package/lean/luci-app-socat/luasrc/controller/socat.lua
+sed -i 's/_("微信推送"), 30)/_("信息推送"), 30)/g' package/lean/luci-app-serverchan/luasrc/controller/serverchan.lua
+sed -i 's/_('京东签到服务'), 10)/_("京东签到"), 10)/g' package/lean/luci-app-jd-dailybonus/luasrc/controller/jd-dailybonus.lua
 sed -i 's/"aMule设置"/"电驴下载"/g' package/lean/luci-app-amule/po/zh-cn/amule.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-amule/po/zh-cn/amule.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-vsftpd/po/zh-cn/vsftpd.po
