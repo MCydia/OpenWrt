@@ -254,7 +254,7 @@ jobs:
       uses: ncipollo/release-action@v1
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       with:
-        name: ${{ env.CODE }}-${{ env.TARGET_PROFILE }}
+        name: ${{ env.Compile_Date }}-${{ env.CODE }}-${{ env.TARGET_PROFILE }}
         tag: ${{ env.date }}
         token: ${{ secrets.actions_jellyfin_op }}
         bodyFile: "update_log.txt"
