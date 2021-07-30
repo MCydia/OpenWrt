@@ -281,49 +281,18 @@ if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
 	cp -Rf "${Home}"/build/common/Custom/DRM-I915 target/linux/x86/DRM-I915
 	for X in $(ls -1 target/linux/x86 | grep "config-"); do echo -e "\n$(cat target/linux/x86/DRM-I915)" >> target/linux/x86/${X}; done
 fi
-grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
-grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
-if [[ `grep -c "CONFIG_PACKAGE_luci-i18n-qbittorrent-zh-cn=y" ${Home}/.config` -eq '0' ]]; then
-	sed -i '/qbittorrent/d' Plug-in
-fi
-sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
-sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
-sed -i 's/=y/\"/g' Plug-in
-awk '$0=NR$0' Plug-in > Plug-2
-awk '{print "	" $0}' Plug-2 > Plug-in
-sed -i "s/^/TIME g \"/g" Plug-in
-cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c > CPU
-cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
-sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
-CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-rm -rf CPU
-find . -name 'LICENSE' -o -name 'README' -o -name 'README.md' | xargs -i rm -rf {}
-find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'DEVICE_NAME' | xargs -i rm -rf {}
 
-if [[ `grep -c "KERNEL_PATCHVER:=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
-	PATCHVER=$(grep KERNEL_PATCHVER:= ${Home}/target/linux/${TARGET_BOARD}/Makefile | cut -c18-100)
-elif [[ `grep -c "KERNEL_PATCHVER=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
-	PATCHVER=$(grep KERNEL_PATCHVER= ${Home}/target/linux/${TARGET_BOARD}/Makefile | cut -c17-100)
-else
-	PATCHVER=unknown
-fi
-if [[ "${PATCHVER}" != "unknown" ]]; then
-	PATCHVER=$(egrep -o "${PATCHVER}.[0-9]+" ${Home}/include/kernel-version.mk)
-fi
-[[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
-[[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
-	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open.yml
-	Make_ker="$(cat open.yml | grep ./make | cut -d "k" -f3 | sed s/[[:space:]]//g)"
-	TARGET_kernel="${Make_ker}"
-	TARGET_model="${amlogic_model}"
-} || {
-	TARGET_kernel="${amlogic_kernel}"
-	TARGET_model="${amlogic_model}"
-}
-
-if [[ "${REPO_BRANCH}" == "master" ]]; then
-	sed -i 's/distversion)%>/distversion)%><!--/g' package/lean/autocore/files/*/index.htm
-	sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
+if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
+	[[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
+	[[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
+		curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open.yml
+		Make_ker="$(cat open.yml | grep ./make | cut -d "k" -f3 | sed s/[[:space:]]//g)"
+		TARGET_kernel="${Make_ker}"
+		TARGET_model="${amlogic_model}"
+	} || {
+		TARGET_kernel="${amlogic_kernel}"
+		TARGET_model="${amlogic_model}"
+	}
 fi
 
 if [[ `grep -c "CONFIG_ARCH=\"x86_64\"" ${Home}/.config` -eq '1' ]]; then
@@ -332,17 +301,13 @@ elif [[ `grep -c "CONFIG_ARCH=\"i386\"" ${Home}/.config` -eq '1' ]]; then
 	Arch="i386"
 elif [[ `grep -c "CONFIG_ARCH=\"aarch64\"" ${Home}/.config` -eq '1' ]]; then
 	Arch="arm64"
-elif [[ `grep -c "CONFIG_ARCH=\"mipsel\"" ${Home}/.config` -eq '1' ]]; then
-	Arch="mipsle_softfloat"
-elif [[ `grep -c "CONFIG_ARCH=\"armeb\"" ${Home}/.config` -eq '1' ]]; then
-	Arch="armeb"
 fi
 if [[ `grep -c "CONFIG_ARCH=\"arm\"" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_arm_v7=y" ${Home}/.config` -eq '1' ]]; then
 		Arch="armv7"
 	fi	
 fi
-if [[ ! "${REPO_BRANCH}" == "master" ]]; then
+if [[ "${Arch}" =~ (amd64|i386|mipsle_softfloat|armeb|armv7) ]]; then
 	downloader="curl -L -k --retry 2 --connect-timeout 20 -o"
 	latest_ver="$($downloader - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null|grep -E 'tag_name' |grep -E 'v[0-9.]+' -o 2>/dev/null)"
 	wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz
@@ -352,6 +317,39 @@ if [[ ! "${REPO_BRANCH}" == "master" ]]; then
 	chmod 777 files/usr/bin/AdGuardHome
 	rm -rf {AdGuardHome_linux_${Arch}.tar.gz,AdGuardHome}
 fi
+
+if [[ "${BY_INFORMATION}" == "true" ]]; then
+	grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
+	grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
+	if [[ `grep -c "CONFIG_PACKAGE_luci-i18n-qbittorrent-zh-cn=y" ${Home}/.config` -eq '0' ]]; then
+		if [[ `grep -c "luci-app-qbittorrent_static" ${Home}/Plug-in` -eq '1' ]]; then
+			sed -i '/qbittorrent/d' Plug-in
+		fi
+	fi
+	sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
+	sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
+	sed -i 's/=y/\"/g' Plug-in
+	awk '$0=NR$0' Plug-in > Plug-2
+	awk '{print "	" $0}' Plug-2 > Plug-in
+	sed -i "s/^/TIME g \"/g" Plug-in
+	cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c > CPU
+	cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
+	sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
+	CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
+	rm -rf CPU
+	if [[ `grep -c "KERNEL_PATCHVER:=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
+		PATCHVER=$(grep KERNEL_PATCHVER:= ${Home}/target/linux/${TARGET_BOARD}/Makefile | cut -c18-100)
+	elif [[ `grep -c "KERNEL_PATCHVER=" ${Home}/target/linux/${TARGET_BOARD}/Makefile` -eq '1' ]]; then
+		PATCHVER=$(grep KERNEL_PATCHVER= ${Home}/target/linux/${TARGET_BOARD}/Makefile | cut -c17-100)
+	else
+		PATCHVER="unknown"
+	fi
+	if [[ ! "${PATCHVER}" == "unknown" ]]; then
+		PATCHVER=$(egrep -o "${PATCHVER}.[0-9]+" ${Home}/include/kernel-version.mk)
+	fi
+fi
+find . -name 'README' -o -name 'README.md' | xargs -i rm -rf {}
+find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'DEVICE_NAME' | xargs -i rm -rf {}
 }
 
 ################################################################################################################
@@ -500,7 +498,7 @@ if [[ ${REGULAR_UPDATE} == "true" ]]; then
 	TIME g "《编译成功，会自动把固件发布到指定地址，然后才会生成云端路径》"
 	TIME g "《普通的那个发布固件跟云端的发布路径是两码事，如果你不需要普通发布的可以不用打开发布功能》"
 	TIME g "《请把“REPO_TOKEN”密匙设置好,没设置好密匙运行到 “把定时更新固件发布到云端” 步骤就会出错,生成不了云端地址》"
-	TIME g "《设置密匙教程： https://github.com/MCydia/OpenWrt/blob/main/README.md 》"
+	TIME g "《设置密匙教程： https://github.com/danshui-git/shuoming/blob/master/jm.md 》"
 	echo
 else
 	echo
