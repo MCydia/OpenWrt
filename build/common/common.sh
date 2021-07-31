@@ -137,7 +137,7 @@ Diy_amlogic() {
 svn co https://github.com/ophub/amlogic-s9xxx-openwrt/trunk/amlogic-s9xxx $GITHUB_WORKSPACE/amlogic-s9xxx > /dev/null 2>&1
 curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/make >$GITHUB_WORKSPACE/make
 source $GITHUB_WORKSPACE/amlogic_openwrt
-if [[ ${amlogic_kernel} == "5.12.12_5.4.127" ]]; then
+if [[ ${amlogic_kernel} == "5.12.12_5.4.136" ]]; then
 	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open.yml
 	Make_kernel="$(cat open.yml | grep ./make | cut -d "k" -f3 | sed s/[[:space:]]//g)"
 	amlogic_kernel="${Make_kernel}"
@@ -145,7 +145,7 @@ else
 	amlogic_kernel="${amlogic_kernel}"
 fi
 if [[ -z "${Make_kernel}" ]];then
-	amlogic_kernel="5.12.12_5.4.127"
+	amlogic_kernel="5.12.12_5.4.136"
 fi
 minsize="$(egrep -o "ROOT_MB=+.*?[0-9]" $GITHUB_WORKSPACE/make)"
 rootfssize="ROOT_MB=${rootfs_size}"
