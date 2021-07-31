@@ -52,6 +52,10 @@ sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/auto
 # 增加防火墙规则
 echo "iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/config/firewall/files/firewall.user
 
+# 删除默认插件
+rm -rf ./feeds/luci/applications/luci-app-upnp
+rm -rf ./feeds/luci/applications/luci-app-wol
+
 # 修改插件名字
 sed -i 's/"aMule设置"/"电驴下载"/g' `grep "aMule设置" -rl ./`
 sed -i 's/"网络存储"/"存储"/g' `grep "网络存储" -rl ./`
