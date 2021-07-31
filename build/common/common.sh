@@ -153,7 +153,7 @@ sed -i "s/"${minsize}"/"${rootfssize}"/g" $GITHUB_WORKSPACE/make
 mkdir -p $GITHUB_WORKSPACE/openwrt-armvirt
 cp -Rf ${Home}/bin/targets/*/*/*.tar.gz $GITHUB_WORKSPACE/openwrt-armvirt/ && sync
 sudo chmod +x make
-sudo ./make -d -b "${amlogic_model}" -k "${amlogic_kernel}"
+sudo ./make -d -b s905d -k "${amlogic_kernel}"
 cp -Rf $GITHUB_WORKSPACE/out/* ${Home}/bin/targets/*/*
 }
 
