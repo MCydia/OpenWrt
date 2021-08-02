@@ -64,14 +64,15 @@ sed -i 's/"aMule设置"/"电驴下载"/g' `grep "aMule设置" -rl ./`
 sed -i 's/"网络存储"/"存储"/g' `grep "网络存储" -rl ./`
 sed -i 's/"Turbo ACC 网络加速"/"网络加速"/g' `grep "Turbo ACC 网络加速" -rl ./`
 sed -i 's/"实时流量监测"/"流量"/g' `grep "实时流量监测" -rl ./`
-sed -i 's/"KMS 服务器"/"KMS激活"/g' `grep "KMS 服务器" -rl ./`
-sed -i 's/"TTYD 终端"/"命令窗"/g' `grep "TTYD 终端" -rl ./`
+sed -i 's/"KMS 服务器"/"KMS 激活"/g' `grep "KMS 服务器" -rl ./`
+sed -i 's/"TTYD 终端"/"shell终端"/g' `grep "TTYD 终端" -rl ./`
+sed -i 's/"Frp 内网穿透"/"内网穿透"/g' `grep "Frp 内网穿透" -rl ./`
 sed -i 's/"USB 打印服务器"/"打印服务"/g' `grep "USB 打印服务器" -rl ./`
 # sed -i 's/"Web 管理"/"Web"/g' `grep "Web 管理" -rl ./`
 sed -i 's/"CPU 性能优化调节"/"CPU 调节"/g' `grep "CPU 性能优化调节" -rl ./`
 sed -i 's/"上网时间控制"/"上网控制"/g' `grep "上网时间控制" -rl ./`
-sed -i 's/"京东签到服务"/"京东签到"/g' `grep "京东签到服务" -rl ./`
 sed -i 's/"AdGuard Home"/"AdGuard"/g' `grep "AdGuard Home" -rl ./`
+sed -i 's/"ShadowSocksR Plus+"/"SSR Plus+"/g' `ShadowSocksR Plus+" -rl ./`
 sed -i 's/"FTP 服务器"/"FTP 服务"/g' `grep "FTP 服务器" -rl ./`
 sed -i 's/"管理权"/"改密码"/g' `grep "管理权" -rl ./`
 sed -i 's/"带宽监控"/"监控"/g' `grep "带宽监控" -rl ./`
