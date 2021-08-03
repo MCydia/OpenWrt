@@ -14,7 +14,7 @@ uci set network.lan.delegate='0'                                            # �
 uci commit network                                                          # 不要删除跟注释,除非上面全部删除或注释掉了
 uci set dhcp.lan.ignore='1'                                                 # 关闭DHCP功能
 uci commit dhcp                                                             # 跟‘关闭DHCP功能’联动,同时启用或者删除跟注释
-uci set system.@system[0].hostname='jellyfin'                               # 修改主机名称为OpenWrt
+uci set system.@system[0].hostname='OpenWrt'                               # 修改主机名称为OpenWrt
 EOF
 
 # 版本号里显示一个自己的名字（MCydia build $(TZ=UTC-8 date "+%Y.%m.%d") @ 这些都是后增加的）
@@ -27,9 +27,10 @@ sed -i "s/OpenWrt /jellyfin build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" pac
 sed -i '/ip6assign/d' package/base-files/files/bin/config_generate
 
 # 添加新版argon主题
+rm -rf ../lean/luci-theme-argon
 git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
 git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
-rm -rf ../lean/luci-theme-argon
+
                                                 
 # 选择edge为默认主题
 sed -i 's/luci-theme-bootstrap/luci-theme-edge/g' feeds/luci/collections/luci/Makefile
@@ -101,7 +102,7 @@ sed -i 's/"TTYD 终端"/"shell终端"/g' package/lean/luci-app-ttyd/po/zh-cn/ter
 sed -i 's/"USB 打印服务器"/"打印服务"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
 #sed -i 's/"Web 管理"/"Web"/g' package/lean/luci-app-webadmin/po/zh-cn/webadmin.po
-#sed -i 's/"管理权"/"改密码"/g' feeds/luci/modules/luci-base/po/zh-cn/base.po
+sed -i 's/"管理权"/"改密码"/g' feeds/luci/modules/luci-base/po/zh-cn/base.po
 sed -i 's/"socat"/"端口转发"/g' package/lean/luci-app-socat/po/zh-cn/socat.po
 sed -i 's/"带宽监控"/"监视"/g' feeds/luci/applications/luci-app-nlbwmon/po/zh-cn/nlbwmon.po
 sed -i 's/"Dynamic DNS"/"动态 DNS"/g' feeds/luci/applications/luci-app-ddns/po/zh-cn/ddns.po
