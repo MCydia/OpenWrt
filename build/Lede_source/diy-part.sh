@@ -74,6 +74,7 @@ rm -rf ./package/lean/luci-app-adbyby-plus              # 删除广告大师
 rm -rf ./package/lean/luci-app-xlnetacc                 # 删除迅雷快鸟
 rm -rf ./package/lean/uugamebooster                     # 删除UU游戏加速
 rm -rf ./package/lean/luci-app-uugamebooster            # 删除UU游戏加速
+rm -rf ./feeds/luci/applications/luci-app-adguardhome
 
 # 自定义插件
 sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
