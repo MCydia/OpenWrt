@@ -1,7 +1,7 @@
 #!/bin/bash
 
-sed -i 's/<a href/<!--<a href/g' /usr/lib/lua/luci/view/themes/*/footer.htm
-sed -i 's/%>)<\/a> \//%>)<\/a> \/-->/g' /usr/lib/lua/luci/view/themes/*/footer.htm
+sed -i 's/<a href="https:\/\/github/<!--<a href="https:\/\/github/g' /usr/lib/lua/luci/view/themes/*/footer.htm
+sed -i 's/luciversion %>)<\/a> \//luciversion %>)<\/a> \/-->/g' /usr/lib/lua/luci/view/themes/*/footer.htm
 
 sed -i '/coremark.sh/d' /etc/crontabs/root
 
@@ -23,4 +23,3 @@ chmod -R +x /etc/init.d
 rm -rf /etc/networkip
 rm -rf /etc/webweb.sh
 exit 0
-
