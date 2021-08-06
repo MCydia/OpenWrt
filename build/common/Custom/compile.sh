@@ -232,7 +232,7 @@ case $MENU in
 esac
 echo
 echo
-[[ ! $firmware == "openwrt_amlogic" ]] && {
+[[ ! $firmware == "Openwrt_amlogic" ]] && {
 	TIME g "是否把定时更新插件编译进固件?"
 	read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " RELE
 	case $RELE in
@@ -402,7 +402,7 @@ source build/${firmware}/common.sh && Diy_all
 	echo
 	exit 1
 }
-if [[ $firmware == "openwrt_amlogic" ]]; then
+if [[ $firmware == "Openwrt_amlogic" ]]; then
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
 	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
