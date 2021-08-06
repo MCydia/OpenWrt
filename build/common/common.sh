@@ -28,7 +28,6 @@ Compte=$(date +%Y年%m月%d号%H时%M分)
 Diy_lede() {
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' -o -name 'mentohust' | xargs -i rm -rf {}
 find . -name 'luci-app-ipsec-vpnd' -o -name 'k3screenctrl' -o -name 'luci-app-fileassistant' | xargs -i rm -rf {}
-find . -name 'luci-theme-netgear' | xargs -i rm -rf {}
 
 sed -i '/to-ports 53/d' $ZZZ
 
@@ -127,7 +126,13 @@ fi
 if [ -n "$(ls -A "${PATH1}/patches" 2>/dev/null)" ]; then
 	find "${PATH1}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
 fi
-chmod -R 775 feeds/luci/applications/luci-app-rebootschedule
+if [[ "${REPO_BRANCH}" == "master" ]]; then
+	sed -i 's/distversion)%>/distversion)%><!--/g' package/lean/autocore/files/*/index.htm
+	sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
+fi
+if [ -n "$(ls -A "feeds/luci/applications/luci-app-rebootschedule" 2>/dev/null)" ]; then
+	chmod -R 775 feeds/luci/applications/luci-app-rebootschedule
+fi
 }
 
 ################################################################################################################
@@ -375,7 +380,7 @@ Diy_gonggao() {
 GONGGAO z "《Lede_source文件，Luci版本为18.06，内核版本为5.10》"
 GONGGAO y "《Lienol_source文件，Luci版本为19.07，内核版本为4.14》"
 GONGGAO g "《Mortal_source文件，Luci版本为21.02，内核版本为5.4》"
-GONGGAO z "《openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci版本为18.06，内核版本为5.4》"
+GONGGAO z "《Openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci版本为18.06，内核版本为5.4》"
 GONGGAO g "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 GONGGAO g "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 GONGGAO r "《如果编译脚本在这里就出现错误的话，意思就是不得不更新脚本了，怎么更新我会在这里写明》"
@@ -499,7 +504,7 @@ if [[ ${REGULAR_UPDATE} == "true" ]]; then
 	TIME g "《编译成功，会自动把固件发布到指定地址，然后才会生成云端路径》"
 	TIME g "《普通的那个发布固件跟云端的发布路径是两码事，如果你不需要普通发布的可以不用打开发布功能》"
 	TIME g "《请把“REPO_TOKEN”密匙设置好,没设置好密匙运行到 “把定时更新固件发布到云端” 步骤就会出错,生成不了云端地址》"
-	TIME g "《设置密匙教程： https://github.com/MCydia/OpenWrt/blob/main/README.md 》"
+	TIME g "《设置密匙教程： https://github.com/danshui-git/shuoming/blob/master/jm.md 》"
 	echo
 else
 	echo
@@ -509,15 +514,6 @@ TIME z " 系统空间      类型   总数  已用  可用 使用率"
 cd ../ && df -hT $PWD && cd openwrt
 echo
 echo
-TIME z "  本服务器的CPU型号为[ ${CPUNAME} ]"
-echo
-TIME z "  在此系统上使用核心数为[ ${CPUCORES} ],线程数为[ $(nproc) ]"
-echo
-TIME z "  经过几次测试,随机分配到E5系列CPU编译是最慢的,8171M的CPU快很多，8272CL的又比8171M快一丢丢！"
-echo
-TIME z "  如果你编译的插件较多，而你又分配到E5系列CPU的话，你可以考虑关闭了重新再来的！"
-echo
-TIME z "  下面将使用[ $(nproc)线程 ]编译固件"
 if [ -n "$(ls -A "${Home}/EXT4" 2>/dev/null)" ]; then
 	echo
 	echo
