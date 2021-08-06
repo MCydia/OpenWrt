@@ -50,7 +50,7 @@ XTbit=`getconf LONG_BIT`
 	echo
 	sudo apt-get update -y
 	sudo apt-get full-upgrade -y
-	sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler libpcap0.8-dev g++-multilib antlr3 gperf wget curl rename swig rsync
+	sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl rename libpcap0.8-dev swig rsync
 	[[ ! $? == 0 ]] && {
 		clear
 		echo
@@ -193,7 +193,7 @@ fi
 		break
 		;;
 		4)
-			firmware="openwrt_amlogic"
+			firmware=Openwrt_amlogic"
 			CODE="lede"
 			TIME y "您选择了：N1和晶晨系列CPU盒子专用"
 		break
@@ -232,7 +232,7 @@ case $MENU in
 esac
 echo
 echo
-[[ ! $firmware == "Openwrt_amlogic" ]] && {
+[[ ! $firmware == "openwrt_amlogic" ]] && {
 	TIME g "是否把定时更新插件编译进固件?"
 	read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " RELE
 	case $RELE in
@@ -364,7 +364,7 @@ rm -rf {.bf_config,compile.sh,dl}
 rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
 echo "Compile_Date=$(date +%Y%m%d%H%M)" > $Home/Openwrt.info
 [ -f $Home/Openwrt.info ] && . $Home/Openwrt.info
-svn co https://github.com/281677160/AutoBuild-OpenWrt/trunk/build $Home/build > /dev/null 2>&1
+svn co https://github.com/281677160/build-actions/trunk/build $Home/build > /dev/null 2>&1
 [[ $? -ne 0 ]] && {
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -402,7 +402,7 @@ source build/${firmware}/common.sh && Diy_all
 	echo
 	exit 1
 }
-if [[ $firmware == "Openwrt_amlogic" ]]; then
+if [[ $firmware == "openwrt_amlogic" ]]; then
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
 	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
@@ -470,10 +470,6 @@ else
 fi
 if [ "${REGULAR_UPDATE}" == "true" ]; then
           source build/$firmware/upgrade.sh && Diy_Part2
-fi
-if [[ "${REPO_BRANCH}" == "master" ]]; then
-	sed -i 's/distversion)%>/distversion)%><!--/g' package/lean/autocore/files/*/index.htm
-	sed -i 's/luciversion)%>)/luciversion)%>)-->/g' package/lean/autocore/files/*/index.htm
 fi
 echo
 TIME g "正在下载DL文件,请耐心等待..."
