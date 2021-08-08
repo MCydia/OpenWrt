@@ -57,7 +57,7 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 rm -rf ./feeds/packages/net/aria2                       # 删除aria2
 rm -rf ./feeds/packages/net/ariang                      # 删除aria2
 rm -rf ./feeds/luci/applications/luci-app-aria2         # 删除aria2
-rm -rf ./feeds/luci/applications/luci-app-samba       # 删除samba 不能与samba4同时编译
+# rm -rf ./feeds/luci/applications/luci-app-samba       # 删除samba 不能与samba4同时编译
 rm -rf ./feeds/luci/applications/luci-app-upnp          # 删除upnp自动端口映射
 rm -rf ./feeds/luci/applications/luci-app-wol           # 删除wol网络唤醒
 # rm -rf ./feeds/luci/applications/luci-app-nlbwmon     # 删除nlbwmon流量监控
