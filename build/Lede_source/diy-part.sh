@@ -18,7 +18,7 @@ uci set system.@system[0].hostname='OpenWrt'                               # 修
 EOF
 
 # 版本号里显示一个自己的名字（jellyfin build $(TZ=UTC-8 date "+%Y.%m.%d") @ 这些都是后增加的）
-sed -i 's/OpenWrt /jellyfin build $(TZ=UTC-8 date "%Y-%m-%d") @ OpenWrt /g' openwrt/package/lean/default-settings/files/zzz-default-settings
+# sed -i 's/OpenWrt /jellyfin build $(TZ=UTC-8 date "%Y-%m-%d") @ OpenWrt /g' openwrt/package/lean/default-settings/files/zzz-default-settings
 sed -i "s/OpenWrt /jellyfin build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/lean/default-settings/files/zzz-default-settings
 #sed -i "s/OpenWrt /jellyfin Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 # 修改机器名称
@@ -33,8 +33,8 @@ git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
 
                                                 
 # 选择edge为默认主题
-sed -i 's/luci-theme-bootstrap/luci-theme-edge/g' feeds/luci/collections/luci/Makefile
-sed -i "/commit luci/i\uci set luci.main.mediaurlbase='/luci-static/edge'" package/lean/default-settings/files/zzz-default-settings
+sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
+sed -i "/commit luci/i\uci set luci.main.mediaurlbase='/luci-static/argon'" package/lean/default-settings/files/zzz-default-settings
 
 # 替换密码（要替换密码就不能设置密码为空）
 #sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0/$1$PhflQnJ1$yamWfH5Mphs4hXV7UXWQ21:18725/g' $ZZZ          
@@ -54,26 +54,26 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 # rm -rf ./feeds/kenzok/luci-app-ssr-plus               # 删除SSR-PLUS
 # rm -rf ./feeds/garypang/luci-app-ssr-plus             # 删除SSR-PLUS
 # rm -rf ./package/luci-app-ssr-plus/luci-app-ssr-plus  # 删除SSR-PLUS
-# rm -rf ./feeds/packages/net/aria2                       # 删除aria2
-# rm -rf ./feeds/packages/net/ariang                      # 删除aria2
-# rm -rf ./feeds/luci/applications/luci-app-aria2         # 删除aria2
-# rm -rf ./feeds/luci/applications/luci-app-samba       # 删除samba 不能与samba4同时编译
-# rm -rf ./feeds/luci/applications/luci-app-upnp          # 删除upnp自动端口映射
-# rm -rf ./feeds/luci/applications/luci-app-wol           # 删除wol网络唤醒
+rm -rf ./feeds/packages/net/aria2                       # 删除aria2
+rm -rf ./feeds/packages/net/ariang                      # 删除aria2
+rm -rf ./feeds/luci/applications/luci-app-aria2         # 删除aria2
+rm -rf ./feeds/luci/applications/luci-app-samba       # 删除samba 不能与samba4同时编译
+rm -rf ./feeds/luci/applications/luci-app-upnp          # 删除upnp自动端口映射
+rm -rf ./feeds/luci/applications/luci-app-wol           # 删除wol网络唤醒
 # rm -rf ./feeds/luci/applications/luci-app-nlbwmon     # 删除nlbwmon流量监控
-# rm -rf ./package/lean/luci-app-pptp-server              # 删除PPTP-VPN服务端
-# rm -rf ./package/lean/luci-app-qbittorrent              # 删除qbittorrent
-# rm -rf ./package/lean/qBittorrent-static                # 删除qbittorrent
-# rm -rf ./package/lean/luci-app-qbittorrent_static       # 删除qbittorrent
-# rm -rf ./feeds/packages/net/zerotier                    # 删除zerotier内网穿透
-# rm -rf ./package/lean/luci-app-zerotier                 # 删除zerotier内网穿透
-# rm -rf ./package/lean/luci-app-unblockmusic             # 删除网易云音乐解锁
-# rm -rf ./package/lean/UnblockNeteaseMusic-Go            # 删除网易云音乐解锁
-# rm -rf ./package/lean/adbyby                            # 删除广告大师
-# rm -rf ./package/lean/luci-app-adbyby-plus              # 删除广告大师
-# rm -rf ./package/lean/luci-app-xlnetacc                 # 删除迅雷快鸟
-# rm -rf ./package/lean/uugamebooster                     # 删除UU游戏加速
-# rm -rf ./package/lean/luci-app-uugamebooster            # 删除UU游戏加速
+rm -rf ./package/lean/luci-app-pptp-server              # 删除PPTP-VPN服务端
+rm -rf ./package/lean/luci-app-qbittorrent              # 删除qbittorrent
+rm -rf ./package/lean/qBittorrent-static                # 删除qbittorrent
+rm -rf ./package/lean/luci-app-qbittorrent_static       # 删除qbittorrent
+rm -rf ./feeds/packages/net/zerotier                    # 删除zerotier内网穿透
+rm -rf ./package/lean/luci-app-zerotier                 # 删除zerotier内网穿透
+rm -rf ./package/lean/luci-app-unblockmusic             # 删除网易云音乐解锁
+rm -rf ./package/lean/UnblockNeteaseMusic-Go            # 删除网易云音乐解锁
+rm -rf ./package/lean/adbyby                            # 删除广告大师
+rm -rf ./package/lean/luci-app-adbyby-plus              # 删除广告大师
+rm -rf ./package/lean/luci-app-xlnetacc                 # 删除迅雷快鸟
+rm -rf ./package/lean/uugamebooster                     # 删除UU游戏加速
+rm -rf ./package/lean/luci-app-uugamebooster            # 删除UU游戏加速
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
 git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/adguarehome
 # 自定义插件
@@ -84,15 +84,10 @@ echo "iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/c
 
 # 修改插件名字
 sed -i 's/"BaiduPCS Web"/"百度网盘"/g' package/lean/luci-app-baidupcs-web/luasrc/controller/baidupcs-web.lua
-sed -i 's/("qBittorrent"))/("BT 下载"))/g' package/lean/luci-app-qbittorrent/luasrc/controller/qbittorrent.lua
-sed -i 's/_("Dynamic DNS"), 59)/_("动态 DNS"), 59)/g' package/lean/luci-app-ddns/luasrc/controller/ddns.lua
-sed -i 's/_("socat"), 100)/_("端口转发"), 100)/g' package/lean/luci-app-socat/luasrc/controller/socat.lua
-sed -i 's/_("微信推送"), 30)/_("信息推送"), 30)/g' package/lean/luci-app-serverchan/luasrc/controller/serverchan.lua
-sed -i 's/_('京东签到服务'), 10)/_("京东签到"), 10)/g' package/lean/luci-app-jd-dailybonus/luasrc/controller/jd-dailybonus.lua
 sed -i 's/"aMule设置"/"电驴下载"/g' package/lean/luci-app-amule/po/zh-cn/amule.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-amule/po/zh-cn/amule.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-vsftpd/po/zh-cn/vsftpd.po
-sed -i 's/"FTP 服务器"/"FTP 服务"/g' package/lean/luci-app-vsftpd/po/zh-cn/vsftpd.po
+sed -i 's/"FTP 服务器"/"FTP服务"/g' package/lean/luci-app-vsftpd/po/zh-cn/vsftpd.po
 sed -i 's/"Turbo ACC 网络加速"/"网络加速"/g' package/lean/luci-app-flowoffload/po/zh-cn/flowoffload.po
 sed -i 's/"Turbo ACC 网络加速"/"网络加速"/g' package/lean/luci-app-sfe/po/zh-cn/sfe.po
 sed -i 's/"Turbo ACC 网络加速"/"网络加速"/g' package/lean/luci-app-turboacc/po/zh-cn/turboacc.po
@@ -100,13 +95,11 @@ sed -i 's/"实时流量监测"/"流量"/g' package/lean/luci-app-wrtbwmon/po/zh-
 sed -i 's/"上网时间控制"/"上网控制"/g' package/lean/luci-app-accesscontrol/po/zh-cn/mia.po
 sed -i 's/"KMS 服务器"/"KMS激活"/g' package/lean/luci-app-vlmcsd/po/zh-cn/vlmcsd.po
 sed -i 's/"TTYD 终端"/"shell终端"/g' package/lean/luci-app-ttyd/po/zh-cn/terminal.po
-sed -i 's/"USB 打印服务器"/"打印服务"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
+sed -i 's/"USB 打印服务器"/"网络打印"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
 sed -i 's/"网络存储"/"存储"/g' package/lean/luci-app-usb-printer/po/zh-cn/usb-printer.po
 #sed -i 's/"Web 管理"/"Web"/g' package/lean/luci-app-webadmin/po/zh-cn/webadmin.po
 sed -i 's/"管理权"/"改密码"/g' feeds/luci/modules/luci-base/po/zh-cn/base.po
-sed -i 's/"socat"/"端口转发"/g' package/lean/luci-app-socat/po/zh-cn/socat.po
 sed -i 's/"带宽监控"/"监视"/g' feeds/luci/applications/luci-app-nlbwmon/po/zh-cn/nlbwmon.po
 sed -i 's/"Dynamic DNS"/"动态 DNS"/g' feeds/luci/applications/luci-app-ddns/po/zh-cn/ddns.po
-sed -i 's/"解锁网易云灰色歌曲"/"解锁网易云"/g' package/lean/luci-app-unblockmusic/po/zh-cn/unblockmusic.po
 sed -i 's/"Frp 内网穿透"/"内网穿透"/g' package/lean/luci-app-frpc/po/zh-cn/frp.po
 sed -i 's/"Argon 主题设置"/"Argon设置"/g' feeds/luci/applications/luci-app-argon-config/po/zh-cn/argon-config.po
