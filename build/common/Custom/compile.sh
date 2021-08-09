@@ -158,7 +158,7 @@ fi
 	echo
 	echo
 	echo
-	TIME l " 1. Lede_5.10内核,LUCI 18.06版本"
+	TIME l " 1. Lede_5.4内核,LUCI 18.06版本"
 	echo
 	TIME l " 2. Lienol_4.14内核,LUCI 19.07版本"
 	echo
@@ -177,7 +177,7 @@ fi
 		1)
 			firmware="Lede_source"
 			CODE="lede"
-			TIME y "您选择了：Lede_5.10内核,LUCI 18.06版本"
+			TIME y "您选择了：Lede_5.4内核,LUCI 18.06版本"
 		break
 		;;
 		2)
@@ -193,7 +193,7 @@ fi
 		break
 		;;
 		4)
-			firmware=Openwrt_amlogic"
+			firmware="Openwrt_amlogic"
 			CODE="lede"
 			TIME y "您选择了：N1和晶晨系列CPU盒子专用"
 		break
@@ -402,7 +402,7 @@ source build/${firmware}/common.sh && Diy_all
 	echo
 	exit 1
 }
-if [[ $firmware == "Openwrt_amlogic" ]]; then
+if [[ $firmware == "openwrt_amlogic" ]]; then
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
 	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
