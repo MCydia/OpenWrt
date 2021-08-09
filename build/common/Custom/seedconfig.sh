@@ -107,7 +107,7 @@ case $CHOOSE in
 	4)
 		REPO_URL="https://github.com/coolsnowwolf/lede"
 		REPO_BRANCH="master"
-		firmware="openwrt_amlogic"
+		firmware="Openwrt_amlogic"
 		CONFIG="N1和晶晨系列CPU盒子专用源码"
 		echo
 		TIME y "您选择了：${CONFIG}"
