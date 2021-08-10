@@ -57,10 +57,10 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 rm -rf ./feeds/packages/net/aria2                       # 删除aria2
 rm -rf ./feeds/packages/net/ariang                      # 删除aria2
 rm -rf ./feeds/luci/applications/luci-app-aria2         # 删除aria2
-# rm -rf ./feeds/luci/applications/luci-app-samba       # 删除samba 不能与samba4同时编译
+# rm -rf ./feeds/luci/applications/luci-app-samba         # 删除samba 不能与samba4同时编译
 rm -rf ./feeds/luci/applications/luci-app-upnp          # 删除upnp自动端口映射
 rm -rf ./feeds/luci/applications/luci-app-wol           # 删除wol网络唤醒
-# rm -rf ./feeds/luci/applications/luci-app-nlbwmon     # 删除nlbwmon流量监控
+# rm -rf ./feeds/luci/applications/luci-app-nlbwmon       # 删除nlbwmon流量监控
 rm -rf ./package/lean/luci-app-pptp-server              # 删除PPTP-VPN服务端
 rm -rf ./package/lean/luci-app-qbittorrent              # 删除qbittorrent
 rm -rf ./package/lean/qBittorrent-static                # 删除qbittorrent
@@ -69,17 +69,21 @@ rm -rf ./feeds/packages/net/zerotier                    # 删除zerotier内网�
 rm -rf ./package/lean/luci-app-zerotier                 # 删除zerotier内网穿透
 rm -rf ./package/lean/luci-app-unblockmusic             # 删除网易云音乐解锁
 rm -rf ./package/lean/UnblockNeteaseMusic-Go            # 删除网易云音乐解锁
-rm -rf ./package/lean/adbyby                            # 删除广告大师
-rm -rf ./package/lean/luci-app-adbyby-plus              # 删除广告大师
+# rm -rf ./package/lean/adbyby                            # 删除广告大师
+# rm -rf ./package/lean/luci-app-adbyby-plus              # 删除广告大师
 rm -rf ./package/lean/luci-app-xlnetacc                 # 删除迅雷快鸟
 rm -rf ./package/lean/uugamebooster                     # 删除UU游戏加速
 rm -rf ./package/lean/luci-app-uugamebooster            # 删除UU游戏加速
+rm -rf ././package/lean/vlmcsd
+rm -rf ./package/lean/luci-app-vlmcsd
+rm -rf ./package/lean/vsftpd-alt
+rm -rf ./package/lean/luci-app-vsftpd
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
-git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/adguarehome
-rm -rf ./feeds/luci/applications/luci-app-autoupdate
-git clone https://github.com/281677160/luci-app-autoupdate.git package/autoupdate
+git clone https://github.com/skycn3322/luci-app-adguardhome.git package/adguardhome
+git clone --depth=1 -b 18.06 https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
 # 自定义插件
 sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
+git clone https://github.com/281677160/luci-app-autoupdate.git package/autoupdate
 
 # 增加防火墙规则
 echo "iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/config/firewall/files/firewall.user
