@@ -79,7 +79,7 @@ jobs:
           echo "OpenWrt_name=21.02" >> $GITHUB_ENV
         fi
         echo "NETIP=package/base-files/files/etc/networkip" >> $GITHUB_ENV
-        if [ -n "$(ls -A build/common/0808gg 2>/dev/null)" ]; then
+        if [ -n "$(ls -A build/common/0809gg 2>/dev/null)" ]; then
           source build/common/common.sh && Diy_gonggao
         else
           source build/common/common.sh && Diy_tongzhi
@@ -92,7 +92,7 @@ jobs:
           您正在使用[${{matrix.target}}]固件正在努力耕耘中(${{env.CangKu}}仓库的#${{env.Run_number}}号),请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage"
         fi
         
-    - name: 部署环境
+    - name: 部署编译
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -147,7 +147,7 @@ jobs:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
-    - name: 生成配置
+    - name: 生成配置文件
       run: |
         cd openwrt
         source "${PATH1}/common.sh" && Diy_chajian > /dev/null 2>&1
@@ -178,7 +178,7 @@ jobs:
           source "${PATH1}/common.sh" && Diy_xinxi
         fi
         
-    - name: 上传.config
+    - name: 上传.config配置
       uses: actions/upload-artifact@v2
       if: env.UPLOAD_CONFIG == 'true'
       with:
@@ -242,7 +242,7 @@ jobs:
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        sed -i "s/Download Link/COWTRANSFER/g" cowtransfer.log
+        sed -i "s/Download Link/奶牛快传/g" cowtransfer.log
         echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
         ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
         sed -i "s/Download Link/WETRANSFER/g" wetransfer.log
@@ -268,21 +268,38 @@ jobs:
         bodyFile: "update_log.txt"
         artifacts: "${{ env.FIRMWARE }}/*"
         
-    - name: 整理定时更新
+    - name: 定时更新固件发布到云端1
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       run: |
        cd openwrt
        source "${PATH1}/upgrade.sh" && Diy_Part3
         
-    - name: 更新发布到云端
-      uses: softprops/action-gh-release@v1
-      if: steps.organizer.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
-      env:
-        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+    - name: 定时更新固件发布到云端2
+      if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
+      uses: svenstaro/upload-release-action@v2
       with:
-        name: update_Firmware
-        tag_name: AutoUpdate
-        files: openwrt/bin/Firmware/*
+        repo_token: ${{ secrets.REPO_TOKEN }}
+        file: openwrt/bin/Firmware/*
+        tag: AutoUpdate
+        overwrite: true
+        file_glob: true
+        
+    - name: 定时更新固件发布到云端3
+      if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
+      run: |
+        mkdir -p Github_Tags
+        cd Github_Tags
+        wget -q --no-cookie --no-check-certificate https://api.github.com/repos/${{github.repository}}/releases/tags/AutoUpdate -O Github_Tags
+        
+    - name: 定时更新固件发布到云端4
+      if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.REPO_TOKEN }}
+        file: Github_Tags/*
+        tag: AutoUpdate
+        overwrite: true
+        file_glob: true
    
     - name: Telegram
       run: |
