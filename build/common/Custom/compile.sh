@@ -232,6 +232,19 @@ case $MENU in
 esac
 echo
 echo
+TIME g "是否把固件上传到<奶牛快传>?"
+read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " MENU
+case $MENU in
+	[Yy])
+		UPCOWTRANSFER="true"
+		TIME y "您执行了上传固件到<奶牛快传>!"
+	;;
+	*)
+		TIME r "您已关闭上传固件到<奶牛快传>！"
+	;;
+esac
+echo
+echo
 [[ ! $firmware == "Openwrt_amlogic" ]] && {
 	TIME g "是否把定时更新插件编译进固件?"
 	read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " RELE
@@ -320,7 +333,7 @@ elif [[ $firmware == "Mortal_source" ]]; then
 	OpenWrt_name="21.02"
 	echo -e "\nipdz=$ip" > openwrt/.Mortal_core
 	echo -e "\nGit=$Github" >> openwrt/.Mortal_core
-elif [[ $firmware == "openwrt_amlogic" ]]; then
+elif [[ $firmware == "Openwrt_amlogic" ]]; then
 	[[ -d openwrt ]] && {
 		rm -rf openwrtl && git clone https://github.com/coolsnowwolf/lede openwrtl
 	} || {
@@ -356,6 +369,10 @@ elif [[ $firmware == "openwrt_amlogic" ]]; then
 	echo -e "\nipdz=$ip" > openwrt/.amlogic_core
 	echo -e "\nGit=$Github" >> openwrt/.amlogic_core
 fi
+if [[ "${UPCOWTRANSFER}" == "true" ]]; then
+	curl -fsSL git.io/file-transfer | sh
+fi
+Danhome="$PWD"
 Home="$PWD/openwrt"
 PATH1="$PWD/openwrt/build/${firmware}"
 NETIP="package/base-files/files/etc/networkip"
@@ -402,7 +419,7 @@ source build/${firmware}/common.sh && Diy_all
 	echo
 	exit 1
 }
-if [[ $firmware == "openwrt_amlogic" ]]; then
+if [[ $firmware == "Openwrt_amlogic" ]]; then
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
 	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
@@ -438,6 +455,7 @@ EOF
 sed -i "s/OpenWrt /${Ubuntu_mz} compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 echo
+sed -i 's/"网络存储"/"NAS"/g' `grep "网络存储" -rl ./`
 sed -i 's/"管理权"/"改密码"/g' `grep "管理权" -rl ./feeds/luci/modules/luci-base`
 sed -i 's/"带宽监控"/"监控"/g' `grep "带宽监控" -rl ./feeds/luci/applications`
 sed -i 's/"Argon 主题设置"/"Argon设置"/g' `grep "Argon 主题设置" -rl ./feeds/luci/applications`
@@ -472,6 +490,7 @@ if [ "${REGULAR_UPDATE}" == "true" ]; then
           source build/$firmware/upgrade.sh && Diy_Part2
 fi
 echo
+COMFIRMWARE="openwrt/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
 TIME g "正在下载DL文件,请耐心等待..."
 echo
 [[ -d $Home/dl ]] && {
@@ -515,24 +534,24 @@ clear
 echo
 echo
 echo
-TIME l "您的CPU型号为[ ${CPUNAME} ]"
+TIME g "您的CPU型号为[ ${CPUNAME} ]"
 echo
 echo
-TIME l "在Ubuntu使用核心数为[ ${CPUCORES} ],线程数为[ $(nproc) ]"
+TIME g "在Ubuntu使用核心数为[ ${CPUCORES} ],线程数为[ $(nproc) ]"
 echo
 echo
 if [[ "$(nproc)" == "1" ]]; then
-	TIME l "正在使用[$(nproc)线程]编译固件,预计要[3.5]小时左右,请耐心等待..."
+	TIME y "正在使用[$(nproc)线程]编译固件,预计要[3.5]小时左右,请耐心等待..."
 elif [[ "$(nproc)" =~ (2|3) ]]; then
-	TIME l "正在使用[$(nproc)线程]编译固件,预计要[3]小时左右,请耐心等待..."
+	TIME y "正在使用[$(nproc)线程]编译固件,预计要[3]小时左右,请耐心等待..."
 elif [[ "$(nproc)" =~ (4|5) ]]; then
-	TIME l "正在使用[$(nproc)线程]编译固件,预计要[2.5]小时左右,请耐心等待..."
+	TIME y "正在使用[$(nproc)线程]编译固件,预计要[2.5]小时左右,请耐心等待..."
 elif [[ "$(nproc)" =~ (6|7) ]]; then
-	TIME l "正在使用[$(nproc)线程]编译固件,预计要[2]小时左右,请耐心等待..."
+	TIME y "正在使用[$(nproc)线程]编译固件,预计要[2]小时左右,请耐心等待..."
 elif [[ "$(nproc)" =~ (8|9) ]]; then
-	TIME l "正在使用[$(nproc)线程]编译固件,预计要[1.5]小时左右,请耐心等待..."
+	TIME y "正在使用[$(nproc)线程]编译固件,预计要[1.5]小时左右,请耐心等待..."
 else
-	TIME l "正在使用[$(nproc)线程]编译固件,预计要[1]小时左右,请耐心等待..."
+	TIME y "正在使用[$(nproc)线程]编译固件,预计要[1]小时左右,请耐心等待..."
 fi
 sleep 15s
 make -j$(nproc) V=s 2>&1 |tee build.log
@@ -550,7 +569,7 @@ if [ "$?" == "0" ]; then
 	echo
 	echo
 	echo
-	[[ ${firmware} == "openwrt_amlogic" ]] && {
+	[[ ${firmware} == "Openwrt_amlogic" ]] && {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ N1和晶晨系列盒子专用固件 ]顺利编译完成~~~"
 	} || {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ ${TARGET_PROFILE} ]顺利编译完成~~~"
@@ -566,7 +585,7 @@ if [ "$?" == "0" ]; then
 	echo
 	TIME g "结束时间：${End}"
 	echo
-	TIME y "固件已经存入openwrt/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}文件夹中"
+	TIME y "固件已经存入${COMFIRMWARE}文件夹中"
 	echo
 	if [[ "${REGULAR_UPDATE}" == "true" ]]; then
 		[ -f $Home/Openwrt.info ] && . $Home/Openwrt.info
@@ -575,15 +594,27 @@ if [ "$?" == "0" ]; then
 		TIME g "加入‘定时升级固件插件’的固件已经放入[bin/Firmware]文件夹中"
 		echo
 	fi
-	if [[ $firmware == "openwrt_amlogic" ]]; then
+	if [[ $firmware == "Openwrt_amlogic" ]]; then
 		cp -Rf ${Home}/bin/targets/*/*/*.tar.gz ${Home}/openwrt-armvirt/ && sync
 		TIME l "请输入一键打包命令进行打包固件，打包成功后，固件存放在[openwrt/out]文件夹中"
 	fi
-	rm -rf $Home/Openwrt.info
-	rm -rf ${Home}/upgrade
+	echo
 	cd ${Home}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}
 	rename -v "s/^openwrt/${date1}-${CODE}/" * > /dev/null 2>&1
-	cd ${Home}
+	cd ${Danhome}
+	if [[ "${UPCOWTRANSFER}" == "true" ]]; then
+		TIME g "正在上传固件至奶牛快传中，请稍后..."
+		echo
+		WETCOMFIRMWARE="${Home}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
+		mv ${WETCOMFIRMWARE}/packages ${Home}/bin/targets/${TARGET_BOARD}/packages
+		./transfer cow --block 2621440 -s -p 64 --no-progress ${WETCOMFIRMWARE} 2>&1 | tee cowtransfer.log > /dev/null 2>&1
+		cow="$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+		echo -e "\n奶牛快传：${cow}"
+		echo
+	fi
+	rm -rf $Home/Openwrt.info
+	rm -rf ${Home}/upgrade
+	rm -rf {transfer,cowtransfer.log,wetransfer.log}
 	sleep 5
 	exit 0
 else
