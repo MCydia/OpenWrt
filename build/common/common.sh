@@ -38,8 +38,7 @@ git clone --depth=1 https://github.com/garypang13/smartdns-le package/smartdns-l
 
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh" $ZZZ
 
-
-if [[ "${Modelfile}" == "Lede_source" ]]; then
+if [[ ! "${Modelfile}" == "Openwrt_amlogic" ]]; then
 	sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 	echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
@@ -282,13 +281,16 @@ fi
 # 为编译做最后处理
 ################################################################################################################
 Diy_chuli() {
-
-if [[ "${TARGET_PROFILE}" == "x86-64" ]]; then
+if [[ "${TARGET_BOARD}" == "x86" ]]; then
 	cp -Rf "${Home}"/build/common/Custom/DRM-I915 target/linux/x86/DRM-I915
 	for X in $(ls -1 target/linux/x86 | grep "config-"); do echo -e "\n$(cat target/linux/x86/DRM-I915)" >> target/linux/x86/${X}; done
 fi
 
-if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
+if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${Home}/.config` -eq '1' ]]; then
+	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/281677160/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
+fi
+
+if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
 	[[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
 	[[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
 		curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open.yml
@@ -313,7 +315,7 @@ if [[ `grep -c "CONFIG_ARCH=\"arm\"" ${Home}/.config` -eq '1' ]]; then
 		Arch="armv7"
 	fi	
 fi
-if [[ "${Arch}" =~ (amd64|i386|mipsle_softfloat|armeb|armv7) ]]; then
+if [[ "${Arch}" =~ (amd64|i386|armeb|armv7) ]]; then
 	downloader="curl -L -k --retry 2 --connect-timeout 20 -o"
 	latest_ver="$($downloader - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null|grep -E 'tag_name' |grep -E 'v[0-9.]+' -o 2>/dev/null)"
 	wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz
@@ -380,16 +382,23 @@ Diy_gonggao() {
 GONGGAO y "《Lede_source文件，Luci版本为18.06，内核版本为5.4》"
 GONGGAO y "《Lienol_source文件，Luci版本为17.01，内核版本为4.14》"
 GONGGAO y "《Mortal_source文件，Luci版本为21.02，内核版本为5.4》"
-GONGGAO y "《Openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci版本为18.06，内核版本为5.4》"
+GONGGAO y "《openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci版本为18.06，内核版本为5.4》"
 GONGGAO g "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 GONGGAO g "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 GONGGAO r "《如果编译脚本在这里就出现错误的话，意思就是不得不更新脚本了，怎么更新我会在这里写明》"
+GONGGAO y "把上传.config配置文件修改了一下，现在编译错误都会上传一个配置文件的，免得你辛辛苦苦弄的又要重新再弄"
+GONGGAO y "不过这样上传的.config也是双面的，如果你是因为.config编译错误，你不能直接套进去又继续编译，要看编译错误是什么，再进SSH把配置弄好"
+GONGGAO g "修复定时更新需要依赖翻墙才能完成，现在最新V6.5版，不需要翻墙也可以使用了"
 echo
 echo
 }
 
 Diy_tongzhi() {
-GONGGAO r "8月8号，请重新拉取仓库，麻烦各位了，也感谢各位的支持"
+GONGGAO r "8月9号，请重新拉取仓库，麻烦各位了，也感谢各位的支持"
+GONGGAO r "修复因上游发布代码仓库错误，导致不能发布定时更新固件"
+GONGGAO r "修复定时更新需要依赖翻墙才能完成，现在最新V6.5版，不需要翻墙也可以使用了"
+GONGGAO r "把上传.config配置文件修改了一下，现在编译错误都会上传一个配置文件的，免得你辛辛苦苦弄的又要重新再弄"
+GONGGAO r "不过这样上传的.config也是双面的，如果你是因为.config编译错误，你不能直接套进去又继续编译，要看编译错误是什么，再进SSH把配置弄好"
 echo
 echo
 exit 1
@@ -410,7 +419,7 @@ TIME b "源码分支: ${REPO_BRANCH}"
 TIME b "源码作者: ${ZUOZHE}"
 TIME b "默认内核: ${PATCHVER}"
 TIME b "Luci版本: ${OpenWrt_name}"
-[[ "${Modelfile}" == "Openwrt_amlogic" ]] && {
+[[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME b "编译机型: ${TARGET_model}"
 	TIME b "打包内核: ${TARGET_kernel}"
 } || {
@@ -420,7 +429,7 @@ TIME b "固件作者: ${Author}"
 TIME b "仓库地址: ${Github}"
 TIME b "启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
 TIME b "编译时间: ${Compte}"
-[[ "${Modelfile}" == "Openwrt_amlogic" ]] && {
+[[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_model}】固件"
 } || {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_PROFILE}】固件"
@@ -491,6 +500,7 @@ if [[ ${REGULAR_UPDATE} == "true" ]]; then
 	TIME g "《普通的那个发布固件跟云端的发布路径是两码事，如果你不需要普通发布的可以不用打开发布功能》"
 	TIME g "《请把“REPO_TOKEN”密匙设置好,没设置好密匙运行到 “把定时更新固件发布到云端” 步骤就会出错,生成不了云端地址》"
 	TIME g "《设置密匙教程： https://github.com/MCydia/OpenWrt/blob/main/README.md 》"
+	TIME y "《2021年8月9号修复定时更新需要依赖翻墙才能完成，现在最新V6.5版，不需要翻墙也可以使用了》"
 	echo
 else
 	echo
