@@ -83,7 +83,6 @@ git clone https://github.com/skycn3322/luci-app-adguardhome.git package/adguardh
 git clone --depth=1 -b 18.06 https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
 # 自定义插件
 sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
-git clone https://github.com/281677160/luci-app-autoupdate.git package/autoupdate
 
 # 增加防火墙规则
 echo "iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/config/firewall/files/firewall.user
