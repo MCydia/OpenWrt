@@ -93,7 +93,7 @@ find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-openwrt'
 # 全部作者源码公共diy.sh文件
 ################################################################################################################
 Diy_all() {
-git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/281677160/openwrt-package
+git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/MCydia/openwrt-package
 cp -Rf openwrt-package/* "${Home}" && rm -rf "${Home}"/openwrt-package
 
 if [[ ${REGULAR_UPDATE} == "true" ]]; then
@@ -287,7 +287,7 @@ if [[ "${TARGET_BOARD}" == "x86" ]]; then
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${Home}/.config` -eq '1' ]]; then
-	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/281677160/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
+	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/mcydia/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
 fi
 
 if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
