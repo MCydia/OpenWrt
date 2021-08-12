@@ -288,7 +288,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       uses: svenstaro/upload-release-action@v2
       with:
-        repo_token: ${{ secrets.actions_jellyfin_op }}
+        repo_token: ${{ secrets.actions_jellyfin_op2 }}
         file: Github_Tags/*
         tag: AutoUpdate
         overwrite: true
