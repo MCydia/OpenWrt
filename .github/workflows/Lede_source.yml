@@ -257,7 +257,7 @@ jobs:
       with:
         name: ${{ env.CODE }}-${{ env.TARGET_PROFILE }}
         tag: ${{ env.date }}
-        token: ${{ secrets.actions_jellyfin_op }}
+        token: ${{ secrets.actions_jellyfina_op2 }}
         bodyFile: "update_log.txt"
         artifacts: "${{ env.FIRMWARE }}/*"
         
@@ -271,7 +271,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       uses: svenstaro/upload-release-action@v2
       with:
-        repo_token: ${{ secrets.actions_jellyfin_op }}
+        repo_token: ${{ secrets.actions_jellyfina_op2 }}
         file: openwrt/bin/Firmware/*
         tag: AutoUpdate
         overwrite: true
@@ -288,7 +288,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       uses: svenstaro/upload-release-action@v2
       with:
-        repo_token: ${{ secrets.actions_jellyfin_op2 }}
+        repo_token: ${{ secrets.actions_jellyfina_op2 }}
         file: Github_Tags/*
         tag: AutoUpdate
         overwrite: true
