@@ -16,9 +16,7 @@ if [[ -e /usr/share/AdGuardHome ]] && [[ -e /etc/init.d/AdGuardHome ]]; then
  chmod -R +x /usr/share/AdGuardHome /etc/init.d/AdGuardHome
 fi
 
-sed -i '/coremark/d' /etc/crontabs/root
-
-chmod -R +x /etc/init.d
+chmod -R +x /etc/init.d /usr/share
 
 rm -rf /etc/networkip
 rm -rf /etc/webweb.sh
