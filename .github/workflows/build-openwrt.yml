@@ -256,7 +256,7 @@ jobs:
       with:
         name: ${{ env.Compile_Date }}-${{ env.CODE }}-${{ env.TARGET_PROFILE }}
         tag: ${{ env.date }}
-        token: ${{ secrets.actions_jellyfin_op }}
+        token: ${{ secrets.actions_jellyfina_op2 }}
         bodyFile: "update_log.txt"
         artifacts: "${{ env.FIRMWARE }}/*"
         
@@ -270,7 +270,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: steps.organizer.outputs.status == 'success' && env.REGULAR_UPDATE == 'true'
       env:
-        GITHUB_TOKEN: ${{ secrets.actions_jellyfin_op }}
+        GITHUB_TOKEN: ${{ secrets.actions_jellyfina_op2 }}
       with:
         name: update_Firmware
         tag_name: AutoUpdate
