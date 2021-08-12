@@ -1,7 +1,7 @@
 
 config amlogic 'config'
 	option enable '1'
-	option amlogic_firmware_repo 'https://github.com/xxx'
+	option amlogic_firmware_repo 'https://github.com/jellyfina/build-actions'
 	option amlogic_firmware_tag 's905d_lede'
 	option amlogic_firmware_suffix '.img.gz'
 	option amlogic_firmware_config '1'
