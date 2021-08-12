@@ -38,7 +38,7 @@ git clone --depth=1 https://github.com/garypang13/smartdns-le package/smartdns-l
 
 sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh" $ZZZ
 
-if [[ ! "${Modelfile}" == "openwrt_amlogic" ]]; then
+if [[ ! "${Modelfile}" == "Openwrt_amlogic" ]]; then
 	sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 	echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
@@ -382,7 +382,7 @@ Diy_gonggao() {
 GONGGAO y "《Lede_source文件，Luci版本为18.06，内核版本为5.4》"
 GONGGAO y "《Lienol_source文件，Luci版本为17.01，内核版本为4.14》"
 GONGGAO y "《Mortal_source文件，Luci版本为21.02，内核版本为5.4》"
-GONGGAO y "《openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci版本为18.06，内核版本为5.4》"
+GONGGAO y "《Openwrt_amlogic文件，编译N1和晶晨系列盒子专用，Luci版本为18.06，内核版本为5.4》"
 GONGGAO g "第一次用我仓库的，请不要拉取任何插件，先SSH进入固件配置那里看过我脚本实在是没有你要的插件才再拉取"
 GONGGAO g "拉取插件应该单独拉取某一个你需要的插件，别一下子就拉取别人一个插件包，这样容易增加编译失败概率"
 GONGGAO r "《如果编译脚本在这里就出现错误的话，意思就是不得不更新脚本了，怎么更新我会在这里写明》"
@@ -419,7 +419,7 @@ TIME b "源码分支: ${REPO_BRANCH}"
 TIME b "源码作者: ${ZUOZHE}"
 TIME b "默认内核: ${PATCHVER}"
 TIME b "Luci版本: ${OpenWrt_name}"
-[[ "${Modelfile}" == "openwrt_amlogic" ]] && {
+[[ "${Modelfile}" == "Openwrt_amlogic" ]] && {
 	TIME b "编译机型: ${TARGET_model}"
 	TIME b "打包内核: ${TARGET_kernel}"
 } || {
@@ -429,7 +429,7 @@ TIME b "固件作者: ${Author}"
 TIME b "仓库地址: ${Github}"
 TIME b "启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
 TIME b "编译时间: ${Compte}"
-[[ "${Modelfile}" == "openwrt_amlogic" ]] && {
+[[ "${Modelfile}" == "Openwrt_amlogic" ]] && {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_model}】固件"
 } || {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_PROFILE}】固件"
