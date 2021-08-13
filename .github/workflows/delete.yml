@@ -50,4 +50,4 @@ jobs:
           keep_latest: 5         #保留多少个发布不删除
           delete_tags: true
         env:
-          GITHUB_TOKEN: ${{ secrets.actions_jellyfin }}
+          GITHUB_TOKEN: ${{ secrets.actions_jellyfina_op2 }}
