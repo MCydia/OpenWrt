@@ -8,7 +8,7 @@
 #
 # 下面的开关控制，仅在手动按钮启动时候生效，定时启动的话默认全开
 
-name: delete
+name: 删旧版固件
 on:
   workflow_dispatch:
     inputs:
