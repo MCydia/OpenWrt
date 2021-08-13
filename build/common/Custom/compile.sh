@@ -233,8 +233,8 @@ esac
 echo
 echo
 TIME g "是否把固件上传到<奶牛快传>?"
-read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " MENU
-case $MENU in
+read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " NNKC
+case $NNKC in
 	[Yy])
 		UPCOWTRANSFER="true"
 		TIME y "您执行了上传固件到<奶牛快传>!"
@@ -386,7 +386,7 @@ svn co https://github.com/281677160/build-actions/trunk/build $Home/build > /dev
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/281677160/common $Home/build/common
+git clone https://github.com/MCydia/OpenWrt/tree/main/build/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -419,7 +419,7 @@ source build/${firmware}/common.sh && Diy_all
 	echo
 	exit 1
 }
-if [[ $firmware == "Openwrt_amlogic" ]]; then
+if [[ $firmware == "openwrt_amlogic" ]]; then
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
 	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
