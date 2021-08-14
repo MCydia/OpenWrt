@@ -27,6 +27,7 @@ echo
 } || {
 	wget -q --no-cookie --no-check-certificate -T 15 -t 4 -P ${Download_Path} https://ghproxy.com/${Github_Tagstwo} -O ${Download_Path}/Github_Tags > /dev/null 2>&1
 	export CLOUD_Name="$(egrep -o "${LUCI_Name}-${CURRENT_Version}${BOOT_Type}-[a-zA-Z0-9]+${Firmware_SFX}" ${Download_Tags} | awk 'END {print}')" > /dev/null 2>&1
+	[[ ! -f /etc/CLOUD_Name ]] && [[ ${CLOUD_Name} ]] && echo "${CLOUD_Name}" > /etc/CLOUD_Name
 }
 echo -e "${Green}详细参数：
 /overlay 可用:					${Overlay_Available}
@@ -75,7 +76,8 @@ export Overlay_Available="$(df -h | grep ":/overlay" | awk '{print $4}' | awk 'N
 rm -rf "${Download_Path}" && export TMP_Available="$(df -m | grep "/tmp" | awk '{print $4}' | awk 'NR==1' | awk -F. '{print $1}')"
 [ ! -d "${Download_Path}" ] && mkdir -p ${Download_Path}
 opkg list | awk '{print $1}' > ${Download_Path}/Installed_PKG_List
-AutoUpdate_Log_Path=/tmp
+export PKG_List="${Download_Path}/Installed_PKG_List"
+export AutoUpdate_Log_Path="/tmp"
 GET_PID() {
 	local Result
 	while [[ $1 ]];do
@@ -150,12 +152,12 @@ else
 	-t | -n | -f | -u | -N | -s | -w)
 		case ${Input_Option} in
 		-t)
-			Input_Other="-t"
+			export Input_Other="-t"
 			TIME h "执行: 测试模式"
 			TIME z "测试模式(只运行,不安装,查看更新固件操作流程是否正确)"
 		;;
 		-w)
-			Input_Other="-w"
+			export Input_Other="-w"
 		;;
 		-n | -N)
 			export Upgrade_Options="sysupgrade -n"
@@ -335,7 +337,7 @@ TIME g "准备更新固件,更新期间请不要断开电源或重启设备 ..."
 }
 sleep 2
 TIME g "正在更新固件,请耐心等待 ..."
-[[ `grep -c "gzip" ${Download_Path}/Installed_PKG_List` -ge '1' ]] && opkg remove gzip > /dev/null 2>&1
+[[ "$(cat ${PKG_List})" =~ gzip ]] && opkg remove gzip > /dev/null 2>&1
 if [[ "${AutoUpdate_Mode}" == 1 ]] || [[ "${Update_Mode}" == 1 ]]; then
 	cp -Rf /etc/config/network /mnt/network
 	mv -f /etc/config/luci /etc/config/luci-
