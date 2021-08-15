@@ -134,8 +134,8 @@ display "交换内存" "$swap_usage" "10" "0" "%" " of $swap_total""Mb"
 printf "IP  地址:  \x1B[92m%s\x1B[0m" "$ip_address"
 echo "" # fixed newline
 
-display "启动存储" "$boot_usage" "90" "1" "%" " of $boot_total"
 display "系统存储" "$root_usage" "90" "1" "%" " of $root_total"
+printf  "固件编译: \x1B[92m%s\x1B[0m" " jellyfin"
 echo ""
 
 
