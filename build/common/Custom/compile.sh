@@ -100,7 +100,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 	else
           	TARGET_PROFILE="armvirt"
 	fi
-	[[ ${firmware} == "openwrt_amlogic" ]] && {
+	[[ ${firmware} == "Openwrt_amlogic" ]] && {
 		clear
 		echo
 		echo
@@ -128,7 +128,7 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		*)
 			YUAN_MA="false"
 			TIME y "您已关闭更换源码，保存配置中，请稍后..."
-			cp -Rf openwrt/{.bf_config,compile.sh,${Core},dl} ./
+			cp -Rf openwrt/{.bf_config,compile.sh,${Core},dl} ./ > /dev/null 2>&1
 		;;
 	esac
 fi
@@ -254,12 +254,12 @@ echo
 		;;
 		*)
 			TIME r "您已关闭把‘定时更新插件’编译进固件！"
-			Github="https://github.com/MCydia/OpenWrt"
+			Github="https://github.com/MCydia/OpenWrt/"
 		;;
 	esac
 }
 [[ "${REG_UPDATE}" == "true" ]] && {
-	[[ ! ${YUAN_MA} == "false" ]] && Git="https://github.com/MCydia/OpenWrt"
+	[[ ! ${YUAN_MA} == "false" ]] && Git="https://github.com/MCydia/OpenWrt/"
 	TIME g "设置Github地址,定时更新固件需要把固件传至对应地址的Releases"
 	TIME z "回车默认为：$Git"
 	read -p " 请输入Github地址：" Github
@@ -386,7 +386,7 @@ svn co https://github.com/281677160/build-actions/trunk/build $Home/build > /dev
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/MCydia/OpenWrt/tree/main/build/common $Home/build/common
+git clone https://github.com/281677160/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -419,7 +419,7 @@ source build/${firmware}/common.sh && Diy_all
 	echo
 	exit 1
 }
-if [[ $firmware == "openwrt_amlogic" ]]; then
+if [[ $firmware == "Openwrt_amlogic" ]]; then
 	packages=" \
 	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
 	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
@@ -475,7 +475,21 @@ find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'README.cn.md' | 
 [ "${Menuconfig}" == "YES" ] && {
 make menuconfig
 }
+TIME g "正在生成配置文件，请稍后..."
+source build/${firmware}/common.sh && Diy_chajian
 make defconfig
+if [ -n "$(ls -A "${Home}/Chajianlibiao" 2>/dev/null)" ]; then
+	clear
+	echo
+	echo
+	echo
+	chmod -R +x ${Home}/CHONGTU
+	source ${Home}/CHONGTU
+	rm -rf {CHONGTU,Chajianlibiao}
+	echo
+	TIME g "如需重新编译请按 Ctrl+c 结束此次编译，继续使用命令重新编译，否则20秒后继续编译!"
+	sleep 20s
+fi
 cp -rf ${Home}/.config ${Home}/.bf_config
 TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)"
 TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)"
@@ -594,7 +608,7 @@ if [ "$?" == "0" ]; then
 		TIME g "加入‘定时升级固件插件’的固件已经放入[bin/Firmware]文件夹中"
 		echo
 	fi
-	if [[ $firmware == "Openwrt_amlogic" ]]; then
+	if [[ $firmware == "openwrt_amlogic" ]]; then
 		cp -Rf ${Home}/bin/targets/*/*/*.tar.gz ${Home}/openwrt-armvirt/ && sync
 		TIME l "请输入一键打包命令进行打包固件，打包成功后，固件存放在[openwrt/out]文件夹中"
 	fi
