@@ -254,12 +254,12 @@ echo
 		;;
 		*)
 			TIME r "您已关闭把‘定时更新插件’编译进固件！"
-			Github="https://github.com/MCydia/OpenWrt/"
+			Github="https://github.com/MCydia/OpenWrt"
 		;;
 	esac
 }
 [[ "${REG_UPDATE}" == "true" ]] && {
-	[[ ! ${YUAN_MA} == "false" ]] && Git="https://github.com/MCydia/OpenWrt/"
+	[[ ! ${YUAN_MA} == "false" ]] && Git="https://github.com/MCydia/OpenWrt"
 	TIME g "设置Github地址,定时更新固件需要把固件传至对应地址的Releases"
 	TIME z "回车默认为：$Git"
 	read -p " 请输入Github地址：" Github
@@ -381,12 +381,12 @@ rm -rf {.bf_config,compile.sh,dl}
 rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
 echo "Compile_Date=$(date +%Y%m%d%H%M)" > $Home/Openwrt.info
 [ -f $Home/Openwrt.info ] && . $Home/Openwrt.info
-svn co https://github.com/281677160/build-actions/trunk/build $Home/build > /dev/null 2>&1
+svn co https://github.com/MCydia/OpenWrt/trunk/build $Home/build > /dev/null 2>&1
 [[ $? -ne 0 ]] && {
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/281677160/common $Home/build/common
+git clone https://github.com/MCydia/OpenWrt/trunk/build/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -608,7 +608,7 @@ if [ "$?" == "0" ]; then
 		TIME g "加入‘定时升级固件插件’的固件已经放入[bin/Firmware]文件夹中"
 		echo
 	fi
-	if [[ $firmware == "openwrt_amlogic" ]]; then
+	if [[ $firmware == "Openwrt_amlogic" ]]; then
 		cp -Rf ${Home}/bin/targets/*/*/*.tar.gz ${Home}/openwrt-armvirt/ && sync
 		TIME l "请输入一键打包命令进行打包固件，打包成功后，固件存放在[openwrt/out]文件夹中"
 	fi
