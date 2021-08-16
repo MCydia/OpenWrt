@@ -191,13 +191,45 @@ rm -rf {build,README.md}
 ################################################################################################################
 Diy_chajian() {
 echo
+make defconfig > /dev/null 2>&1
 echo "TIME b \"					插件冲突信息\"" > ${Home}/CHONGTU
 
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-docker=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-app-dockerman=y" ${Home}/.config` -eq '1' ]]; then
-		sed -i 's/CONFIG_PACKAGE_luci-app-docker=y/# CONFIG_PACKAGE_luci-app-docker=y is not set/g' ${Home}/.config
-		sed -i 's/CONFIG_PACKAGE_luci-i18n-docker-zh-cn=y/# CONFIG_PACKAGE_luci-i18n-docker-zh-cn=y is not set/g' ${Home}/.config
+		sed -i 's/CONFIG_PACKAGE_luci-app-docker=y/# CONFIG_PACKAGE_luci-app-docker is not set/g' ${Home}/.config
+		sed -i 's/CONFIG_PACKAGE_luci-i18n-docker-zh-cn=y/# CONFIG_PACKAGE_luci-i18n-docker-zh-cn is not set/g' ${Home}/.config
 		echo "TIME r \"您同时选择luci-app-docker和luci-app-dockerman，插件有冲突，相同功能插件只能二选一，已删除luci-app-docker\"" >>CHONGTU
+		echo "TIME z \"\"" >>CHONGTU
+		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
+	fi
+	
+fi
+if [[ `grep -c "CONFIG_PACKAGE_luci-app-adblock-plus=y" ${Home}/.config` -eq '1' ]]; then
+	if [[ `grep -c "CONFIG_PACKAGE_luci-app-adblock=y" ${Home}/.config` -eq '1' ]]; then
+		sed -i 's/CONFIG_PACKAGE_luci-app-adblock=y/# CONFIG_PACKAGE_luci-app-adblock is not set/g' ${Home}/.config
+		sed -i '/luci-i18n-adblock/d' ${Home}/.config
+		echo "TIME r \"您同时选择luci-app-adblock-plus和luci-app-adblock，插件有依赖冲突，只能二选一，已删除luci-app-adblock\"" >>CHONGTU
+		echo "TIME z \"\"" >>CHONGTU
+		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
+	fi
+	
+fi
+if [[ `grep -c "CONFIG_PACKAGE_luci-app-kodexplorer=y" ${Home}/.config` -eq '1' ]]; then
+	if [[ `grep -c "CONFIG_PACKAGE_luci-app-vnstat=y" ${Home}/.config` -eq '1' ]]; then
+		sed -i 's/CONFIG_PACKAGE_luci-app-vnstat=y/# CONFIG_PACKAGE_luci-app-vnstat is not set/g' ${Home}/.config
+		sed -i '/luci-i18n-vnstat/d' ${Home}/.config
+		echo "TIME r \"您同时选择luci-app-kodexplorer和luci-app-vnstat，插件有依赖冲突，只能二选一，已删除luci-app-vnstat\"" >>CHONGTU
+		echo "TIME z \"\"" >>CHONGTU
+		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
+	fi
+	
+fi
+if [[ `grep -c "luci-app-ssr-plus=y" ${Home}/.config` -ge '1' ]]; then
+	if [[ `grep -c "CONFIG_PACKAGE_luci-app-easymesh=y" ${Home}/.config` -eq '1' ]]; then
+		sed -i 's/CONFIG_PACKAGE_luci-app-easymesh=y/# CONFIG_PACKAGE_luci-app-easymesh is not set/g' ${Home}/.config
+		sed -i 's/CONFIG_PACKAGE_wpad-openssl=y/CONFIG_PACKAGE_wpad-openssl=m/g' ${Home}/.config
+		sed -i '/luci-i18n-easymesh/d' ${Home}/.config
+		echo "TIME r \"您同时选择luci-app-ssr-plus和luci-app-easymesh，插件有依赖冲突，只能二选一，已删除luci-app-easymesh\"" >>CHONGTU
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
