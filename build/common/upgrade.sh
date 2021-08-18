@@ -65,14 +65,10 @@ GET_TARGET_INFO() {
 	Github_UP_RELEASE="${Github}/releases/AutoUpdate"
 	Openwrt_Version="${REPO_Name}-${TARGET_PROFILE}-${Compile_Date}"
 	Egrep_Firmware="${LUCI_Name}-${REPO_Name}-${TARGET_PROFILE}"
-	Ghproxy_Tags="${REPO_Name}-${TARGET_PROFILE}"
 }
 
 Diy_Part1() {
-	sed -i '/luci-app-autoupdate/d' .config > /dev/null 2>&1
-	echo -e "\nCONFIG_PACKAGE_luci-app-autoupdate=y" >> .config
-	sed -i '/luci-app-ttyd/d' .config > /dev/null 2>&1
-	echo -e "\nCONFIG_PACKAGE_luci-app-ttyd=y" >> .config
+sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-autoupdate luci-app-ttyd/g' target/linux/*/Makefile
 }
 
 Diy_Part2() {
@@ -90,7 +86,6 @@ Diy_Part2() {
 	Download_Path=/tmp/Downloads
 	Version=${AutoUpdate_Version}
 	Download_Tags=/tmp/Downloads/Github_Tags
-	Ghproxy_Tags=${Ghproxy_Tags}
 	EOF
 }
 
@@ -134,8 +129,6 @@ Diy_Part3() {
 		}
 	;;
 	esac
-	cd ${Home}/bin/Firmware
-	du -sh * > ${Ghproxy_Tags}
 	cd ${Home}
 }
 
