@@ -12,8 +12,8 @@ uci set network.lan.broadcast='192.168.2.254'                               # IP
 uci set network.lan.dns='223.6.6.6'                                         # DNS(多个DNS要用空格分开)
 uci set network.lan.delegate='0'                                            # 去掉LAN口使用内置的 IPv6 管理
 uci commit network                                                          # 不要删除跟注释,除非上面全部删除或注释掉了
-# uci set dhcp.lan.ignore='1'                                                 # 关闭DHCP功能
-# uci commit dhcp                                                             # 跟‘关闭DHCP功能’联动,同时启用或者删除跟注释
+uci set dhcp.lan.ignore='1'                                                 # 关闭DHCP功能
+uci commit dhcp                                                             # 跟‘关闭DHCP功能’联动,同时启用或者删除跟注释
 uci set system.@system[0].hostname='OpenWrt'                               # 修改主机名称为OpenWrt
 EOF
 
@@ -81,7 +81,7 @@ rm -rf ./package/lean/luci-app-vsftpd
 # rm -rf ./feeds/luci/applications/luci-app-autoupdate
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
 git clone https://github.com/skycn3322/luci-app-adguardhome.git package/adguardhome
-git clone --depth=1 -b 18.06 https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
+# git clone --depth=1 -b 18.06 https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
 # 自定义插件
 sed -i '$a src-git serverchan https://github.com/tty228/luci-app-serverchan' feeds.conf.defaul
 
