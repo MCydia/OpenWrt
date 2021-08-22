@@ -57,7 +57,8 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 rm -rf ./feeds/packages/net/aria2                       # 删除aria2
 rm -rf ./feeds/packages/net/ariang                      # 删除aria2
 rm -rf ./feeds/luci/applications/luci-app-aria2         # 删除aria2
-# rm -rf ./feeds/luci/applications/luci-app-samba         # 删除samba 不能与samba4同时编译
+rm -rf ./feeds/luci/applications/luci-app-samba# 删除samba 不能与samba4同时编译
+rm -rf ./package/lean/autosamba
 rm -rf ./feeds/luci/applications/luci-app-upnp          # 删除upnp自动端口映射
 rm -rf ./feeds/luci/applications/luci-app-wol           # 删除wol网络唤醒
 # rm -rf ./feeds/luci/applications/luci-app-nlbwmon       # 删除nlbwmon流量监控
@@ -78,6 +79,10 @@ rm -rf ././package/lean/vlmcsd
 rm -rf ./package/lean/luci-app-vlmcsd
 rm -rf ./package/lean/vsftpd-alt
 rm -rf ./package/lean/luci-app-vsftpd
+rm -rf ./rm -rf ./feeds/luci/applications/luci-app-ddns
+rm -rf ./package/lean/luci-app-filetransfer
+rm -rf ./package/lean/luci-app-autoreboot
+rm -rf ./package/lean/luci-app-ttyd
 # rm -rf ./feeds/luci/applications/luci-app-autoupdate
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
 git clone https://github.com/skycn3322/luci-app-adguardhome.git package/adguardhome
