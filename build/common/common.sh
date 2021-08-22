@@ -311,7 +311,7 @@ if [[ "${Arch}" =~ (amd64|i386|armeb|armv7) ]]; then
 	tar -zxvf AdGuardHome_linux_${Arch}.tar.gz -C ${Home}
 	mkdir -p files/usr/bin/AdGuardHome
 	mv -f AdGuardHome/AdGuardHome files/usr/bin/AdGuardHome
-	chmod 777 files/usr/bin/AdGuardHome/AdGuardHome
+	chmod 777 files/usr/bin/AdGuardHome
 	rm -rf {AdGuardHome_linux_${Arch}.tar.gz,AdGuardHome}
 fi
 
