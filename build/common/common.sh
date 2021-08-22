@@ -309,9 +309,9 @@ if [[ "${Arch}" =~ (amd64|i386|armeb|armv7) ]]; then
 	latest_ver="$($downloader - https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest 2>/dev/null|grep -E 'tag_name' |grep -E 'v[0-9.]+' -o 2>/dev/null)"
 	wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz
 	tar -zxvf AdGuardHome_linux_${Arch}.tar.gz -C ${Home}
-	mkdir -p files/usr/bin
-	mv -f AdGuardHome/AdGuardHome files/usr/bin
-	chmod 777 files/usr/bin/AdGuardHome
+	mkdir -p files/usr/bin/AdGuardHome
+	mv -f AdGuardHome/AdGuardHome files/usr/bin/AdGuardHome
+	chmod 777 files/usr/bin/AdGuardHome/AdGuardHome
 	rm -rf {AdGuardHome_linux_${Arch}.tar.gz,AdGuardHome}
 fi
 
