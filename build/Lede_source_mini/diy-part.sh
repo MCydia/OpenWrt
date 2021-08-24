@@ -84,7 +84,7 @@ rm -rf ./package/lean/luci-app-filetransfer
 rm -rf ./package/lean/luci-app-autoreboot
 rm -rf ./package/lean/luci-app-ttyd
 rm -rf ./package/lean/luci-app-accesscontrol
-rm -rf ./feeds/luci/applications/luci-app-nlbwmon
+# rm -rf ./feeds/luci/applications/luci-app-nlbwmon
 rm -rf ./package/lean/luci-app-ramfree
 rm -rf ./package/lean/luci-app-arpbind
 # rm -rf ./feeds/luci/applications/luci-app-autoupdate
