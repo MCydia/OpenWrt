@@ -79,7 +79,7 @@ rm -rf ././package/lean/vlmcsd
 rm -rf ./package/lean/luci-app-vlmcsd
 rm -rf ./package/lean/vsftpd-alt
 rm -rf ./package/lean/luci-app-vsftpd
-rm -rf ./rm -rf ./feeds/luci/applications/luci-app-ddns
+rm -rf ./feeds/luci/applications/luci-app-ddns
 rm -rf ./package/lean/luci-app-filetransfer
 rm -rf ./package/lean/luci-app-autoreboot
 rm -rf ./package/lean/luci-app-ttyd
