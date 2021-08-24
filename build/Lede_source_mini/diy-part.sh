@@ -79,10 +79,14 @@ rm -rf ././package/lean/vlmcsd
 rm -rf ./package/lean/luci-app-vlmcsd
 rm -rf ./package/lean/vsftpd-alt
 rm -rf ./package/lean/luci-app-vsftpd
-rm -rf ./rm -rf ./feeds/luci/applications/luci-app-ddns
+rm -rf ./feeds/luci/applications/luci-app-ddns
 rm -rf ./package/lean/luci-app-filetransfer
 rm -rf ./package/lean/luci-app-autoreboot
 rm -rf ./package/lean/luci-app-ttyd
+rm -rf ./package/lean/luci-app-accesscontrol
+rm -rf ./feeds/luci/applications/luci-app-nlbwmon
+rm -rf ./package/lean/luci-app-ramfree
+rm -rf ./package/lean/luci-app-arpbind
 # rm -rf ./feeds/luci/applications/luci-app-autoupdate
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
 git clone https://github.com/skycn3322/luci-app-adguardhome.git package/adguardhome
