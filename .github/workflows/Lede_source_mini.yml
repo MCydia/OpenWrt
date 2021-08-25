@@ -243,9 +243,10 @@ jobs:
     - name: 整理发布信息
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       run: |
-        echo "### $(date +"%Y年%m月%d号-%H点%M分")" > update_log.txt
+        echo "#### Lede_x86_x64_mini版编译于$(date +"%Y年%m月%d号-%H点%M分")" > update_log.txt
         curl -fsSL git.io/file-transfer | sh
         echo "##### IP地址：192.168.2.3    账号：root  密码：无" >> update_log.txt
+        echo "##### 本固件极度精简，仅保留反广告和科学上网，适合esxi使用" >> update_log.txt
         ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
         echo "##### 奶牛快传：$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> update_log.txt
         ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
@@ -255,7 +256,7 @@ jobs:
       uses: ncipollo/release-action@v1
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       with:
-        name: ${{ env.CODE }}-${{ env.TARGET_PROFILE }}
+        name: ${{ env.CODE }}_mini-${{ env.TARGET_PROFILE }}
         tag: ${{ env.date }}
         token: ${{ secrets.actions_jellyfina_op2 }}
         bodyFile: "update_log.txt"
