@@ -29,7 +29,7 @@ sed -i '/ip6assign/d' package/base-files/files/bin/config_generate
 # 添加新版argon主题
 rm -rf ../lean/luci-theme-argon
 git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
-git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
+# git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config
 
                                                 
 # 选择edge为默认主题
@@ -57,7 +57,7 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 rm -rf ./feeds/packages/net/aria2                       # 删除aria2
 rm -rf ./feeds/packages/net/ariang                      # 删除aria2
 rm -rf ./feeds/luci/applications/luci-app-aria2         # 删除aria2
-rm -rf ./feeds/luci/applications/luci-app-samba# 删除samba 不能与samba4同时编译
+rm -rf ./feeds/luci/applications/luci-app-samba         # 删除samba 不能与samba4同时编译
 rm -rf ./package/lean/autosamba
 rm -rf ./feeds/luci/applications/luci-app-upnp          # 删除upnp自动端口映射
 rm -rf ./feeds/luci/applications/luci-app-wol           # 删除wol网络唤醒
