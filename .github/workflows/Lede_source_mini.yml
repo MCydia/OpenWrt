@@ -247,7 +247,7 @@ jobs:
         curl -fsSL git.io/file-transfer | sh
         echo "##### IP地址：192.168.2.3    账号：root  密码：无" >> update_log.txt
         echo "##### 本固件极度精简，仅保留反广告和科学上网，适合esxi使用" >> update_log.txt
-        echo "##### 保留插件：AdGuare home/SSRP/serverchan/turboacc" >> update_log.txt
+        echo "##### 保留插件：AdGuard home/SSRP/serverchan/turboacc" >> update_log.txt
         ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
         echo "##### 奶牛快传：$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> update_log.txt
         ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
