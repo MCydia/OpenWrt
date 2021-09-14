@@ -62,3 +62,4 @@ sed -i 's/"动态 DNS"/"Dynamic DNS"/g' feeds/luci/applications/luci-app-ddns/po
 sed -i 's/"解锁网易云灰色歌曲"/"NetEase music"/g' package/lean/luci-app-unblockmusic/po/zh-cn/unblockmusic.po
 sed -i 's/"Frp 内网穿透"/"Frp Intranet"/g' package/lean/luci-app-frpc/po/zh-cn/frp.po
 sed -i 's/"Argon 主题设置"/"Argon Settings"/g' feeds/luci/applications/luci-app-argon-config/po/zh-cn/argon-config.po
+sed -i 's/"甜糖星愿自动采集"/"TTnode"/g' feeds/luci/applications/luci-app-ttnode/luasrc/controller/ttnode.lua
