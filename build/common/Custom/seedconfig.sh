@@ -140,7 +140,7 @@ rm -rf seedconfig && git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" see
 Home="$PWD/seedconfig"
 cd $Home
 ./scripts/feeds update -a > /dev/null 2>&1
-git clone -b "$REPO_BRANCH" --single-branch https://github.com/281677160/openwrt-package
+git clone -b "$REPO_BRANCH" --single-branch https://github.com/MCydia/openwrt-package
 [[ $? -ne 0 ]] && {
 	echo
 	rm -rf ../seedconfig.sh
