@@ -63,22 +63,34 @@ XTbit=`getconf LONG_BIT`
 	echo "compile" > .compile
 	}
 }
-rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core,dl,.bf_config,compile.sh}
-if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
+rm -rf ${firmware}
+if [[ -n "$(ls -A "openwrt/config_bf" 2>/dev/null)" ]]; then
 	if [[ -n "$(ls -A "openwrt/.Lede_core" 2>/dev/null)" ]]; then
 		firmware="Lede_source"
+		CODE="lede"
+		CJB_DL="Lede_dl.zip"
+		Modelfile="Lede_source"
 		Core=".Lede_core"
 		source openwrt/.Lede_core
 	elif [[ -n "$(ls -A "openwrt/.Lienol_core" 2>/dev/null)" ]]; then
 		firmware="Lienol_source"
+		CODE="lienol"
+		CJB_DL="Lienol_dl.zip"
+		Modelfile="Lienol_source"
 		Core=".Lienol_core"
 		source openwrt/.Lienol_core
 	elif [[ -n "$(ls -A "openwrt/.Mortal_core" 2>/dev/null)" ]]; then
 		firmware="Mortal_source"
+		CODE="mortal"
+		CJB_DL="Mortal_dl.zip"
+		Modelfile="Mortal_source"
 		Core=".Mortal_core"
 		source openwrt/.Mortal_core
 	elif [[ -n "$(ls -A "openwrt/.amlogic_core" 2>/dev/null)" ]]; then
-		firmware="Openwrt_amlogic"
+		firmware="openwrt_amlogic"
+		CODE="lede"
+		CJB_DL="Lede_dl.zip"
+		Modelfile="openwrt_amlogic"
 		Core=".amlogic_core"
 		source openwrt/.amlogic_core
 	else
@@ -87,16 +99,15 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 		echo
 		echo
 		TIME r "没检测到openwrt文件夹有执行文件，自动转换成首次编译命令编译固件，请稍后..."
-		rm -rf openwrt
-		rm -rf {dl,.bf_config,compile.sh,.compile}
-		rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
+		rm -rf {openwrt,.compile}
+		rm -rf ${firmware}
 		bash <(curl -fsSL git.io/JcGDV)
 	fi
 	echo
-	if [[ `grep -c "CONFIG_TARGET_x86_64=y" openwrt/.bf_config` -eq '1' ]]; then
+	if [[ `grep -c "CONFIG_TARGET_x86_64=y" openwrt/config_bf` -eq '1' ]]; then
           	TARGET_PROFILE="x86-64"
-	elif [[ `grep -c "CONFIG_TARGET.*DEVICE.*=y" openwrt/.bf_config` -eq '1' ]]; then
-          	TARGET_PROFILE="$(egrep -o "CONFIG_TARGET.*DEVICE.*=y" openwrt/.bf_config | sed -r 's/.*DEVICE_(.*)=y/\1/')"
+	elif [[ `grep -c "CONFIG_TARGET.*DEVICE.*=y" openwrt/config_bf` -eq '1' ]]; then
+          	TARGET_PROFILE="$(egrep -o "CONFIG_TARGET.*DEVICE.*=y" openwrt/config_bf | sed -r 's/.*DEVICE_(.*)=y/\1/')"
 	else
           	TARGET_PROFILE="armvirt"
 	fi
@@ -121,14 +132,13 @@ if [[ -n "$(ls -A "openwrt/.bf_config" 2>/dev/null)" ]]; then
 			echo
 			TIME r "您选择更改源码，正在清理旧文件中，请稍后..."
 			rm -rf openwrt
-			rm -rf openwrtl
-			rm -rf {dl,.bf_config,compile.sh}
-			rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
+			rm -rf ${firmware}
 		;;
 		*)
 			YUAN_MA="false"
 			TIME y "您已关闭更换源码，保存配置中，请稍后..."
-			cp -Rf openwrt/{.bf_config,compile.sh,${Core},dl} ./ > /dev/null 2>&1
+			mkdir -p ${firmware}
+			cp -Rf openwrt/{config_bf,${Core},compile.sh} ${firmware} > /dev/null 2>&1
 		;;
 	esac
 fi
@@ -158,13 +168,13 @@ fi
 	echo
 	echo
 	echo
-	TIME l " 1. Lede_5.4内核,LUCI 18.06版本"
+	TIME l " 1. Lede_5.4内核,LUCI 18.06版本(Lede_source)"
 	echo
-	TIME l " 2. Lienol_4.14内核,LUCI 19.07版本"
+	TIME l " 2. Lienol_4.14内核,LUCI 19.07版本(Lienol_source)"
 	echo
-	TIME l " 3. Immortalwrt_5.4内核,LUCI 21.02版本"
+	TIME l " 3. Immortalwrt_5.4内核,LUCI 21.02版本(Mortal_source)"
 	echo
-	TIME l " 4. N1和晶晨系列CPU盒子专用"
+	TIME l " 4. N1和晶晨系列CPU盒子专用(Openwrt_amlogic)"
 	echo
 	TIME l " 5. 退出编译程序"
 	echo
@@ -177,24 +187,40 @@ fi
 		1)
 			firmware="Lede_source"
 			CODE="lede"
+			Core=".Lede_core"
+			CJB_DL="Lede_dl.zip"
+			Modelfile="Lede_source"
+			source Lede_source/.Lede_core > /dev/null 2>&1
 			TIME y "您选择了：Lede_5.4内核,LUCI 18.06版本"
 		break
 		;;
 		2)
 			firmware="Lienol_source"
 			CODE="lienol"
+			Core=".Lienol_core"
+			CJB_DL="Lienol_dl.zip"
+			Modelfile="Lienol_source"
+			source Lienol_source/.Lienol_core > /dev/null 2>&1
 			TIME y "您选择了：Lienol_4.14内核,LUCI 19.07版本"
 		break
 		;;
 		3)
 			firmware="Mortal_source"
 			CODE="mortal"
+			Core=".Mortal_core"
+			CJB_DL="Mortal_dl.zip"
+			Modelfile="Mortal_source"
+			source Mortal_source/.Mortal_core > /dev/null 2>&1
 			TIME y "您选择了：Immortalwrt_5.4内核,LUCI 21.02版本"
 		break
 		;;
 		4)
 			firmware="Openwrt_amlogic"
 			CODE="lede"
+			Core=".amlogic_core"
+			CJB_DL="Lede_dl.zip"
+			Modelfile="Openwrt_amlogic"
+			source openwrt_amlogic/.amlogic_core > /dev/null 2>&1
 			TIME y "您选择了：N1和晶晨系列CPU盒子专用"
 		break
 		;;
@@ -212,7 +238,7 @@ fi
 }
 echo
 echo
-[[ ! ${YUAN_MA} == "false" ]] && ipdz="192.168.1.1"
+[[ -z ${ipdz} ]] && ipdz="192.168.1.1"
 TIME g "设置openwrt的后台IP地址[ 回车默认 $ipdz ]"
 read -p " 请输入后台IP地址：" ip
 ip=${ip:-"$ipdz"}
@@ -259,7 +285,7 @@ echo
 	esac
 }
 [[ "${REG_UPDATE}" == "true" ]] && {
-	[[ ! ${YUAN_MA} == "false" ]] && Git="https://github.com/MCydia/OpenWrt"
+	[[ -z ${Git} ]] && Git="https://github.com/MCydia/OpenWrt"
 	TIME g "设置Github地址,定时更新固件需要把固件传至对应地址的Releases"
 	TIME z "回车默认为：$Git"
 	read -p " 请输入Github地址：" Github
@@ -270,81 +296,53 @@ echo
 	CangKu="${Apidz##*/}"
 }
 echo
-[[ -f ${Core} ]] && {
-	echo -e "\nipdz=$ip" > ${Core}
-	echo -e "\nGit=$Github" >> ${Core}
-}
+mkdir -p ${firmware}
+cat >${firmware}/${Core} <<-EOF
+ipdz=$ip
+Git=$Github
+EOF
 Begin="$(date "+%Y/%m/%d-%H.%M")"
 date1="$(date +'%m.%d')"
 echo
 TIME g "正在下载源码中,请耐心等候~~~"
 echo
 if [[ $firmware == "Lede_source" ]]; then
-	[[ -d openwrt ]] && {
-		rm -rf openwrtl && git clone https://github.com/coolsnowwolf/lede openwrtl
-	} || {
-		git clone https://github.com/coolsnowwolf/lede openwrt
-	}
+	rm -rf openwrt && git clone https://github.com/coolsnowwolf/lede openwrt
 	[[ $? -ne 0 ]] && {
 		TIME r "源码下载失败，请检测网络或更换节点再尝试!"
-		rm -rf openwrtl
 		echo
 	 	exit 1
-	} || {
-	[[ -d openwrtl ]] && rm -rf openwrt && mv openwrtl openwrt
 	}
 	ZZZ="package/lean/default-settings/files/zzz-default-settings"
 	OpenWrt_name="18.06"
 	echo -e "\nipdz=$ip" > openwrt/.Lede_core
 	echo -e "\nGit=$Github" >> openwrt/.Lede_core
 elif [[ $firmware == "Lienol_source" ]]; then
-	[[ -d openwrt ]] && {
-		rm -rf openwrtl && git clone -b 19.07 --single-branch https://github.com/Lienol/openwrt openwrtl
-	} || {
-		git clone -b 19.07 --single-branch https://github.com/Lienol/openwrt openwrt
-	}
+	rm -rf openwrt && git clone -b 19.07 --single-branch https://github.com/Lienol/openwrt openwrt
 	[[ $? -ne 0 ]] && {
 		TIME r "源码下载失败，请检测网络或更换节点再尝试!"
-		rm -rf openwrtl
 		echo
 	 	exit 1
-	} || {
-	[[ -d openwrtl ]] && rm -rf openwrt && mv openwrtl openwrt
 	}
 	ZZZ="package/default-settings/files/zzz-default-settings"
 	OpenWrt_name="19.07"
 	echo -e "\nipdz=$ip" > openwrt/.Lienol_core
 	echo -e "\nGit=$Github" >> openwrt/.Lienol_core
 elif [[ $firmware == "Mortal_source" ]]; then
-	[[ -d openwrt ]] && {
-		rm -rf openwrtl && git clone -b openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt openwrtl
-	} || {
-		git clone -b openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt openwrt
-	}
+	rm -rf openwrt && git clone -b openwrt-21.02 --single-branch https://github.com/immortalwrt/immortalwrt openwrt
 	[[ $? -ne 0 ]] && {
 		TIME r "源码下载失败，请检测网络或更换节点再尝试!"
-		rm -rf openwrtl
 		echo
 	 	exit 1
-	} || {
-	[[ -d openwrtl ]] && rm -rf openwrt && mv openwrtl openwrt
 	}
 	ZZZ="package/emortal/default-settings/files/zzz-default-settings"
 	OpenWrt_name="21.02"
 	echo -e "\nipdz=$ip" > openwrt/.Mortal_core
 	echo -e "\nGit=$Github" >> openwrt/.Mortal_core
-elif [[ $firmware == "Openwrt_amlogic" ]]; then
-	[[ -d openwrt ]] && {
-		rm -rf openwrtl && git clone https://github.com/coolsnowwolf/lede openwrtl
-	} || {
-		git clone https://github.com/coolsnowwolf/lede openwrt
-		
-	}
-	[[ $? -eq 0 ]] && {
-		cp -Rf compile.sh openwrt/compile.sh
-	} || {
+elif [[ $firmware == "openwrt_amlogic" ]]; then
+	rm -rf openwrt && git clone https://github.com/coolsnowwolf/lede openwrt
+	[[ $? -ne 0 ]] && {
 		TIME r "源码下载失败，请检测网络或更换节点再尝试!"
-		rm -rf openwrtl
 		echo
 	 	exit 1
 	}
@@ -353,12 +351,11 @@ elif [[ $firmware == "Openwrt_amlogic" ]]; then
 	echo
 	rm -rf amlogic-s9xxx && svn co https://github.com/ophub/amlogic-s9xxx-openwrt/trunk/amlogic-s9xxx amlogic-s9xxx
 	[[ $? -ne 0 ]] && {
-		rm -rf {amlogic-s9xxx,openwrtlede}
+		rm -rf amlogic-s9xxx
 		TIME r "内核下载失败，请检测网络或更换节点再尝试!"
 		echo
 		exit 1
 	} || {
-	[[ -d openwrtl ]] && rm -rf openwrt && mv openwrtl openwrt
 	mv amlogic-s9xxx openwrt/amlogic-s9xxx
 	curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/make > openwrt/make
 	mkdir -p openwrt/openwrt-armvirt
@@ -372,21 +369,19 @@ fi
 if [[ "${UPCOWTRANSFER}" == "true" ]]; then
 	curl -fsSL git.io/file-transfer | sh
 fi
-Danhome="$PWD"
+GITHUB_WORKSPACE="$PWD"
 Home="$PWD/openwrt"
 PATH1="$PWD/openwrt/build/${firmware}"
 NETIP="package/base-files/files/etc/networkip"
-[[ -e ${Core} ]] && cp -Rf {.bf_config,compile.sh,${Core},dl} $Home
-rm -rf {.bf_config,compile.sh,dl}
-rm -rf {.Lede_core,.Lienol_core,.amlogic_core,.Mortal_core}
+[[ -e "${firmware}" ]] && cp -Rf "${firmware}"/* "${Home}"
 echo "Compile_Date=$(date +%Y%m%d%H%M)" > $Home/Openwrt.info
 [ -f $Home/Openwrt.info ] && . $Home/Openwrt.info
-svn co https://github.com/MCydia/OpenWrt/trunk/build $Home/build > /dev/null 2>&1
+svn co https://github.com/281677160/build-actions/trunk/build $Home/build > /dev/null 2>&1
 [[ $? -ne 0 ]] && {
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/MCydia/OpenWrt/trunk/build/common $Home/build/common
+git clone https://github.com/MCydia/OpenWrt/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -403,15 +398,11 @@ echo
 cd $Home
 ./scripts/feeds update -a > /dev/null 2>&1
 if [[ "${REPO_BRANCH}" == "master" ]]; then
-          source build/${firmware}/common.sh && Diy_lede
-          cp -Rf build/common/LEDE/files ./
-          cp -Rf build/common/LEDE/diy/* ./
-	  cp -Rf build/common/LEDE/patches/* "${PATH1}/patches"
+	source "${PATH1}/common.sh" && Diy_lede
 elif [[ "${REPO_BRANCH}" == "19.07" ]]; then
-          source build/${firmware}/common.sh && Diy_lienol
-          cp -Rf build/common/LIENOL/files ./
-          cp -Rf build/common/LIENOL/diy/* ./
-	  cp -Rf build/common/LIENOL/patches/* "${PATH1}/patches"
+	source "${PATH1}/common.sh" && Diy_lienol
+elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
+	source "${PATH1}/common.sh" && Diy_mortal
 fi
 source build/${firmware}/common.sh && Diy_all
 [[ $? -ne 0 ]] && {
@@ -419,32 +410,6 @@ source build/${firmware}/common.sh && Diy_all
 	echo
 	exit 1
 }
-if [[ $firmware == "Openwrt_amlogic" ]]; then
-	packages=" \
-	brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio kmod-brcmfmac wpad \
-	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat dosfstools e2fsprogs ntfs-3g \
-	kmod-usb2 kmod-usb3 kmod-usb-storage kmod-usb-storage-extras kmod-usb-storage-uas \
-	kmod-usb-net kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 \
-	blkid lsblk parted fdisk cfdisk losetup resize2fs tune2fs pv unzip \
-	lscpu htop iperf3 curl lm-sensors python3 luci-app-amlogic
-	"
-	sed -i '/FEATURES+=/ { s/cpiogz //; s/ext4 //; s/ramdisk //; s/squashfs //; }' \
-    	target/linux/armvirt/Makefile
-	for x in $packages; do
-    	sed -i "/DEFAULT_PACKAGES/ s/$/ $x/" target/linux/armvirt/Makefile
-	done
-	sed -i 's/LUCI_DEPENDS.*/LUCI_DEPENDS:=\@\(arm\|\|aarch64\)/g' package/lean/luci-app-cpufreq/Makefile
-	sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armvirt/g' package/lean/autocore/Makefile
-fi
-if [ -n "$(ls -A "build/$firmware/diy" 2>/dev/null)" ]; then
-          cp -Rf build/$firmware/diy/* ./
-fi
-if [ -n "$(ls -A "build/$firmware/files" 2>/dev/null)" ]; then
-          cp -Rf build/$firmware/files ./ && chmod -R +x files
-fi
-if [ -n "$(ls -A "build/$firmware/patches" 2>/dev/null)" ]; then
-          find "build/$firmware/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward"
-fi
 echo
 TIME g "正在加载源和安装源,请耐心等候~~~"
 echo
@@ -455,29 +420,35 @@ EOF
 sed -i "s/OpenWrt /${Ubuntu_mz} compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 echo
-sed -i 's/"网络存储"/"NAS"/g' `grep "网络存储" -rl ./`
-sed -i 's/"管理权"/"改密码"/g' `grep "管理权" -rl ./feeds/luci/modules/luci-base`
+sed -i 's/"网络存储"/"NAS"/g' `grep "网络存储" -rl ./feeds/luci/applications`
+sed -i 's/"网络存储"/"NAS"/g' `grep "网络存储" -rl ./package`
 sed -i 's/"带宽监控"/"监控"/g' `grep "带宽监控" -rl ./feeds/luci/applications`
 sed -i 's/"Argon 主题设置"/"Argon设置"/g' `grep "Argon 主题设置" -rl ./feeds/luci/applications`
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 ./scripts/feeds install -a
-[[ ! -e ${Home}/.bf_config ]] && {
-	cp -rf ${Home}/build/${firmware}/.config ${Home}/.config
+[[ -e ${Home}/config_bf ]] && {
+	cp -rf ${Home}/config_bf ${Home}/.config
 } || {
-	cp -rf ${Home}/.bf_config ${Home}/.config
+	cp -rf ${Home}/build/${firmware}/.config ${Home}/.config
 }
 if [[ "${REGULAR_UPDATE}" == "true" ]]; then
 	  source build/$firmware/upgrade.sh && Diy_Part1
 fi
-find . -name 'LICENSE' -o -name 'README' -o -name 'README.md' -o -name '*.git*' | xargs -i rm -rf {}
-find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'README.cn.md' | xargs -i rm -rf {}
+if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon=y" ${Home}/.config` -eq '0' ]]; then
+	echo -e "\nCONFIG_PACKAGE_luci-theme-argon=y" >> ${Home}/.config
+fi
+find . -name 'README' -o -name 'README.md' | xargs -i rm -rf {}
+find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'DEVICE_NAME' | xargs -i rm -rf {}
 [ "${Menuconfig}" == "YES" ] && {
 make menuconfig
 }
+echo
 TIME g "正在生成配置文件，请稍后..."
+echo
 source build/${firmware}/common.sh && Diy_chajian
 make defconfig
+./scripts/diffconfig.sh > ${Home}/config_bf
 if [ -n "$(ls -A "${Home}/Chajianlibiao" 2>/dev/null)" ]; then
 	clear
 	echo
@@ -487,10 +458,10 @@ if [ -n "$(ls -A "${Home}/Chajianlibiao" 2>/dev/null)" ]; then
 	source ${Home}/CHONGTU
 	rm -rf {CHONGTU,Chajianlibiao}
 	echo
-	TIME g "如需重新编译请按 Ctrl+c 结束此次编译，继续使用命令重新编译，否则20秒后继续编译!"
-	sleep 20s
+	TIME g "如需重新编译请按 Ctrl+c 结束此次编译，继续使用命令重新编译，否则30秒后继续编译!"
+	make defconfig > /dev/null 2>&1
+	sleep 30s
 fi
-cp -rf ${Home}/.config ${Home}/.bf_config
 TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' .config)"
 TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' .config)"
 if [[ `grep -c "CONFIG_TARGET_x86_64=y" .config` -eq '1' ]]; then
@@ -504,41 +475,61 @@ if [ "${REGULAR_UPDATE}" == "true" ]; then
           source build/$firmware/upgrade.sh && Diy_Part2
 fi
 echo
+rm -rf ../{Lede_source,Lienol_source,Mortal_source,openwrt_amlogic}
+# 为编译做最后处理
+BY_INFORMATION="false"
+source build/${firmware}/common.sh && Diy_chuli
 COMFIRMWARE="openwrt/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
 TIME g "正在下载DL文件,请耐心等待..."
-echo
-[[ -d $Home/dl ]] && {
-	make -j8 download 2>&1 |tee build.log
-	find dl -size -1024c -exec ls -l {} \;
-	find dl -size -1024c -exec rm -f {} \;
-	if [[ `grep -c "make with -j1 V=s or V=sc" build.log` -ge '1' ]]; then
-		TIME y "下载DL有错误，正在重新下载..."
-		rm -rf build.log
-		echo
-		make -j8 download 2>&1 |tee build.log
-		find dl -size -1024c -exec ls -l {} \;
-		find dl -size -1024c -exec rm -f {} \;
-	
-	fi
-	if [[ `grep -c "make with -j1 V=s or V=sc" build.log` -ge '1' ]]; then
-		echo
-		TIME r "下载DL失败，请检查网络或者更换节点后再尝试编译!"
-		echo
-		exit 1
-	fi
-	
-} || {
-	make download -j8 V=s
-	find dl -size -1024c -exec ls -l {} \;
-	find dl -size -1024c -exec rm -f {} \;
-	make -j8 download 2>&1 |tee build.log
-	if [[ `grep -c "make with -j1 V=s or V=sc" build.log` -ge '1' ]]; then
-		echo
-		TIME r "下载DL失败，请检查网络或者更换节点后再尝试编译!"
-		echo
-		exit 1
-	fi
-}
+make -j8 download 2>&1 |tee build.log
+find dl -size -1024c -exec ls -l {} \;
+find dl -size -1024c -exec rm -f {} \;
+if [[ `grep -c "make with -j1 V=s or V=sc" build.log` -ge '1' ]]; then
+	clear
+	echo
+	echo
+	TIME g "下载DL失败，更换节点后再尝试下载？"
+	read -p " [输入[ Y/y ]回车,退出下载，更换节点后按回车继续尝试下载DL]： " XZDL
+	case $XZDL in
+		[Yy])
+			exit 1
+			echo
+		;;
+		*)
+			rm -rf build.log
+			make -j8 download 2>&1 |tee build.log
+			find dl -size -1024c -exec ls -l {} \;
+			find dl -size -1024c -exec rm -f {} \;
+		;;
+	esac
+fi
+if [[ `grep -c "make with -j1 V=s or V=sc" build.log` -ge '1' ]]; then
+	clear
+	echo
+	echo
+	TIME g "下载DL失败，继续更换节点后再尝试下载？"
+	read -p " [输入[ Y/y ]回车,退出下载，更换节点后按回车继续尝试下载DL]： " XZDLE
+	case $XZDLE in
+		[Yy])
+			exit 1
+			echo
+		;;
+		*)	
+			rm -rf build.log
+			make -j8 download 2>&1 |tee build.log
+			find dl -size -1024c -exec ls -l {} \;
+			find dl -size -1024c -exec rm -f {} \;
+		;;
+	esac
+fi
+if [[ `grep -c "make with -j1 V=s or V=sc" build.log` -ge '1' ]]; then
+	echo
+	rm -rf build.log
+	TIME r "下载DL失败，请检查网络或者更换节点后再尝试编译!"
+	exit 1
+	echo
+fi
+rm -rf build.log
 cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c > CPU
 cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
 sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
@@ -583,7 +574,7 @@ if [ "$?" == "0" ]; then
 	echo
 	echo
 	echo
-	[[ ${firmware} == "Openwrt_amlogic" ]] && {
+	[[ ${firmware} == "openwrt_amlogic" ]] && {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ N1和晶晨系列盒子专用固件 ]顺利编译完成~~~"
 	} || {
 		TIME y "使用[ ${firmware} ]文件夹，编译[ ${TARGET_PROFILE} ]顺利编译完成~~~"
@@ -615,7 +606,7 @@ if [ "$?" == "0" ]; then
 	echo
 	cd ${Home}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}
 	rename -v "s/^openwrt/${date1}-${CODE}/" * > /dev/null 2>&1
-	cd ${Danhome}
+	cd ${GITHUB_WORKSPACE}
 	if [[ "${UPCOWTRANSFER}" == "true" ]]; then
 		TIME g "正在上传固件至奶牛快传中，请稍后..."
 		echo
@@ -623,7 +614,9 @@ if [ "$?" == "0" ]; then
 		mv ${WETCOMFIRMWARE}/packages ${Home}/bin/targets/${TARGET_BOARD}/packages
 		./transfer cow --block 2621440 -s -p 64 --no-progress ${WETCOMFIRMWARE} 2>&1 | tee cowtransfer.log > /dev/null 2>&1
 		cow="$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-		echo -e "\n奶牛快传：${cow}"
+		echo
+		TIME y "奶牛快传：${cow}"
+		echo "${cow}" > openwrt/bin/奶牛快传链接
 		echo
 	fi
 	rm -rf $Home/Openwrt.info
