@@ -27,7 +27,7 @@ Compte=$(date +%Y年%m月%d号%H时%M分)
 ################################################################################################################
 Diy_lede() {
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' -o -name 'mentohust' | xargs -i rm -rf {}
-find . -name 'luci-app-ipsec-vpnd' -o -name 'k3screenctrl' -o -name 'luci-app-fileassistant' -o -name 'luci-app-wol' | xargs -i rm -rf {}
+find . -name 'luci-app-ipsec-vpnd' -o -name 'k3screenctrl' -o -name 'luci-app-wol' | xargs -i rm -rf {}
 find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' | xargs -i rm -rf {}
 
 sed -i '/to-ports 53/d' $ZZZ
@@ -70,7 +70,7 @@ fi
 # LIENOL源码通用diy.sh文件
 ################################################################################################################
 Diy_lienol() {
-find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' -o -name 'luci-app-fileassistant' | xargs -i rm -rf {}
+find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' | xargs -i rm -rf {}
 find . -name 'ddns-scripts_aliyun' -o -name 'ddns-scripts_dnspod' -o -name 'luci-app-wol' | xargs -i rm -rf {}
 find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' -o -name 'pdnsd-alt' | xargs -i rm -rf {}
 rm -rf feeds/packages/libs/libcap
@@ -87,7 +87,7 @@ sed -i "/exit 0/i\chmod +x /etc/webweb.sh && source /etc/webweb.sh" $ZZZ
 ################################################################################################################
 Diy_mortal() {
 
-find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon' -o -name 'luci-light' -o -name 'luci-app-fileassistant'  | xargs -i rm -rf {}
+find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon' -o -name 'luci-light' | xargs -i rm -rf {}
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-openwrt' -o -name 'luci-app-cifs' | xargs -i rm -rf {}
 find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' | xargs -i rm -rf {}
 }
@@ -189,12 +189,12 @@ fi
 rm -rf {build,README.md}
 }
 
+
 ################################################################################################################
 # 判断插件冲突
 ################################################################################################################
 Diy_chajian() {
 echo
-make defconfig > /dev/null 2>&1
 echo "TIME b \"					插件冲突信息\"" > ${Home}/CHONGTU
 
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-docker=y" ${Home}/.config` -eq '1' ]]; then
@@ -202,6 +202,15 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-docker=y" ${Home}/.config` -eq '1' ]]; t
 		sed -i 's/CONFIG_PACKAGE_luci-app-docker=y/# CONFIG_PACKAGE_luci-app-docker is not set/g' ${Home}/.config
 		sed -i 's/CONFIG_PACKAGE_luci-i18n-docker-zh-cn=y/# CONFIG_PACKAGE_luci-i18n-docker-zh-cn is not set/g' ${Home}/.config
 		echo "TIME r \"您同时选择luci-app-docker和luci-app-dockerman，插件有冲突，相同功能插件只能二选一，已删除luci-app-docker\"" >>CHONGTU
+		echo "TIME z \"\"" >>CHONGTU
+		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
+	fi
+	
+fi
+if [[ `grep -c "CONFIG_PACKAGE_luci-app-advanced=y" ${Home}/.config` -eq '1' ]]; then
+	if [[ `grep -c "CONFIG_PACKAGE_luci-app-fileassistant=y" ${Home}/.config` -eq '1' ]]; then
+		sed -i 's/CONFIG_PACKAGE_luci-app-fileassistant=y/# CONFIG_PACKAGE_luci-app-fileassistant is not set/g' ${Home}/.config
+		echo "TIME r \"您同时选择luci-app-advanced和luci-app-fileassistant，luci-app-advanced已附带luci-app-fileassistant，所以删除了luci-app-fileassistant\"" >>CHONGTU
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
@@ -326,12 +335,14 @@ fi
 # 为编译做最后处理
 ################################################################################################################
 Diy_chuli() {
+
 sed -i '$ s/exit 0$//' ${Home}/package/base-files/files/etc/rc.local
 echo '
 if [[ `grep -c "coremark" /etc/crontabs/root` -eq '1' ]]; then
   sed -i '/coremark/d' /etc/crontabs/root
 fi
 /etc/init.d/network restart
+/etc/init.d/uhttpd restart
 exit 0
 ' >> ${Home}/package/base-files/files/etc/rc.local
 
@@ -346,7 +357,7 @@ if [[ "${TARGET_BOARD}" == "x86" ]]; then
 fi
 
 if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${Home}/.config` -eq '1' ]]; then
-	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/281677160/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
+	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/MCydia/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
 fi
 
 
@@ -401,7 +412,7 @@ if [[ "${BY_INFORMATION}" == "true" ]]; then
 		PATCHVER=$(egrep -o "${PATCHVER}.[0-9]+" ${Home}/include/kernel-version.mk)
 	fi
 	
-	if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
+	if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
 		[[ -e $GITHUB_WORKSPACE/amlogic_openwrt ]] && source $GITHUB_WORKSPACE/amlogic_openwrt
 		[[ "${amlogic_kernel}" == "5.12.12_5.4.127" ]] && {
 			curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-openwrt/main/.github/workflows/build-openwrt-lede.yml > open.yml
@@ -417,6 +428,7 @@ fi
 find . -name 'README' -o -name 'README.md' | xargs -i rm -rf {}
 find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'DEVICE_NAME' | xargs -i rm -rf {}
 }
+
 
 ################################################################################################################
 # 公告
@@ -452,12 +464,10 @@ echo
 }
 
 Diy_tongzhi() {
-GONGGAO g "8月9号更新通知"
-GONGGAO r "请重新拉取仓库，麻烦各位了，也感谢各位的支持"
-GONGGAO r "修复因上游源码仓库错误，导致不能发布定时更新固件"
-GONGGAO r "修复定时更新需要依赖翻墙才能完成，现在最新V6.5版，不需要翻墙也可以使用了"
-GONGGAO r "把上传.config配置文件修改了一下，现在编译错误都会上传一个配置文件的，免得你辛辛苦苦弄的又要重新再弄"
-GONGGAO r "不过这样上传的.config也是双面的，如果你是因为.config编译错误，你不能直接套进去又继续编译，要看编译错误是什么，再进SSH把配置弄好"
+GONGGAO g "9月30号更新通知"
+GONGGAO g "请大家重新FORK仓库，给大家带来麻烦，非常抱歉"
+GONGGAO r "修复了一个小BUG，还有修改了一下说明文件，请大家编译之前认真看说明"
+GONGGAO r "增加了缓存加速"
 echo
 echo
 exit 1
@@ -476,7 +486,7 @@ TIME b "源码链接: ${REPO_URL}"
 TIME b "源码分支: ${REPO_BRANCH}"
 TIME b "源码作者: ${ZUOZHE}"
 TIME b "Luci版本: ${OpenWrt_name}"
-[[ "${Modelfile}" == "Openwrt_amlogic" ]] && {
+[[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME b "编译机型: ${TARGET_model}"
 	TIME b "打包内核: ${TARGET_kernel}"
 } || {
@@ -486,7 +496,7 @@ TIME b "固件作者: ${Author}"
 TIME b "仓库地址: ${Github}"
 TIME b "启动编号: #${Run_number}（${CangKu}仓库第${Run_number}次启动[${Run_workflow}]工作流程）"
 TIME b "编译时间: ${Compte}"
-[[ "${Modelfile}" == "Openwrt_amlogic" ]] && {
+[[ "${Modelfile}" == "openwrt_amlogic" ]] && {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_model}】固件"
 } || {
 	TIME g "友情提示：您当前使用【${Modelfile}】文件夹编译【${TARGET_PROFILE}】固件"
