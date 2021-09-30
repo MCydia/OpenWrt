@@ -111,7 +111,7 @@ if [[ -n "$(ls -A "openwrt/config_bf" 2>/dev/null)" ]]; then
 	else
           	TARGET_PROFILE="armvirt"
 	fi
-	[[ ${firmware} == "Openwrt_amlogic" ]] && {
+	[[ ${firmware} == "openwrt_amlogic" ]] && {
 		clear
 		echo
 		echo
@@ -174,7 +174,7 @@ fi
 	echo
 	TIME l " 3. Immortalwrt_5.4内核,LUCI 21.02版本(Mortal_source)"
 	echo
-	TIME l " 4. N1和晶晨系列CPU盒子专用(Openwrt_amlogic)"
+	TIME l " 4. N1和晶晨系列CPU盒子专用(openwrt_amlogic)"
 	echo
 	TIME l " 5. 退出编译程序"
 	echo
@@ -215,11 +215,11 @@ fi
 		break
 		;;
 		4)
-			firmware="Openwrt_amlogic"
+			firmware="openwrt_amlogic"
 			CODE="lede"
 			Core=".amlogic_core"
 			CJB_DL="Lede_dl.zip"
-			Modelfile="Openwrt_amlogic"
+			Modelfile="openwrt_amlogic"
 			source openwrt_amlogic/.amlogic_core > /dev/null 2>&1
 			TIME y "您选择了：N1和晶晨系列CPU盒子专用"
 		break
@@ -271,7 +271,7 @@ case $NNKC in
 esac
 echo
 echo
-[[ ! $firmware == "Openwrt_amlogic" ]] && {
+[[ ! $firmware == "openwrt_amlogic" ]] && {
 	TIME g "是否把定时更新插件编译进固件?"
 	read -p " [输入[ Y/y ]回车确认，直接回车跳过选择]： " RELE
 	case $RELE in
@@ -458,7 +458,7 @@ if [ -n "$(ls -A "${Home}/Chajianlibiao" 2>/dev/null)" ]; then
 	source ${Home}/CHONGTU
 	rm -rf {CHONGTU,Chajianlibiao}
 	echo
-	TIME g "如需重新编译请按 Ctrl+c 结束此次编译，继续使用命令重新编译，否则30秒后继续编译!"
+	TIME g "如需重新编译请按 Ctrl+c 结束此次编译，否则30秒后继续编译!"
 	make defconfig > /dev/null 2>&1
 	sleep 30s
 fi
@@ -599,7 +599,7 @@ if [ "$?" == "0" ]; then
 		TIME g "加入‘定时升级固件插件’的固件已经放入[bin/Firmware]文件夹中"
 		echo
 	fi
-	if [[ $firmware == "Openwrt_amlogic" ]]; then
+	if [[ $firmware == "openwrt_amlogic" ]]; then
 		cp -Rf ${Home}/bin/targets/*/*/*.tar.gz ${Home}/openwrt-armvirt/ && sync
 		TIME l "请输入一键打包命令进行打包固件，打包成功后，固件存放在[openwrt/out]文件夹中"
 	fi
