@@ -85,6 +85,8 @@ rm -rf ./package/lean/luci-app-autoreboot
 rm -rf ./package/lean/luci-app-ttyd
 # rm -rf ./feeds/luci/applications/luci-app-autoupdate
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
+rm -rf ./package/lean/luci-app-dockerman        # 删除大雕docker
+rm -rf ./package/lean/luci-lib-docker           # 删除大雕docker
 git clone https://github.com/skycn3322/luci-app-adguardhome.git package/adguardhome
 # git clone --depth=1 -b 18.06 https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
 # 自定义插件
