@@ -70,7 +70,8 @@ rm -rf ././package/lean/vlmcsd
 rm -rf ./package/lean/luci-app-vlmcsd
 rm -rf ./package/lean/vsftpd-alt
 rm -rf ./package/lean/luci-app-vsftpd
-
+rm -rf ./package/lean/luci-app-dockerman        # 删除大雕docker
+rm -rf ./package/lean/luci-lib-docker           # 删除大雕docker
 # 修改插件名字
 sed -i 's/"aMule设置"/"电驴下载"/g' `grep "aMule设置" -rl ./`
 sed -i 's/"网络存储"/"存储"/g' `grep "网络存储" -rl ./`
