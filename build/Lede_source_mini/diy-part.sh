@@ -89,6 +89,8 @@ rm -rf ./package/lean/luci-app-accesscontrol
 rm -rf ./package/lean/luci-app-ramfree
 rm -rf ./package/lean/luci-app-arpbind
 rm -rf ./package/lean/luci-app-turboacc
+rm -rf ./feeds/packages/utils/docker
+rm -rf ./feeds/packages/utils/dockerd
 # rm -rf ./feeds/luci/applications/luci-app-autoupdate
 rm -rf ./feeds/luci/applications/luci-app-adguardhome
 git clone https://github.com/skycn3322/luci-app-adguardhome.git package/adguardhome
