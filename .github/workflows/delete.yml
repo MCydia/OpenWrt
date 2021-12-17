@@ -40,7 +40,7 @@ jobs:
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}       
-          retain_days: 10
+          retain_days: 1
           keep_minimum_runs: 0
     
       - name: 删除自动发布的老固件
