@@ -57,10 +57,8 @@ XTbit=`getconf LONG_BIT`
 		TIME r "环境部署失败，请检测网络或更换节点再尝试!"
 		exit 1
 	} || {
-	sudo apt-get autoremove --purge
-	sudo apt-get clean
-	sudo timedatectl set-timezone Asia/Shanghai
-	echo "compile" > .compile
+		sudo timedatectl set-timezone Asia/Shanghai
+		echo "compile" > .compile
 	}
 }
 rm -rf ${firmware}
@@ -103,6 +101,11 @@ if [[ -n "$(ls -A "openwrt/config_bf" 2>/dev/null)" ]]; then
 		rm -rf ${firmware}
 		bash <(curl -fsSL git.io/JcGDV)
 	fi
+	if [[ ! -e openwrt/${Core} ]]; then
+		if [[ -e ${firmware}/${Core} ]]; then
+			source ${firmware}/${Core}
+		fi
+	fi
 	echo
 	if [[ `grep -c "CONFIG_TARGET_x86_64=y" openwrt/config_bf` -eq '1' ]]; then
           	TARGET_PROFILE="x86-64"
@@ -141,6 +144,15 @@ if [[ -n "$(ls -A "openwrt/config_bf" 2>/dev/null)" ]]; then
 			cp -Rf openwrt/{config_bf,${Core},compile.sh} ${firmware} > /dev/null 2>&1
 		;;
 	esac
+fi
+Ubunkj="$(df -h | grep "/dev/*/" | awk '{print $4}' | awk 'NR==1')"
+FINAL=`echo ${Ubunkj: -1}`
+if [[ "${FINAL}" =~ (M|K) ]]; then
+	echo
+	TIME r "敬告：可用空间小于[ 1G ]退出编译,建议可用空间大于20G,是否继续?"
+	sleep 2
+	exit 1
+	echo
 fi
 Ubuntu_mz="$(cat /etc/group | grep adm | cut -f2 -d,)"
 Ubuntu_kj="$(df -h | grep "/dev/*/" | awk '{print $4}' | awk 'NR==1' | sed 's/.$//g')"
@@ -280,12 +292,12 @@ echo
 		;;
 		*)
 			TIME r "您已关闭把‘定时更新插件’编译进固件！"
-			Github="https://github.com/MCydia/OpenWrt"
+			Github="https://github.com/281677160/build-actions"
 		;;
 	esac
 }
 [[ "${REG_UPDATE}" == "true" ]] && {
-	[[ -z ${Git} ]] && Git="https://github.com/MCydia/OpenWrt"
+	[[ -z ${Git} ]] && Git="https://github.com/281677160/build-actions"
 	TIME g "设置Github地址,定时更新固件需要把固件传至对应地址的Releases"
 	TIME z "回车默认为：$Git"
 	read -p " 请输入Github地址：" Github
@@ -373,7 +385,7 @@ GITHUB_WORKSPACE="$PWD"
 Home="$PWD/openwrt"
 PATH1="$PWD/openwrt/build/${firmware}"
 NETIP="package/base-files/files/etc/networkip"
-[[ -e "${firmware}" ]] && cp -Rf "${firmware}"/* "${Home}"
+[[ -e "${firmware}" ]] && cp -Rf "${firmware}"/${Core} "${Home}"/${Core}
 echo "Compile_Date=$(date +%Y%m%d%H%M)" > $Home/Openwrt.info
 [ -f $Home/Openwrt.info ] && . $Home/Openwrt.info
 svn co https://github.com/281677160/build-actions/trunk/build $Home/build > /dev/null 2>&1
@@ -381,7 +393,7 @@ svn co https://github.com/281677160/build-actions/trunk/build $Home/build > /dev
 	TIME r "编译脚本下载失败，请检测网络或更换节点再尝试!"
 	exit 1
 }
-git clone https://github.com/MCydia/OpenWrt/common $Home/build/common
+git clone https://github.com/281677160/common $Home/build/common
 [[ $? -ne 0 ]] && {
 	TIME r "脚本扩展下载失败，请检测网络或更换节点再尝试!"
 	exit 1
@@ -425,7 +437,7 @@ sed -i 's/"网络存储"/"NAS"/g' `grep "网络存储" -rl ./package`
 sed -i 's/"带宽监控"/"监控"/g' `grep "带宽监控" -rl ./feeds/luci/applications`
 sed -i 's/"Argon 主题设置"/"Argon设置"/g' `grep "Argon 主题设置" -rl ./feeds/luci/applications`
 ./scripts/feeds update -a
-./scripts/feeds install -a
+./scripts/feeds install -a > /dev/null 2>&1
 ./scripts/feeds install -a
 [[ -e ${Home}/config_bf ]] && {
 	cp -rf ${Home}/config_bf ${Home}/.config
@@ -479,8 +491,11 @@ rm -rf ../{Lede_source,Lienol_source,Mortal_source,openwrt_amlogic}
 # 为编译做最后处理
 BY_INFORMATION="false"
 source build/${firmware}/common.sh && Diy_chuli
+source "${PATH1}/upgrade.sh" && GET_TARGET_INFO
+source "${PATH1}/common.sh" && Diy_xinxi
 COMFIRMWARE="openwrt/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
 TIME g "正在下载DL文件,请耐心等待..."
+make defconfig
 make -j8 download 2>&1 |tee build.log
 find dl -size -1024c -exec ls -l {} \;
 find dl -size -1024c -exec rm -f {} \;
@@ -562,11 +577,15 @@ sleep 15s
 make -j$(nproc) V=s 2>&1 |tee build.log
 
 if [ "$?" == "0" ]; then
-	[[ `grep -c "please re-run with -j1 to see" build.log` -ge '1' ]] && {
-		TIME r "编译失败~~!"
-		TIME y "请不要使用桌面版ubuntu编译，或者检测网络或者更换节点再尝试"
+	if [[ `ls ${COMFIRMWARE} | grep -c "openwrt"` -ge '1' ]] || [[ `ls ${COMFIRMWARE} | grep -c "immortalwrt"` -ge '1' ]]; then
+		echo
+		echo
+		TIME r "编译失败，没发现固件存在~~!"
+		echo
+		TIME y "请不要使用桌面版ubuntu编译，或者您的翻墙网络有问题，油管或者是飞快，但是不能用于编译"
+		sleep 5
 		exit 1
-	}
+	fi
 	byend="1"
 	End="$(date "+%Y/%m/%d-%H.%M")"
 	rm -rf $Home/build.log
