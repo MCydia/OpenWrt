@@ -43,7 +43,7 @@ sed -i "/commit luci/i\uci set luci.main.mediaurlbase='/luci-static/argon'" pack
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 
 # 修改内核版本为5.4
-#sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.4/g' target/linux/x86/Makefile                        
+sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.15/g' target/linux/x86/Makefile                        
 
 # 修改内核版本为4.19
 #sed -i 's/PATCHVER:=5.4/PATCHVER:=4.19/g' target/linux/x86/Makefile  
