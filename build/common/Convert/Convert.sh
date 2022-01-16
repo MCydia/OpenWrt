@@ -1,17 +1,12 @@
 #!/bin/bash
-
-rm -rf package/emortal/default-settings
-svn co https://github.com/Lienol/openwrt/trunk/package/default-settings package/emortal/default-settings
-rm -rf package/emortal/default-settings/.svn
-chmod 775 zzz-default-settings
-cp -Rf zzz-default-settings package/emortal/default-settings/files/zzz-default-settings
+cp -Rf 99-default-settings package/emortal/default-settings/files/99-default-settings
 cp -Rf SourceCode feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 cp -Rf SourceCode package/emortal/autocore/files/arm/rpcd_10_system.js
 cp -Rf SourceCode package/emortal/autocore/files/x86/rpcd_10_system.js
 chmod 664 feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
 chmod 664 package/emortal/autocore/files/arm/rpcd_10_system.js
 chmod 664 package/emortal/autocore/files/x86/rpcd_10_system.js
-rm -rf {zzz-default-settings,SourceCode,Convert.sh}
+rm -rf {99-default-settings,SourceCode,Convert.sh,1806-default-settings}
 
 po_file="$({ find |grep -E "[a-z0-9]+\.zh\-cn.+po"; } 2>"/dev/null")"
 for a in ${po_file}
