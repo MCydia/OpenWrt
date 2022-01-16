@@ -1,9 +1,5 @@
 #!/bin/bash
 
-sed -i 's/<a href="https:\/\/github/<!--<a href="https:\/\/github/g' /usr/lib/lua/luci/view/themes/*/footer.htm
-sed -i 's/luciversion %>)<\/a> \//luciversion %>)<\/a> \/-->/g' /usr/lib/lua/luci/view/themes/*/footer.htm
-sed -i 's/distversion %><\/a> \//distversion %><\/a> \/-->/g' /usr/lib/lua/luci/view/themes/*/footer.htm
-
 [[ ! -f /mnt/network ]] && chmod +x /etc/networkip && source /etc/networkip
 
 cp -Rf /etc/config/network /mnt/network
@@ -30,6 +26,9 @@ if [[ -e /etc/init.d/ddnsto ]]; then
 fi
 
 chmod -R +x /etc/init.d /usr/share
+
+uci set argon.@global[0].bing_background=0
+uci commit argon
 
 rm -rf /etc/networkip
 rm -rf /etc/webweb.sh
