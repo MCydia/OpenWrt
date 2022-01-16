@@ -1,6 +1,6 @@
 #!/bin/bash
-# https://github.com/281677160/AutoBuild-OpenWrt
-# common Module by 28677160
+# https://github.com/MCydia/OpenWrt
+# common Module by MCydia
 # matrix.target=${Modelfile}
 
 TIME() {
@@ -27,7 +27,7 @@ Compte=$(date +%Y年%m月%d号%H时%M分)
 ################################################################################################################
 Diy_lede() {
 find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' -o -name 'mentohust' | xargs -i rm -rf {}
-find . -name 'luci-app-ipsec-vpnd' -o -name 'k3screenctrl' -o -name 'luci-app-wol' | xargs -i rm -rf {}
+find . -name 'luci-app-ipsec-vpnd' -o -name 'luci-app-wol' | xargs -i rm -rf {}
 find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' | xargs -i rm -rf {}
 find . -name 'UnblockNeteaseMusic-Go' -o -name 'UnblockNeteaseMusic' -o -name 'luci-app-unblockmusic' | xargs -i rm -rf {}
 
@@ -45,7 +45,7 @@ if [[ ! "${Modelfile}" == "openwrt_amlogic" ]]; then
 	sed -i '/IMAGES_GZIP/d' "${PATH1}/${CONFIG_FILE}" > /dev/null 2>&1
 	echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> "${PATH1}/${CONFIG_FILE}"
 fi
-if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
+if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
 	# 修复NTFS格式优盘不自动挂载
 	packages=" \
 	block-mount fdisk usbutils badblocks ntfs-3g kmod-scsi-core kmod-usb-core \
@@ -80,6 +80,7 @@ find . -name 'UnblockNeteaseMusic-Go' -o -name 'UnblockNeteaseMusic' -o -name 'l
 rm -rf feeds/packages/libs/libcap
 git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 rm -rf package/luci-app-passwall/{v2ray-core,v2ray-plugin,xray-core,xray-plugin}
+# git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
 git clone https://github.com/281677160/ssr package/luci-app-ssr-plus
 
 sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += luci-app-passwall/g' target/linux/x86/Makefile
@@ -102,10 +103,8 @@ find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' -o -name 'luci-app-wol' | x
 # 天灵源码21.02 diy.sh文件
 ################################################################################################################
 Diy_mortal() {
-
-find . -name 'luci-app-argon-config' -o -name 'luci-theme-argon' -o -name 'luci-light' | xargs -i rm -rf {}
-find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-openwrt' -o -name 'luci-app-cifs' | xargs -i rm -rf {}
-find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' | xargs -i rm -rf {}
+find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-app-cifs' | xargs -i rm -rf {}
+find . -name 'luci-app-wol' | xargs -i rm -rf {}
 }
 
 
@@ -132,11 +131,7 @@ elif [[ "${REPO_BRANCH}" == "openwrt-18.06" ]]; then
 	cp -Rf "${Home}"/build/common/TIANLING/files "${Home}"
 	cp -Rf "${Home}"/build/common/TIANLING/diy/* "${Home}"
 	cp -Rf "${Home}"/build/common/TIANLING/patches/* "${PATH1}/patches"
-	rm -rf package/emortal/default-settings
-	svn co https://github.com/Lienol/openwrt/trunk/package/default-settings package/emortal/default-settings
-	chmod 775 ${Home}/build/common/Convert/1806zzz-default-settings
-	cp -Rf ${Home}/build/common/Convert/1806zzz-default-settings package/emortal/default-settings/files/zzz-default-settings
-	rm -rf package/emortal/default-settings/.svn
+	curl -fsSL https://raw.githubusercontent.com/281677160/common/main/Convert/1806-default-settings > ${Home}/package/emortal/default-settings/files/99-default-settings
 elif [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
 	cp -Rf "${Home}"/build/common/MORTAL/files "${Home}"
 	cp -Rf "${Home}"/build/common/MORTAL/diy/* "${Home}"
@@ -244,7 +239,6 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-docker=y" ${Home}/.config` -eq '1' ]]; t
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
-	
 fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-advanced=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-app-fileassistant=y" ${Home}/.config` -eq '1' ]]; then
@@ -253,7 +247,6 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-advanced=y" ${Home}/.config` -eq '1' ]];
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
-	
 fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-adblock-plus=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-app-adblock=y" ${Home}/.config` -eq '1' ]]; then
@@ -264,7 +257,6 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-adblock-plus=y" ${Home}/.config` -eq '1'
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
-	
 fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-kodexplorer=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-app-vnstat=y" ${Home}/.config` -eq '1' ]]; then
@@ -277,7 +269,6 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-kodexplorer=y" ${Home}/.config` -eq '1' 
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
-	
 fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-ssr-plus=y" ${Home}/.config` -ge '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-app-cshark=y" ${Home}/.config` -eq '1' ]]; then
@@ -288,13 +279,11 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-ssr-plus=y" ${Home}/.config` -ge '1' ]];
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
-	
 fi
 if [[ `grep -c "CONFIG_PACKAGE_wpad-openssl=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_wpad=y" ${Home}/.config` -eq '1' ]]; then
 		sed -i 's/CONFIG_PACKAGE_wpad=y/# CONFIG_PACKAGE_wpad is not set/g' ${Home}/.config
 	fi
-
 fi
 if [[ `grep -c "CONFIG_PACKAGE_dnsmasq-full=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_dnsmasq=y" ${Home}/.config` -eq '1' ]] || [[ `grep -c "CONFIG_PACKAGE_dnsmasq-dhcpv6=y" ${Home}/.config` -eq '1' ]]; then
@@ -315,7 +304,6 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-samba4=y" ${Home}/.config` -eq '1' ]]; t
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
-	
 fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon_new=y" ${Home}/.config` -eq '1' ]]; then
@@ -324,7 +312,6 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon=y" ${Home}/.config` -eq '1' ]]; 
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
 	fi
-
 fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-app-sfe=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_PACKAGE_luci-app-flowoffload=y" ${Home}/.config` -eq '1' ]]; then
@@ -357,8 +344,7 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-app-unblockneteasemusic=y" ${Home}/.config` 
 		echo "TIME r \"您选择了luci-app-unblockmusic，会和luci-app-unblockneteasemusic冲突导致编译错误，已删除luci-app-unblockmusic\"" >>CHONGTU
 		echo "TIME z \"\"" >>CHONGTU
 		echo "TIME b \"插件冲突信息\"" > ${Home}/Chajianlibiao
-	fi	
-
+	fi
 fi
 if [[ `grep -c "CONFIG_PACKAGE_luci-i18n-qbittorrent-zh-cn=y" ${Home}/.config` -eq '0' ]]; then
 	sed -i 's/CONFIG_PACKAGE_luci-app-qbittorrent_static=y/# CONFIG_PACKAGE_luci-app-qbittorrent_static is not set/g' ${Home}/.config
@@ -366,6 +352,12 @@ if [[ `grep -c "CONFIG_PACKAGE_luci-i18n-qbittorrent-zh-cn=y" ${Home}/.config` -
 	sed -i 's/CONFIG_PACKAGE_luci-app-qbittorrent_dynamic=y/# CONFIG_PACKAGE_luci-app-qbittorrent_dynamic is not set/g' ${Home}/.config
 	sed -i 's/CONFIG_PACKAGE_qBittorrent-static=y/# CONFIG_PACKAGE_qBittorrent-static is not set/g' ${Home}/.config
 	sed -i 's/CONFIG_PACKAGE_qbittorrent=y/# CONFIG_PACKAGE_qbittorrent is not set/g' ${Home}/.config
+fi
+if [[ `grep -c "CONFIG_PACKAGE_luci-theme-argon=y" ${Home}/.config` -eq '1' ]]; then
+	if [[ `grep -c "CONFIG_PACKAGE_luci-app-argon-config=y" ${Home}/.config` == '0' ]]; then
+		sed -i '/luci-app-argon-config/d' ${Home}/.config
+		echo -e "\nCONFIG_PACKAGE_luci-theme-argon=y" >> ${Home}/.config
+	fi
 fi
 if [[ `grep -c "CONFIG_TARGET_ROOTFS_EXT4FS=y" ${Home}/.config` -eq '1' ]]; then
 	if [[ `grep -c "CONFIG_TARGET_ROOTFS_PARTSIZE" ${Home}/.config` -eq '0' ]]; then
@@ -392,6 +384,7 @@ else
 	rm -rf CHONGTU
 fi
 }
+
 
 ################################################################################################################
 # 为编译做最后处理
@@ -640,3 +633,6 @@ if [ -n "$(ls -A "${Home}/Plug-in" 2>/dev/null)" ]; then
 	echo
 fi
 }
+© 2022 GitHub, Inc.
+Terms
+Privacy
