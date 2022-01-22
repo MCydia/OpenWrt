@@ -62,3 +62,18 @@ sed -i 's/"动态 DNS"/"Dynamic DNS"/g' feeds/luci/applications/luci-app-ddns/po
 sed -i 's/"解锁网易云灰色歌曲"/"NetEase music"/g' package/lean/luci-app-unblockmusic/po/zh-cn/unblockmusic.po
 sed -i 's/"Frp 内网穿透"/"Frp Intranet"/g' package/lean/luci-app-frpc/po/zh-cn/frp.po
 sed -i 's/"Argon 主题设置"/"Argon Settings"/g' feeds/luci/applications/luci-app-argon-config/po/zh-cn/argon-config.po
+
+# 在线更新时，删除不想保留固件的某个文件，在EOF跟EOF之间加入删除代码，记住这里对应的是固件的文件路径，比如： rm /etc/config/luci
+cat >$DELETE <<-EOF
+EOF
+
+# 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间
+cat >${GITHUB_WORKSPACE}/Clear <<-EOF
+rm -rf config.buildinfo
+rm -rf feeds.buildinfo
+rm -rf openwrt-x86-64-generic-kernel.bin
+rm -rf openwrt-x86-64-generic.manifest
+rm -rf openwrt-x86-64-generic-squashfs-rootfs.img.gz
+rm -rf sha256sums
+rm -rf version.buildinfo
+EOF
