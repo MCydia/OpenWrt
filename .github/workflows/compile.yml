@@ -70,7 +70,8 @@ jobs:
     - name: 公 告
       run: |
         echo
-          chmod -R +x "${GITHUB_WORKSPACE}/build/common"
+        git clone --depth 1 -b main https://github.com/MCydia/OpenWrt/tree/main/build/common build/common > /dev/null 2>&1
+        chmod -R +x "${GITHUB_WORKSPACE}/build/common"
         if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
           echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
           echo "CODE=amlogic" >> $GITHUB_ENV
