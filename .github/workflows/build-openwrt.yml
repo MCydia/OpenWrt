@@ -273,18 +273,18 @@ jobs:
         git commit -m "${{env.GONGGAO1}}"
         git push --force "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
     
-    - name: 编译信息
-      continue-on-error: true
-      run: |
-        cd openwrt
-        source "${PATH1}/common.sh" && Diy_chuli > /dev/null 2>&1
-        if [ "${REGULAR_UPDATE}" == "true" ]; then
-          source "${PATH1}/upgrade.sh" && Diy_Part2 > /dev/null 2>&1
-        fi
-        if [ "${BY_INFORMATION}" == "true" ]; then
-          source "${PATH1}/upgrade.sh" && GET_TARGET_INFO
-          source "${PATH1}/common.sh" && Diy_xinxi
-        fi
+#    - name: 编译信息
+#      continue-on-error: true
+#      run: |
+#        cd openwrt
+#        source "${PATH1}/common.sh" && Diy_chuli > /dev/null 2>&1
+#        if [ "${REGULAR_UPDATE}" == "true" ]; then
+#          source "${PATH1}/upgrade.sh" && Diy_Part2 > /dev/null 2>&1
+#        fi
+#        if [ "${BY_INFORMATION}" == "true" ]; then
+#          source "${PATH1}/upgrade.sh" && GET_TARGET_INFO
+#          source "${PATH1}/common.sh" && Diy_xinxi
+#        fi
     
     - name: 清理Actions空间
       if: env.REPO_TOKEN
