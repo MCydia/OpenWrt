@@ -5,7 +5,7 @@
 # Copyright (C) 2019 P3TERX <https://p3terx.com>
 # <https://github.com/P3TERX/Actions-OpenWrt.git>
 #
-name: 触发compile启动编译
+name: 触发 x86-SSH启动编译
 on:
   workflow_dispatch:
     inputs:
@@ -49,7 +49,7 @@ jobs:
       matrix:
         target: [Lede_source]
 
-        # [Lede_source,Lienol_source,Mortal_source,Tianling_source,openwrt_amlogic]
+        # [Lede_source,Lienol_source,Mortal_source,Tianling_source,Openwrt_amlogic]
 
     
     steps:
@@ -84,7 +84,7 @@ jobs:
         echo "BILDYML=$(grep "compileop" -rl ${GITHUB_WORKSPACE}/.github |cut -d "/" -f9)" >> $GITHUB_ENV
         echo "NETIP=package/base-files/files/etc/networkip" >> $GITHUB_ENV
         echo "DELETE=package/base-files/files/etc/deletefile" >> $GITHUB_ENV
-        if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
+        if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
           echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
           echo "CODE=amlogic" >> $GITHUB_ENV
           echo "OpenWrt_name=18.06" >> $GITHUB_ENV
@@ -155,10 +155,10 @@ jobs:
         
     - name: SSH远程连接（制作.config配置文件）
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
-      uses: danshui-git/debugger-action@master
+      uses: MCydia/debugger-action@master
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
     - name: 生成"${{matrix.target}}"配置文件
       id: compileop
