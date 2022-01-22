@@ -72,7 +72,7 @@ jobs:
         echo
         git clone --depth 1 -b main https://github.com/MCydia/common build/common > /dev/null 2>&1
         chmod -R +x "${GITHUB_WORKSPACE}/build/common"
-        if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
+        if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
           echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
           echo "CODE=amlogic" >> $GITHUB_ENV
           echo "OpenWrt_name=18.06" >> $GITHUB_ENV
