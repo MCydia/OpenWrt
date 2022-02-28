@@ -72,7 +72,8 @@ jobs:
         echo
         git clone --depth 1 -b main https://github.com/MCydia/common build/common > /dev/null 2>&1
         chmod -R +x "${GITHUB_WORKSPACE}/build/common"
-        if [[ "${Modelfile}" == "Openwrt_amlogic" ]]; then
+        chmod -R +x "${GITHUB_WORKSPACE}/build/common"
+        if [[ "${Modelfile}" == "openwrt_amlogic" ]]; then
           echo "ZZZ=package/lean/default-settings/files/zzz-default-settings" >> $GITHUB_ENV
           echo "CODE=amlogic" >> $GITHUB_ENV
           echo "OpenWrt_name=18.06" >> $GITHUB_ENV
@@ -191,14 +192,17 @@ jobs:
       run: |
         cd openwrt
         source "${PATH1}/common.sh" && Diy_chuli > /dev/null 2>&1
-        if [ "${REGULAR_UPDATE}" == "true" ]; then
-          source "${PATH1}/upgrade.sh" && Diy_Part2 > /dev/null 2>&1
-        fi
         if [ "${BY_INFORMATION}" == "true" ]; then
           source "${PATH1}/upgrade.sh" && GET_TARGET_INFO
           source "${PATH1}/common.sh" && Diy_xinxi
         fi
         
+    - name: 启用在线更新
+      continue-on-error: true
+      if: env.REGULAR_UPDATE == 'true' && env.REPO_TOKEN
+      run: |
+        cd openwrt
+        source "${PATH1}/upgrade.sh" && Diy_Part2 > /dev/null 2>&1
     - name: 下载软件包
       id: package
       run: |
@@ -207,7 +211,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-        
     - name: 开始编译固件
       id: compile
       run: |
@@ -217,33 +220,44 @@ jobs:
         echo "::set-output name=status::success"
         echo "date=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         echo "date1=$(date +'%m-%d')" >> $GITHUB_ENV
-        
     - name: 上传bin文件夹(固件+ipk)在 github actions
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       uses: actions/upload-artifact@v2
       with:
         name: filename+ipk_${{ env.CODE }}_${{ env.TARGET_PROFILE }}_${{ env.Compile_Date }}
         path: openwrt/bin
+        
+    - name: 打包N1固件(自动检测最新内核打包)
+      if: steps.compile.outputs.status == 'success' && env.AUTOMATIC_AMLOGIC == 'true'
+      run: |
+        cd $GITHUB_WORKSPACE
+        git clone --depth 1 https://github.com/ophub/amlogic-s9xxx-openwrt.git amlogic
+        [ -d amlogic/openwrt-armvirt ] || mkdir -p amlogic/openwrt-armvirt
+        cp -f ${Home}/bin/targets/*/*/*.tar.gz amlogic/openwrt-armvirt/ && sync
+        cd amlogic
+        sudo chmod +x make
+        sudo ./make -d -b s905x3_s905x2_s905x_s905w_s905d_s922x_s912 -k 5.10.100_5.4.180 -a true
+        sudo mv -f $GITHUB_WORKSPACE/amlogic/out/* ${Home}/bin/targets/armvirt/64/ && sync
+        sudo rm -rf $GITHUB_WORKSPACE/amlogic
     
     - name: 整理固件文件夹
       id: organizer
       run: |
-        if [ "${AUTOMATIC_AMLOGIC}" == "true" ]; then
-          source "${PATH1}/common.sh" && Diy_amlogic
+        if [ ! "${Modelfile}" == "openwrt_amlogic" ]; then
+          cp -Rf "${Home}"/bin/targets/*/* "${Home}"/upgrade
         fi
-        cd "${Home}"
-        cp -Rf bin/targets/*/* "${Home}"/upgrade
-        cd bin/targets/*/*
+        cd "${Home}"/bin/targets/*/*
         rename -v "s/^immortalwrt/openwrt/" *
         if [[ -e ${GITHUB_WORKSPACE}/Clear ]]; then
           cp -Rf ${GITHUB_WORKSPACE}/Clear ./
           chmod +x Clear && source Clear
-          rm -fr Clear
+          rm -rf Clear
         fi
         rm -rf packages
         rename -v "s/^openwrt/${{ env.date1 }}-${{ env.CODE }}/" *
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
+        echo "### $(date +"%Y年%m月%d号-%H点%M分")" > ${GITHUB_WORKSPACE}/update_log.txt
         
     - name: 上传固件在 github actions
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
@@ -252,26 +266,22 @@ jobs:
         name: ${{ env.OpenWrt_name }}-${{ env.CODE }}-${{ env.TARGET_PROFILE }}-firmware-${{ env.Compile_Date }}
         path: ${{ env.FIRMWARE }}
     
-    - name: 上传固件到「奶牛快传」和「WeTransfer」
+    - name: 上传固件到「奶牛快传」
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true'
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+        echo "##### 奶牛快传：$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> update_log.txt
         sed -i "s/Download Link/奶牛快传/g" cowtransfer.log
         echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        sed -i "s/Download Link/WETRANSFER/g" wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-    
-    - name: 整理发布信息
-      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
+    - name: 上传固件到「WeTransfer」
+      if: steps.organizer.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true'
       run: |
-        echo "### $(date +"%Y年%m月%d号-%H点%M分")" > update_log.txt
         curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "##### 奶牛快传：$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> update_log.txt
         ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
         echo "##### WETRANSFER：$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> update_log.txt
+        sed -i "s/Download Link/WETRANSFER/g" wetransfer.log
+        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
     
     - name: 发布固件
       if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
