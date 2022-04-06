@@ -4,26 +4,63 @@
 # DIY扩展二合一了，在此处可以增加插件
 #
 
-sed -i "/uci commit fstab/a\uci commit network" $ZZZ
-sed -i "/uci commit network/i\uci set network.lan.ipaddr='10.10.10.251'" $ZZZ                             # IPv4 地址(openwrt后台地址)
-sed -i "/uci commit network/i\uci set network.lan.netmask='255.255.255.0'" $ZZZ                           # IPv4 子网掩码
-sed -i "/uci commit network/i\uci set network.lan.gateway='10.10.10.250'" $ZZZ                            # IPv4 网关
-sed -i "/uci commit network/i\uci set network.lan.broadcast='10.10.10.255'" $ZZZ                          # IPv4 广播
-sed -i "/uci commit network/i\uci set network.lan.dns='10.10.10.253'" $ZZZ                                # DNS(多个DNS要用空格分开)
-sed -i "/uci commit network/i\uci set network.lan.delegate='0'" $ZZZ                                      # 去掉LAN口使用内置的 IPv6 管理
-echo "close_dhcp" > package/base-files/files/etc/closedhcp                                                # 关闭DHCP服务
+cat >$NETIP <<-EOF
+uci set network.lan.ipaddr='10.10.10.251'                      # IPv4 地址(openwrt后台地址)
+uci set network.lan.netmask='255.255.255.0'                    # IPv4 子网掩码
+uci set network.lan.gateway='10.10.10.250'                     # IPv4 网关
+uci set network.lan.broadcast='10.10.10.255'                  # IPv4 广播
+uci set network.lan.dns='10.10.10.253'                        # DNS(多个DNS要用空格分开)
+uci set network.lan.delegate='0'                              # 去掉LAN口使用内置的 IPv6 管理(若用IPV6请注释或者删除这个)
+uci set dhcp.@dnsmasq[0].filter_aaaa='1'                      # 禁止解析 IPv6 DNS记录(若用IPV6请注释或者删除这个)
+#uci set dhcp.lan.ignore='1'                                  # 关闭DHCP功能（去掉uci前面的#生效）
+uci set system.@system[0].hostname='OpenWrt'                  # 修改主机名称为OpenWrt-123
+#uci set ttyd.@ttyd[0].command='/bin/login -f root'           # 设置ttyd免帐号登录（去掉uci前面的#生效）
 
-sed -i 's/luci-theme-bootstrap/luci-theme-rosy/g' feeds/luci/collections/luci/Makefile                    # 选择argon为默认主题
+# 如果有用IPV6的话,可以使用以下命令创建IPV6客户端(LAN口)（去掉全部代码uci前面#号生效）
+#uci set network.ipv6=interface
+#uci set network.ipv6.proto='dhcpv6'
+#uci set network.ipv6.ifname='@lan'
+#uci set network.ipv6.reqaddress='try'
+#uci set network.ipv6.reqprefix='auto'
+#uci set firewall.@zone[0].network='lan ipv6'
+EOF
 
-sed -i "s/OpenWrt /${Author} Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ                  # 增加个性名字MCydia
 
-sed -i "/uci commit system/i\uci set system.@system[0].hostname='OpenWrt'" $ZZZ                           # 修改主机名称为OpenWrt-123
+# 设置 argon 为编译必选主题(可自行修改您要的,主题名称必须对,源码内必须有该主题)
+sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
-#sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.:0/$1$PhflQnJ1$yamWfH5Mphs4hXV7UXWQ21:18725/g' $ZZZ          # 替换密码（要替换密码就不能设置密码为空）
 
-sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                                    # 设置密码为空
+# 编译多主题时,设置某主题成默认主题（危险操作,你要确定您这里改的主题的名字准确,比如[argon]和肯定编译了该主题,要不然进不了后台）
+#sed -i "/exit 0/i\uci set luci.main.mediaurlbase='/luci-static/argon' && uci commit luci" "$BASE_PATH/etc/rc.local"
 
-#sed -i 's/PATCHVER:=4.14/PATCHVER:=4.19/g' target/linux/x86/Makefile                                     # 默认内核为4.14，修改内核为4.19
+
+# 增加个性名字 ${Author} 默认为你的github帐号,修改时候把 ${Author} 替换成你要的
+sed -i "s/OpenWrt /${Author} compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ_PATH
+
+
+# 取消路由器每天跑分任务
+sed -i "/exit 0/i\sed -i '/coremark/d' /etc/crontabs/root" "$BASE_PATH/etc/rc.local"
+
+
+# K3专用，编译K3的时候只会出K3固件（其他机型也适宜,把phicomm-k3替换一下，名字要绝对正确才行）
+#sed -i 's|^TARGET_|# TARGET_|g; s|# TARGET_DEVICES += phicomm_k3|TARGET_DEVICES += phicomm_k3|' target/linux/bcm53xx/image/Makefile
+
+
+# 在线更新时，删除不想保留固件的某个文件，在EOF跟EOF之间加入删除代码，记住这里对应的是固件的文件路径，比如： rm -rf /etc/config/luci
+cat >$DELETE <<-EOF
+EOF
+
+# 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间（根据编译机型变化,自行调整删除的固件名称）
+cat >${GITHUB_WORKSPACE}/Clear <<-EOF
+rm -rf packages
+rm -rf config.buildinfo
+rm -rf feeds.buildinfo
+rm -rf openwrt-x86-64-generic-kernel.bin
+rm -rf openwrt-x86-64-generic.manifest
+rm -rf openwrt-x86-64-generic-squashfs-rootfs.img.gz
+rm -rf sha256sums
+rm -rf version.buildinfo
+EOF
 
 
 # 修改插件名字
