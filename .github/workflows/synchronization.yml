@@ -17,6 +17,7 @@ on:
         default: 'fork-actions'
 
 env:
+  BILDYML: synchronization.yml
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   TZ: Asia/Shanghai
 
@@ -43,8 +44,7 @@ jobs:
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
       run: |
         cd $GITHUB_WORKSPACE
-        echo "BILDYML=$(grep "again-fork" -rl ${GITHUB_WORKSPACE}/.github |cut -d "/" -f9)" >> $GITHUB_ENV
-        git clone -b main https://github.com/MCydia/OpenWrt.git shangyou
+        git clone -b main https://github.com/281677160/build-actions.git shangyou
         git clone -b main https://github.com/${{github.repository}}.git repogx
         if [[ -d repogx/build/Lede_source ]];then
           rm -rf shangyou/build/Lede_source/.config
@@ -59,7 +59,7 @@ jobs:
           rm -fr shangyou/build/Tianling_source/.config
         fi
         if [[ -d repogx/build/openwrt_amlogic ]];then
-          rm -fr shangyou/build/Openwrt_amlogic/.config
+          rm -fr shangyou/build/openwrt_amlogic/.config
         fi
         if [[ -n "$(ls -A "$GITHUB_WORKSPACE/repogx/.github/workflows/build-openwrt.yml" 2>/dev/null)" ]]; then
           echo "CRON2=$(grep -A 1 'schedule:' repogx/.github/workflows/build-openwrt.yml |awk 'NR==2' |sed 's/^[ ]*//g' |sed s/^#// |sed 's/^[ ]*//g' |cut -d "#" -f1 |sed 's/\//\\&/g' |sed 's/\*/\\&/g')" >> $GITHUB_ENV
@@ -104,6 +104,7 @@ jobs:
             sed -i "s/${{env.QIDONG1}}/${{env.QIDONG2}}/g" shangyou/.github/workflows/compile.yml
           fi
         fi
+        cp -Rf $GITHUB_WORKSPACE/shangyou/README.md $GITHUB_WORKSPACE/repogx/README.md
         cd repogx
         if [[ -n "$(ls -A "$GITHUB_WORKSPACE/repogx/.github/workflows/compile.yml" 2>/dev/null)" ]]; then
           git rm -rf $GITHUB_WORKSPACE/repogx/.github/workflows/compile.yml
@@ -158,12 +159,6 @@ jobs:
         cp -Rf $GITHUB_WORKSPACE/shangyou/* ./
         cp -Rf $GITHUB_WORKSPACE/shangyou/.github/workflows/* .github/workflows
         git add .
-        git commit -m "同步上游MCydia/OpenWrt 于$(date +%Y年%m月%d号%H时%M分%S秒)" |tee build.log
-        if [[ `grep -c "Your branch is up to date with" build.log` == '1' ]]; then
-          echo "配置文件无更新,所以无需要覆盖!"
-        else
-          rm -fr build.log
-          echo "正在更新${{github.repository}}!"
-          git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
-          echo "同步完成，请注意查看[diy-part.sh]和[settings.ini]文件的变化和设置好!"
-        fi
+        git commit -m "同步上游MCydia/OpenWrt 于$(date +%Y年%m月%d号%H时%M分%S秒)"
+        git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
+        echo "同步完成，请注意查看[diy-part.sh]和[settings.ini]文件的变化和设置好!"
