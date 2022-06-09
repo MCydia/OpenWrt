@@ -1,32 +1,43 @@
 
-<details>
-<summary>🆙点击查看更新说明</summary>
-<br>
-  
-2022年4月27号修改
-  
-1、把 build/openwrt_amlogic/diy-part.sh 里面的晶晨打包组合的路径修改过了，请及时更新
+OpenWrt X86-64 稳定项目
 
-2、把编译的时候不想要的固件或者文件的删除方法修改过了，注意diy-part.sh的代码路径也修改过了，要及时更新，新删除方法请到《[`删除不想要的固件或者文件`](https://github.com/danshui-git/shuoming/blob/master/%E5%9B%BA%E4%BB%B6%E6%96%87%E4%BB%B6%E5%A4%B9%E6%95%B4%E7%90%86.md)》查看说明
+择要
+Lede_source=18.06=5.10
+Lienol_source=19.07=4.14
+Mortal_source=21.02=5.4
+openwrt_amlogic=N1和晶晨系列CPU专用
+openwrt_amlogic文件夹，编译S905x3, S905x2, S922x, S905x, S905d, s912自动打包您所需的固件
+第一次使用请看如下：
+云编译需要 在此 创建个token,勾选：repo, workflow，保存所得的key
 
-<br />
-</details>
+然后在此仓库Settings->Secrets中添加个名字为REPO_TOKEN的Secret,填入token获得的key,否者无法触发编译
 
+Secrets中添加 SCKEY 可通过Server酱 推送编译结果到微信
 
----
-<details>
-<summary>🆘点击查看编译教程</summary>
-<br>
+Secrets中添加 TELEGRAM_CHAT_ID, TELEGRAM_TOKEN 可推送编译结果到Telegram Bot. 教程
 
-## [`github编译教程`](https://github.com/danshui-git/shuoming#readme)
+固件来源：
+感谢coolsnowwolf大神提供的源码
+感谢Lienol大神提供的源码
+感谢ctcgfw大神提供的源码
+感谢P3TERX大神提供的一键编译脚本
+感谢garypang13大神提供的一键编译脚本
+感谢tuanqing大神提供的一键打包脚本
+感谢Hyy2001X大神，定时升级固件来源于此大神
+感谢hyird大神，是这仁兄告诉我有patch补丁这回事的
+感谢微软免费提供的编译平台
+感谢各位大佬提供的各种各样的插件
+由衷感谢所有为openwrt无私奉献的大佬们
+插件列表
+常用插件
+全部插件
+全部插件github
+固件说明：
+lean源码版本，内核为5.10（ipv4）版
 
----
-#### [`本地Ubuntu一键编译`](https://github.com/281677160/bendi)
-#### [`本地一键提取.config然后在云编译脚本使用`](https://github.com/danshui-git/shuoming/blob/master/yijianconfig.md)
+自动每7天更新一次，手动不定时更新
 
-<br />
-</details>
-
+ip：10.10.10.251 密码：为空
 
 ---
  ### 鸣谢！
