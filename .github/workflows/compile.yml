@@ -27,7 +27,7 @@ env:
   SCKEY: ${{ secrets.SCKEY }}
   PUSH_PLUS_TOKEN: ${{ secrets.PUSH_PLUS_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TZ: Asia/Shanghai
 
 jobs:
@@ -199,7 +199,7 @@ jobs:
 
     - name: 电报机器人或pushplus信息通知
       continue-on-error: true
-      if: env.PUSH_PLUS_TOKEN && env.SERVERCHAN_SCKEY == 'PUSH' || env.TELEGRAM_BOT_TOKEN && env.SERVERCHAN_SCKEY == 'TG'
+      if: env.PUSH_PLUS_TOKEN && env.SERVERCHAN_SCKEY == 'PUSH' || env.TELEGRAM_TOKEN && env.SERVERCHAN_SCKEY == 'TG'
       run: |
         if [[ "${SERVERCHAN_SCKEY}" == "TG" ]]; then
           if [[ "${{steps.compile.outcome}}" == 'failure' ]]; then
